@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.viewpager2.widget.ViewPager2 xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/HomeBanner"
+    android:layout_width="match_parent"
+    android:layout_height="520dp"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:paddingBottom="10dp"
+    android:paddingTop="10dp"
+    android:paddingStart="50dp"
+    android:paddingEnd="50dp">
+
+</androidx.viewpager2.widget.ViewPager2>

@@ -73,4 +73,5 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.fragment)
     implementation(libs.navigation)
+    implementation(libs.glide)
 }
