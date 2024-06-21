@@ -9,7 +9,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/HomeFragmentContainer"
-        android:name="com.project.laybare.home.Home"
+        android:name="com.project.laybare.home.fragment.Home"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:navGraph="@navigation/home_navigation"

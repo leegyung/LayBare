@@ -1,6 +1,7 @@
 package com.project.domain.entity
 
 data class SearchImageResultEntity(
+    val keyWord : String,
     val totalResults : Long,
     val nextPageIndex : Int,
     val correctQuery : String,

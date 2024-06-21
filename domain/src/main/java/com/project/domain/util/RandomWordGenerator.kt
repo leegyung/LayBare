@@ -74,7 +74,11 @@ object RandomWordGenerator {
         "Silhouette",
         "Reflection",
         "Panorama",
-        "Macro flowers"
+        "Macro flowers",
+        "자연", "풍경", "동물", "꽃", "나무",
+        "바다", "산", "도시", "건물", "인물",
+        "가족", "음식", "여행", "축제", "예술",
+        "스포츠", "자동차", "공원", "일출", "일몰"
     )
 
     private fun getRandomInt() : Int {
@@ -83,12 +87,13 @@ object RandomWordGenerator {
         return random.nextInt(0, keywords.size)
     }
 
-    fun getRandomWord() : String {
-        return try{
-            keywords[getRandomInt()]
-        }catch (_:Exception){
-            keywords[0]
+    fun getRandomWord(size : Int) : MutableList<String> {
+        val list = mutableSetOf<String>()
+        while (list.size != size) {
+            val word = keywords[getRandomInt()]
+            list.add(word)
         }
+        return list.toMutableList()
     }
 
 

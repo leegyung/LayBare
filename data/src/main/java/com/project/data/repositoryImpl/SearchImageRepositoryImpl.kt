@@ -21,7 +21,7 @@ class SearchImageRepositoryImpl @Inject constructor(private val mApiService : Ap
             if(response.isSuccessful){
                 val body = response.body()
                 if(body != null){
-                    val entity = ImageListMapper.getImageListEntity(body)
+                    val entity = ImageListMapper.getImageListEntity(body, keyword)
                     emit(ApiResult.ResponseSuccess(entity))
                 }else{
                     emit(ApiResult.ResponseError("데이터 로딩 실패"))

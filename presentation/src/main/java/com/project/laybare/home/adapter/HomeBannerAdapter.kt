@@ -1,4 +1,4 @@
-package com.project.laybare.home
+package com.project.laybare.home.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -41,7 +41,8 @@ class HomeBannerAdapter() : RecyclerView.Adapter<HomeBannerAdapter.ViewHolder>()
         fun bind(image : ImageEntity) {
             Glide.with(itemView.context)
                 .load(image.link)
-                .override(400)
+                .override(900)
+                .error(Glide.with(itemView.context).load(image.thumbnailLink))
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(mBinding.MatchParentImageView)
         }

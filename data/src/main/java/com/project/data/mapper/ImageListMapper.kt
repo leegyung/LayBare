@@ -6,7 +6,7 @@ import com.project.domain.entity.ImageEntity
 import com.project.domain.entity.SearchImageResultEntity
 
 object ImageListMapper {
-    fun getImageListEntity(dto : SearchImageResultDto?) : SearchImageResultEntity {
+    fun getImageListEntity(dto : SearchImageResultDto?, keyword : String) : SearchImageResultEntity {
         val total = dto?.queries?.request?.getOrNull(0)?.totalResults?:0
         val nextPageIndex = dto?.queries?.nextPage?.getOrNull(0)?.startIndex?:0
         val correctionQuery = dto?.spelling?.correctedQuery?:""
@@ -17,6 +17,7 @@ object ImageListMapper {
         }
 
         return SearchImageResultEntity(
+            keyword,
             total,
             nextPageIndex,
             correctionQuery,
