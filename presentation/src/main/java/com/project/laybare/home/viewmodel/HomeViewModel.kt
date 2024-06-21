@@ -7,10 +7,12 @@ import com.project.domain.entity.SearchImageResultEntity
 import com.project.domain.usecase.SearchImageUseCase
 import com.project.domain.util.RandomWordGenerator
 import com.project.laybare.BuildConfig
+import com.project.laybare.home.HomeListInterface
 import com.project.laybare.home.data.HomeListSectionData
 import com.project.laybare.home.adapter.HomeAdapter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,13 +37,14 @@ class HomeViewModel @Inject constructor(private val mUseCase: SearchImageUseCase
             mSectionList.clear()
 
             val words = RandomWordGenerator.getRandomWord(5)
-            //val response1 = mUseCase.getImageList(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, words[0], 1, 5)
-            //val response2 = mUseCase.getImageList(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, words[1], 1, 10)
-            //val response3 = mUseCase.getImageList(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, words[2], 1, 10)
-            //val response4 = mUseCase.getImageList(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, words[3], 1, 10)
-            //val response5 = mUseCase.getImageList(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, words[4], 1, 10)
-
             /*
+            val response1 = mUseCase.getImageList(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, words[0], 1, 5)
+            val response2 = mUseCase.getImageList(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, words[1], 1, 10)
+            val response3 = mUseCase.getImageList(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, words[2], 1, 10)
+            val response4 = mUseCase.getImageList(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, words[3], 1, 10)
+            val response5 = mUseCase.getImageList(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, words[4], 1, 10)
+
+
             combine(response1, response2, response3, response4, response5) { v1, v2, v3, v4, v5 ->
                 val sections = arrayListOf<HomeListSectionData>()
                 v1.data?.let {
@@ -65,7 +68,9 @@ class HomeViewModel @Inject constructor(private val mUseCase: SearchImageUseCase
             }.collectLatest { result ->
                 mSectionList.addAll(result)
                 mHomeAdapter.notifyItemRangeInserted (0, mSectionList.size - 1)
-            }*/
+            }
+
+             */
 
 
             mUseCase.getImageList(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, words[0], 1, 5).collectLatest {
@@ -82,6 +87,8 @@ class HomeViewModel @Inject constructor(private val mUseCase: SearchImageUseCase
                 mSectionList.addAll(sections)
                 mHomeAdapter.notifyItemRangeInserted (0, mSectionList.size - 1)
             }
+
+
 
 
 
@@ -110,7 +117,8 @@ class HomeViewModel @Inject constructor(private val mUseCase: SearchImageUseCase
     }
 
 
-    fun getHomeAdapter() : HomeAdapter {
+    fun getHomeAdapter(listener : HomeListInterface?) : HomeAdapter {
+        mHomeAdapter.setListener(listener)
         return mHomeAdapter
     }
 

@@ -3,7 +3,7 @@
     android:id="@+id/HomeNormalImageView"
     android:layout_width="match_parent"
     android:layout_height="200dp"
-    android:background="@color/gray"
+    android:background="@drawable/box_gray_6dp"
     android:scaleType="centerCrop">
 
 </ImageView>

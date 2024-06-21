@@ -74,4 +74,5 @@ dependencies {
     implementation(libs.fragment)
     implementation(libs.navigation)
     implementation(libs.glide)
+    implementation(libs.recyclerView)
 }

@@ -7,9 +7,11 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.project.domain.entity.ImageEntity
 import com.project.laybare.databinding.ImageViewMatchParentBinding
+import com.project.laybare.home.HomeListInterface
 
-class HomeBannerAdapter() : RecyclerView.Adapter<HomeBannerAdapter.ViewHolder>() {
+class HomeBannerAdapter : RecyclerView.Adapter<HomeBannerAdapter.ViewHolder>() {
     private val mImageList = arrayListOf<ImageEntity>()
+    private var mListener : HomeListInterface? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = ImageViewMatchParentBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -33,9 +35,18 @@ class HomeBannerAdapter() : RecyclerView.Adapter<HomeBannerAdapter.ViewHolder>()
         }
     }
 
+    fun setListener(listener : HomeListInterface?) {
+        mListener = listener
+    }
+
     inner class ViewHolder(private val mBinding: ImageViewMatchParentBinding) : RecyclerView.ViewHolder(mBinding.root) {
         init {
             mBinding.MatchParentImageView.clipToOutline = true
+            mBinding.MatchParentImageView.setOnClickListener {
+                mImageList.getOrNull(bindingAdapterPosition)?.let{
+                    mListener?.onImageClicked(it)
+                }
+            }
         }
 
         fun bind(image : ImageEntity) {

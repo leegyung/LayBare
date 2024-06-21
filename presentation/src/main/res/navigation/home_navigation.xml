@@ -3,11 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/home_navigation"
-    app:startDestination="@id/home2">
+    app:startDestination="@id/home">
 
     <fragment
-        android:id="@+id/home2"
+        android:id="@+id/home"
         android:name="com.project.laybare.home.fragment.Home"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_home_to_search"
+            app:destination="@id/search" />
+    </fragment>
+    <fragment
+        android:id="@+id/search"
+        android:name="com.project.laybare.search.Search"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" />
 </navigation>

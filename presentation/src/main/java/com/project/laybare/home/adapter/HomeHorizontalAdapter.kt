@@ -7,9 +7,11 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.project.domain.entity.ImageEntity
 import com.project.laybare.databinding.HomeHorizontalImageViewBinding
+import com.project.laybare.home.HomeListInterface
 
 class HomeHorizontalAdapter : RecyclerView.Adapter<HomeHorizontalAdapter.ViewHolder>() {
     private val mImageList = arrayListOf<ImageEntity>()
+    private var mListener : HomeListInterface? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = HomeHorizontalImageViewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -33,9 +35,18 @@ class HomeHorizontalAdapter : RecyclerView.Adapter<HomeHorizontalAdapter.ViewHol
         }
     }
 
+    fun setListener(listener : HomeListInterface?) {
+        mListener = listener
+    }
+
     inner class ViewHolder(private val mBinding: HomeHorizontalImageViewBinding) : RecyclerView.ViewHolder(mBinding.root) {
         init {
-            //mBinding.HorizontalImageView.clipToOutline = true
+            mBinding.HorizontalImageView.clipToOutline = true
+            mBinding.HorizontalImageView.setOnClickListener {
+                mImageList.getOrNull(bindingAdapterPosition)?.let{
+                    mListener?.onImageClicked(it)
+                }
+            }
         }
 
         fun bind(image : ImageEntity) {

@@ -8,12 +8,16 @@ import androidx.viewpager2.widget.CompositePageTransformer
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.project.domain.entity.ImageEntity
+import com.project.laybare.R
 import com.project.laybare.databinding.HomeBannerViewBinding
 import com.project.laybare.databinding.HomeHorizontalViewBinding
 import com.project.laybare.databinding.HomeNormalImageViewBinding
+import com.project.laybare.home.HomeListInterface
 import com.project.laybare.home.data.HomeListSectionData
 
 class HomeAdapter(private val mSections : ArrayList<HomeListSectionData>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private var mListener : HomeListInterface? = null
 
     private val BANNER_TYPE = 1
     private val HORIZONTAL_TYPE = 2
@@ -48,6 +52,10 @@ class HomeAdapter(private val mSections : ArrayList<HomeListSectionData>) : Recy
         return mSections.size
     }
 
+    fun setListener(listener : HomeListInterface?) {
+        mListener = listener
+    }
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder){
             is BannerViewHolder -> {
@@ -57,7 +65,7 @@ class HomeAdapter(private val mSections : ArrayList<HomeListSectionData>) : Recy
             }
             is HorizontalViewHolder -> {
                 mSections.getOrNull(position)?.let{
-                    holder.bind(it)
+                    holder.bind(it, position)
                 }
             }
             is ImageViewHolder -> {
@@ -89,7 +97,10 @@ class HomeAdapter(private val mSections : ArrayList<HomeListSectionData>) : Recy
                 }
             }
 
-            mAdapter.setImageList(imageList)
+            mAdapter.apply {
+                setImageList(imageList)
+                setListener(mListener)
+            }
             mBinding.HomeBanner.apply {
                 offscreenPageLimit = 1
                 setPageTransformer(pageTransformer)
@@ -97,7 +108,7 @@ class HomeAdapter(private val mSections : ArrayList<HomeListSectionData>) : Recy
             }
 
             mBinding.HomeBanner.doOnPreDraw {
-                mBinding.HomeBanner.setCurrentItem(3, false)
+                mBinding.HomeBanner.setCurrentItem(2, false)
             }
 
         }
@@ -105,14 +116,44 @@ class HomeAdapter(private val mSections : ArrayList<HomeListSectionData>) : Recy
 
     inner class HorizontalViewHolder(private val mBinding : HomeHorizontalViewBinding) : RecyclerView.ViewHolder(mBinding.root) {
         private val mAdapter = HomeHorizontalAdapter()
-        fun bind(data : HomeListSectionData) {
+        fun bind(data : HomeListSectionData, pos : Int) {
             mBinding.HorizontalViewTitle.text = data.keyword
-            mAdapter.setImageList(data.imageList?: arrayListOf())
-            mBinding.HorizontalViewList.adapter = mAdapter
+            mAdapter.apply {
+                setImageList(data.imageList?: arrayListOf())
+                setListener(mListener)
+            }
+            mBinding.HorizontalViewList.apply {
+                if(itemDecorationCount == 0){
+                    addItemDecoration(HomeHorizontalDecorator(resources.getDimensionPixelSize(R.dimen.dp_10)))
+                }
+                adapter = mAdapter
+            }
+
+            setBrush(pos)
+        }
+
+        private fun setBrush(pos : Int) {
+            when(pos){
+                1 -> mBinding.imageView2.setImageResource(R.drawable.brush1)
+                2 -> mBinding.imageView2.setImageResource(R.drawable.brush2)
+                3 -> mBinding.imageView2.setImageResource(R.drawable.brush3)
+                else -> mBinding.imageView2.setImageResource(R.drawable.brush7)
+            }
         }
     }
 
     inner class ImageViewHolder(private val mBinding : HomeNormalImageViewBinding) : RecyclerView.ViewHolder(mBinding.root) {
+
+        init {
+            mBinding.HomeNormalImageView.clipToOutline = true
+            mBinding.HomeNormalImageView.setOnClickListener {
+                mSections.getOrNull(bindingAdapterPosition)?.image?.let{
+                    mListener?.onImageClicked(it)
+                }
+            }
+
+        }
+
         fun bind(img : ImageEntity) {
             Glide.with(itemView.context)
                 .load(img.link)

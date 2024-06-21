@@ -10,6 +10,8 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -19,5 +21,8 @@ class HomeActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
     }
+
+
 }
