@@ -44,7 +44,7 @@ class HomeHorizontalAdapter : RecyclerView.Adapter<HomeHorizontalAdapter.ViewHol
             mBinding.HorizontalImageView.clipToOutline = true
             mBinding.HorizontalImageView.setOnClickListener {
                 mImageList.getOrNull(bindingAdapterPosition)?.let{
-                    mListener?.onImageClicked(it)
+                    mListener?.onImageClicked(it, mBinding.HorizontalImageView)
                 }
             }
         }

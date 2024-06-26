@@ -13,10 +13,20 @@
         <action
             android:id="@+id/action_home_to_search"
             app:destination="@id/search" />
+        <action
+            android:id="@+id/action_home_to_imageDetail"
+            app:destination="@id/imageDetail"
+            app:enterAnim="@anim/expanding_enter"
+            app:popExitAnim="@anim/expanding_exit" />
     </fragment>
     <fragment
         android:id="@+id/search"
         android:name="com.project.laybare.search.Search"
         android:label="fragment_search"
         tools:layout="@layout/fragment_search" />
+    <fragment
+        android:id="@+id/imageDetail"
+        android:name="com.project.laybare.ImageDetail.ImageDetail"
+        android:label="fragment_image_detail"
+        tools:layout="@layout/fragment_image_detail" />
 </navigation>

@@ -148,7 +148,7 @@ class HomeAdapter(private val mSections : ArrayList<HomeListSectionData>) : Recy
             mBinding.HomeNormalImageView.clipToOutline = true
             mBinding.HomeNormalImageView.setOnClickListener {
                 mSections.getOrNull(bindingAdapterPosition)?.image?.let{
-                    mListener?.onImageClicked(it)
+                    mListener?.onImageClicked(it, mBinding.HomeNormalImageView)
                 }
             }
 

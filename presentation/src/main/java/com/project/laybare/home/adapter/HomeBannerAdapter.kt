@@ -44,7 +44,7 @@ class HomeBannerAdapter : RecyclerView.Adapter<HomeBannerAdapter.ViewHolder>() {
             mBinding.MatchParentImageView.clipToOutline = true
             mBinding.MatchParentImageView.setOnClickListener {
                 mImageList.getOrNull(bindingAdapterPosition)?.let{
-                    mListener?.onImageClicked(it)
+                    mListener?.onImageClicked(it, mBinding.MatchParentImageView)
                 }
             }
         }
