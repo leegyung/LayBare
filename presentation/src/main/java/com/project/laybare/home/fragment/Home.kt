@@ -50,7 +50,7 @@ class Home : Fragment() {
         initUI()
 
         if(mViewModel.requireImageData()){
-            //mViewModel.getInitialData()
+            mViewModel.getInitialData()
         }
 
     }

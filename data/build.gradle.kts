@@ -48,5 +48,6 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.retrofit)
     implementation(libs.retrofitConverter)
+    implementation(libs.glide)
 
 }

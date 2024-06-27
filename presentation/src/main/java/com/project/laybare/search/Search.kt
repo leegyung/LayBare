@@ -109,9 +109,7 @@ class Search : Fragment() {
 
 
     }
-
-
-
+    
     private fun initUI() {
         val keyword = mViewModel.getKeyword()
         mBinding.SearchEditText.setText(keyword)
