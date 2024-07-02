@@ -2,6 +2,7 @@ package com.project.laybare.home.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.graphics.drawable.toBitmap
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -42,11 +43,14 @@ class HomeBannerAdapter : RecyclerView.Adapter<HomeBannerAdapter.ViewHolder>() {
     inner class ViewHolder(private val mBinding: ImageViewMatchParentBinding) : RecyclerView.ViewHolder(mBinding.root) {
         init {
             mBinding.MatchParentImageView.clipToOutline = true
+
+
             mBinding.MatchParentImageView.setOnClickListener {
                 mImageList.getOrNull(bindingAdapterPosition)?.let{
                     mListener?.onImageClicked(it, mBinding.MatchParentImageView)
                 }
             }
+
         }
 
         fun bind(image : ImageEntity) {

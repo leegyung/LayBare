@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.ir.backend.js.compile
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -18,6 +20,9 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
+
+
 
     buildTypes {
         debug {
@@ -52,6 +57,7 @@ android {
         viewBinding = true
         buildConfig = true
     }
+
 }
 
 
@@ -75,4 +81,9 @@ dependencies {
     implementation(libs.navigation)
     implementation(libs.glide)
     implementation(libs.recyclerView)
+    implementation(libs.photoView)
+    implementation(libs.gson)
+
+    implementation(libs.imageRecognition)
+
 }

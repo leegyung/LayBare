@@ -1,16 +1,23 @@
 package com.project.laybare.ImageDetail
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import com.project.laybare.R
 import com.project.laybare.databinding.FragmentImageDetailBinding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -55,7 +62,10 @@ class ImageDetail : Fragment() {
     private fun initUI(){
         Glide.with(this)
             .load(mViewModel.getImageUrl())
-            .error(Glide.with(this).load(mViewModel.getThumbnail()))
+            .error(
+                Glide.with(this)
+                    .load(mViewModel.getThumbnail())
+            )
             .into(mBinding.ImageDetailImage)
 
         initListener()
@@ -71,11 +81,27 @@ class ImageDetail : Fragment() {
                 }
             }
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            mViewModel.mTextRecognitionResult.collectLatest { result ->
+                if(result.isNotEmpty()){
+                    Log.v("라인", result)
+                    mViewModel.mTextRecognitionResult.value = ""
+                }
+            }
+        }
+
+
     }
 
     private fun initListener() {
+        // 사진 다운로드 버튼 클릭 리스너
         mBinding.ImageDetailDownload.setOnClickListener {
             mViewModel.downloadImage(mContext)
+        }
+        // 사진 텍스트 추출 리스너
+        mBinding.ImageDetailTextRecognize.setOnClickListener {
+            mViewModel.extractText(mBinding.ImageDetailImage.drawable?.toBitmap())
         }
     }
 

@@ -1,5 +1,6 @@
 package com.project.laybare.home.fragment
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -7,15 +8,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.os.bundleOf
-import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
-import androidx.navigation.Navigation
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.project.domain.entity.ImageEntity
 import com.project.laybare.R
 import com.project.laybare.databinding.FragmentHomeBinding
@@ -65,7 +67,6 @@ class Home : Fragment() {
                 val bundle = bundleOf("imageUrl" to image.link, "thumbnail" to image.thumbnailLink)
                 findNavController().navigate(R.id.action_home_to_imageDetail, bundle)
             }
-
         }
 
 
@@ -100,9 +101,6 @@ class Home : Fragment() {
             this.adapter = adapter
         }
     }
-
-
-
 
 
 
