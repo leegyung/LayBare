@@ -28,5 +28,14 @@
         android:id="@+id/imageDetail"
         android:name="com.project.laybare.ImageDetail.ImageDetail"
         android:label="fragment_image_detail"
-        tools:layout="@layout/fragment_image_detail" />
+        tools:layout="@layout/fragment_image_detail" >
+        <action
+            android:id="@+id/action_imageDetail_to_textResult"
+            app:destination="@id/textResult" />
+    </fragment>
+    <fragment
+        android:id="@+id/textResult"
+        android:name="com.project.laybare.textResult.TextResult"
+        android:label="fragment_text_result"
+        tools:layout="@layout/fragment_text_result" />
 </navigation>

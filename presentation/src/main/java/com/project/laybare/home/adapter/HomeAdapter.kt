@@ -1,12 +1,17 @@
 package com.project.laybare.home.adapter
 
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.doOnPreDraw
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.project.domain.entity.ImageEntity
 import com.project.laybare.R
 import com.project.laybare.databinding.HomeBannerViewBinding
@@ -107,9 +112,6 @@ class HomeAdapter(private val mSections : ArrayList<HomeListSectionData>) : Recy
                 adapter = mAdapter
             }
 
-            mBinding.HomeBanner.doOnPreDraw {
-                mBinding.HomeBanner.setCurrentItem(2, false)
-            }
 
         }
     }
@@ -148,17 +150,29 @@ class HomeAdapter(private val mSections : ArrayList<HomeListSectionData>) : Recy
             mBinding.HomeNormalImageView.clipToOutline = true
             mBinding.HomeNormalImageView.setOnClickListener {
                 mSections.getOrNull(bindingAdapterPosition)?.image?.let{
-                    mListener?.onImageClicked(it, mBinding.HomeNormalImageView)
+                    mListener?.onImageClicked(if(it.linkError) it.thumbnailLink else it.link)
                 }
             }
 
         }
 
-        fun bind(img : ImageEntity) {
+        fun bind(image : ImageEntity) {
             Glide.with(itemView.context)
-                .load(img.link)
+                .load(if(image.linkError) image.thumbnailLink else image.link)
                 .override(900)
-                .error(Glide.with(itemView.context).load(img.thumbnailLink))
+                .listener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                        if(!image.linkError){
+                            image.linkError = true
+                        }
+                        return false
+                    }
+
+                    override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                        return false
+                    }
+                })
+                .error(Glide.with(itemView.context).load(image.thumbnailLink))
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(mBinding.HomeNormalImageView)
 

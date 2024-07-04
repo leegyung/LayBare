@@ -14,5 +14,6 @@ data class ImageEntity(
     val contextLink : String,
     val height : Int,
     val width : Int,
-    val thumbnailLink : String
+    val thumbnailLink : String,
+    var linkError : Boolean = false
 )

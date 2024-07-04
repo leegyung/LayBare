@@ -9,7 +9,7 @@
 
     <ImageView
         android:id="@+id/HomeLogo"
-        android:layout_width="100dp"
+        android:layout_width="112dp"
         android:layout_height="50dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
@@ -18,18 +18,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/HomeCameraBtn"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="20dp"
+        android:src="@drawable/camera_icon"
+        app:layout_constraintBottom_toTopOf="@+id/HomeRecyclerView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <View
         android:id="@+id/HomeSearchBtn"
         android:layout_width="0dp"
         android:layout_height="30dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="15dp"
         android:background="@drawable/box_gray_15dp"
         android:backgroundTint="@color/gray_bg"
-        android:visibility="visible"
         android:transitionName="shared_text"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@+id/HomeLogo"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/HomeCameraBtn"
         app:layout_constraintStart_toEndOf="@+id/HomeLogo"
         app:layout_constraintTop_toTopOf="@+id/HomeLogo" />
 

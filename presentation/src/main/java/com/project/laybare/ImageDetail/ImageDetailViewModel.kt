@@ -2,14 +2,12 @@ package com.project.laybare.ImageDetail
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.util.Log
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.gson.Gson
 import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import com.project.data.util.ImageDownloader
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,25 +22,37 @@ class ImageDetailViewModel @Inject constructor() : ViewModel() {
     val mCreateToast get() = _createToast
     val mTextRecognitionResult get() = _textRecognitionResult
 
+    private var mType = ""
     private var mImageUrl = ""
-    private var mThumbnailUrl = ""
+    private var mImageUri : Uri? = null
 
-    fun requireUrlSetting() : Boolean {
-        return mImageUrl.isEmpty() && mThumbnailUrl.isEmpty()
+
+    fun requireImageDataSetting() : Boolean {
+        return mImageUrl.isEmpty() && mType.isEmpty() && mImageUri == null
     }
 
-    fun setImageUrl(url : String, thumbnail : String) {
+    fun setImageData(type : String, url : String, uri: Uri) {
+        mType = type
         mImageUrl = url
-        mThumbnailUrl = thumbnail
+        mImageUri = uri
+    }
+
+
+    fun isUrlType() : Boolean {
+        return mImageUrl.isNotEmpty()
     }
 
     fun getImageUrl() : String {
         return mImageUrl
     }
 
-    fun getThumbnail() : String {
-        return mThumbnailUrl
+    fun getImageUri() : Uri? {
+        return mImageUri
     }
+
+
+
+
 
     fun downloadImage(context: Context) {
         viewModelScope.launch {
@@ -52,11 +62,7 @@ class ImageDetailViewModel @Inject constructor() : ViewModel() {
             if(downloadManger.downloadAndSaveImage(mImageUrl, name)){
                 _createToast.value = "이미지 다운로드 완료"
             }else{
-                if(downloadManger.downloadAndSaveImage(mThumbnailUrl, name)){
-                    _createToast.value = "이미지 다운로드 완료"
-                }else{
-                    _createToast.value = "이미지 다운로드 애러"
-                }
+                _createToast.value = "이미지 다운로드 애러"
             }
         }
     }
@@ -69,19 +75,15 @@ class ImageDetailViewModel @Inject constructor() : ViewModel() {
         }
 
         val inputImage = InputImage.fromBitmap(bitmap, 0)
-
-        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+        val recognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
         recognizer.process(inputImage)
             .addOnSuccessListener { text ->
-                var resultStr = ""
-                for (i in text.textBlocks){
-                    resultStr += (i.text + "\n")
-                }
-                _textRecognitionResult.value = resultStr
+                _textRecognitionResult.value = text.text
             }
             .addOnFailureListener { e ->
                 _createToast.value = "텍스트 추출 오류"
             }
+
     }
 
 

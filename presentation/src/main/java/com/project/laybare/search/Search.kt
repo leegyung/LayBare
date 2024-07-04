@@ -96,8 +96,8 @@ class Search : Fragment() {
 
         // 검색 결과 목록 리스너
         mListListener = object : SearchAdapterInterface {
-            override fun onImageClicked(view: ImageView, url: String, thumbnail: String) {
-                val bundle = bundleOf("imageUrl" to url, "thumbnail" to thumbnail)
+            override fun onImageClicked(url: String) {
+                val bundle = bundleOf("imageUrl" to url, "imageType" to "URL")
                 val navOption = NavOptions.Builder()
                     .setEnterAnim(R.anim.slide_up)
                     .setPopExitAnim(R.anim.slide_down)

@@ -1,6 +1,6 @@
 package com.project.laybare.home.fragment
 
-import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -8,22 +8,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.graphics.drawable.toBitmap
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.project.domain.entity.ImageEntity
 import com.project.laybare.R
 import com.project.laybare.databinding.FragmentHomeBinding
 import com.project.laybare.home.HomeListInterface
 import com.project.laybare.home.adapter.HomeDecorator
 import com.project.laybare.home.viewmodel.HomeViewModel
+import com.project.laybare.util.PhotoTaker
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -33,6 +32,27 @@ class Home : Fragment() {
     private val mViewModel : HomeViewModel by viewModels()
     private lateinit var mNavController: NavController
     private var mListInterface : HomeListInterface? = null
+
+    private lateinit var mPhotoTaker : PhotoTaker
+    private val mTakePictureResult = registerForActivityResult(ActivityResultContracts.TakePicture()) { success: Boolean ->
+        if (success) {
+
+            val bundle = bundleOf("imageUri" to mPhotoTaker.getPhotoUri().toString(), "imageType" to "URI")
+            findNavController().navigate(R.id.action_home_to_imageDetail, bundle)
+
+        }
+    }
+
+    private val mPickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let {
+            val bundle = bundleOf("imageUri" to it.toString(), "imageType" to "URI")
+            findNavController().navigate(R.id.action_home_to_imageDetail, bundle)
+        } ?: run {
+            Toast.makeText(requireContext(), "사진 선택에 실패했습니다.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,9 +66,8 @@ class Home : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         mNavController = findNavController()
+        mPhotoTaker = PhotoTaker(requireActivity())
 
-        initObserver()
-        initListener()
         initUI()
 
         if(mViewModel.requireImageData()){
@@ -61,15 +80,18 @@ class Home : Fragment() {
 
     }
 
+
+
     private fun initListener(){
+        // 사진 리스트 리스너
         mListInterface = object : HomeListInterface{
-            override fun onImageClicked(image: ImageEntity, imageView : ImageView) {
-                val bundle = bundleOf("imageUrl" to image.link, "thumbnail" to image.thumbnailLink)
+            override fun onImageClicked(image: String) {
+                val bundle = bundleOf("imageUrl" to image, "imageType" to "URL")
                 findNavController().navigate(R.id.action_home_to_imageDetail, bundle)
             }
         }
 
-
+        // 검색 버튼 클릭 리스너
         mBinding.HomeSearchBtn.setOnClickListener {
             val extras = FragmentNavigatorExtras(
                 mBinding.HomeSearchBtn to "shared_text",
@@ -77,9 +99,31 @@ class Home : Fragment() {
             )
             mNavController.navigate(R.id.action_home_to_search, null, null, extras)
         }
+
+        // 사진기 버튼 클릭 리스너
+        mBinding.HomeCameraBtn.setOnClickListener {
+
+
+            mPickImage.launch("image/*")
+
+            /*
+            val permissionGranted = mPhotoTaker.checkCameraPermission()
+            if(permissionGranted){
+                mPhotoTaker.dispatchTakePictureIntent(mTakePictureResult)
+            }
+
+             */
+
+        }
+
     }
 
+
     private fun initUI() {
+        initObserver()
+        initListener()
+
+
         val layoutManager = GridLayoutManager(this.context, 2)
         val adapter = mViewModel.getHomeAdapter(mListInterface)
 
@@ -101,6 +145,7 @@ class Home : Fragment() {
             this.adapter = adapter
         }
     }
+
 
 
 

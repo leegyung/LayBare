@@ -1,22 +1,20 @@
 package com.project.laybare.ImageDetail
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.net.toUri
+import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.project.laybare.R
 import com.project.laybare.databinding.FragmentImageDetailBinding
 import kotlinx.coroutines.flow.collectLatest
@@ -42,31 +40,41 @@ class ImageDetail : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        if(mViewModel.requireUrlSetting()){
-            val url = arguments?.getString("imageUrl")?:""
-            val thumbnail = arguments?.getString("thumbnail")?:""
-            if(url.isEmpty() && thumbnail.isEmpty()){
-                Toast.makeText(mContext, "이미지 로딩 애러", Toast.LENGTH_SHORT).show()
-            }else{
-                mViewModel.setImageUrl(url, thumbnail)
-                initUI()
-            }
+        if(mViewModel.requireImageDataSetting()){
+            checkResource()
+            initUI()
         }else{
             initUI()
         }
-
-
     }
 
+
+    private fun checkResource() {
+        val type = arguments?.getString("imageType")?:""
+        val url = arguments?.getString("imageUrl")?:""
+        val uri = arguments?.getString("imageUri")?:""
+
+        if(type.isEmpty() && url.isEmpty() && uri.isEmpty()){
+            Toast.makeText(mContext, "이미지 로딩 애러", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        mViewModel.setImageData(type, url, uri.toUri())
+    }
+
+
     private fun initUI(){
-        Glide.with(this)
-            .load(mViewModel.getImageUrl())
-            .error(
-                Glide.with(this)
-                    .load(mViewModel.getThumbnail())
-            )
-            .into(mBinding.ImageDetailImage)
+        val isUrlType = mViewModel.isUrlType()
+
+        Glide.with(this).load(
+            if(isUrlType){
+                mViewModel.getImageUrl()
+            }else{
+                mViewModel.getImageUri()
+            }
+        ).into(mBinding.ImageDetailImage)
+
+        mBinding.ImageDetailDownload.isVisible = isUrlType
 
         initListener()
         initObserver()
@@ -85,7 +93,7 @@ class ImageDetail : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             mViewModel.mTextRecognitionResult.collectLatest { result ->
                 if(result.isNotEmpty()){
-                    Log.v("라인", result)
+                    findNavController().navigate(R.id.action_imageDetail_to_textResult, bundleOf("ExtractedText" to result))
                     mViewModel.mTextRecognitionResult.value = ""
                 }
             }
