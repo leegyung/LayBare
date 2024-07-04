@@ -22,11 +22,13 @@ import com.project.laybare.databinding.FragmentHomeBinding
 import com.project.laybare.home.HomeListInterface
 import com.project.laybare.home.adapter.HomeDecorator
 import com.project.laybare.home.viewmodel.HomeViewModel
+import com.project.laybare.util.ImageSelectDialog
+import com.project.laybare.util.ImageSelectDialogListener
 import com.project.laybare.util.PhotoTaker
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class Home : Fragment() {
+class Home : Fragment(), ImageSelectDialogListener {
     private var _binding: FragmentHomeBinding? = null
     private val mBinding get() = _binding!!
     private val mViewModel : HomeViewModel by viewModels()
@@ -36,10 +38,8 @@ class Home : Fragment() {
     private lateinit var mPhotoTaker : PhotoTaker
     private val mTakePictureResult = registerForActivityResult(ActivityResultContracts.TakePicture()) { success: Boolean ->
         if (success) {
-
             val bundle = bundleOf("imageUri" to mPhotoTaker.getPhotoUri().toString(), "imageType" to "URI")
             findNavController().navigate(R.id.action_home_to_imageDetail, bundle)
-
         }
     }
 
@@ -47,8 +47,6 @@ class Home : Fragment() {
         uri?.let {
             val bundle = bundleOf("imageUri" to it.toString(), "imageType" to "URI")
             findNavController().navigate(R.id.action_home_to_imageDetail, bundle)
-        } ?: run {
-            Toast.makeText(requireContext(), "사진 선택에 실패했습니다.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -102,21 +100,31 @@ class Home : Fragment() {
 
         // 사진기 버튼 클릭 리스너
         mBinding.HomeCameraBtn.setOnClickListener {
-
-
-            mPickImage.launch("image/*")
-
-            /*
-            val permissionGranted = mPhotoTaker.checkCameraPermission()
-            if(permissionGranted){
-                mPhotoTaker.dispatchTakePictureIntent(mTakePictureResult)
-            }
-
-             */
-
+            val dialog = ImageSelectDialog()
+            dialog.show(childFragmentManager, dialog.tag)
         }
 
+
     }
+
+    /**
+     * 하단 다이얼로그에서 앨범 선택 리스너
+     */
+    override fun onAlbumClicked() {
+        mPickImage.launch("image/*")
+    }
+
+    /**
+     * 하단 다이얼로그에서 카메라 선택 리스너
+     */
+    override fun onCameraClicked() {
+        val permissionGranted = mPhotoTaker.checkCameraPermission()
+        if(permissionGranted){
+            mPhotoTaker.dispatchTakePictureIntent(mTakePictureResult)
+        }
+    }
+
+
 
 
     private fun initUI() {
@@ -147,13 +155,11 @@ class Home : Fragment() {
     }
 
 
-
-
-
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
+
 
 }
