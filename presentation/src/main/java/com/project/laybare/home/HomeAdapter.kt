@@ -1,9 +1,8 @@
-package com.project.laybare.home.adapter
+package com.project.laybare.home
 
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.view.doOnPreDraw
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import com.bumptech.glide.Glide
@@ -17,8 +16,6 @@ import com.project.laybare.R
 import com.project.laybare.databinding.HomeBannerViewBinding
 import com.project.laybare.databinding.HomeHorizontalViewBinding
 import com.project.laybare.databinding.HomeNormalImageViewBinding
-import com.project.laybare.home.HomeListInterface
-import com.project.laybare.home.data.HomeListSectionData
 
 class HomeAdapter(private val mSections : ArrayList<HomeListSectionData>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 

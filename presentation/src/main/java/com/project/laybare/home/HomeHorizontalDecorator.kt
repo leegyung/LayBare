@@ -1,4 +1,4 @@
-package com.project.laybare.home.adapter
+package com.project.laybare.home
 
 import android.graphics.Rect
 import android.view.View

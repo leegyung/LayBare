@@ -1,6 +1,5 @@
 package com.project.data.repositoryImpl
 
-import com.google.gson.Gson
 import com.project.data.apiService.ApiService
 import com.project.data.mapper.ImageListMapper
 import com.project.domain.entity.SearchImageResultEntity
@@ -13,7 +12,6 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class SearchImageRepositoryImpl @Inject constructor(private val mApiService : ApiService) : SearchImageRepository {
-    private val gson = Gson()
 
     override suspend fun getImageList(apiKey : String, searchEngine : String, keyword: String, page: Int, size: Int): Flow<ApiResult<SearchImageResultEntity>> = flow {
         try{

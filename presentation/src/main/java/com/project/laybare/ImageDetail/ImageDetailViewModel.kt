@@ -83,7 +83,6 @@ class ImageDetailViewModel @Inject constructor() : ViewModel() {
             .addOnFailureListener { e ->
                 _createToast.value = "텍스트 추출 오류"
             }
-
     }
 
 

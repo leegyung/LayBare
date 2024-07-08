@@ -45,8 +45,7 @@ class ImageDownloader(private val context: Context) {
         }
 
         val resolver = context.contentResolver
-        val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
-            ?: return false
+        val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)?: return false
 
         return try {
             resolver.openOutputStream(uri).use { outputStream ->

@@ -1,4 +1,4 @@
-package com.project.laybare.home.data
+package com.project.laybare.home
 
 import com.project.domain.entity.ImageEntity
 

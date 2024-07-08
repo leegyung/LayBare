@@ -1,14 +1,11 @@
-package com.project.laybare.home.fragment
+package com.project.laybare.home
 
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
@@ -16,12 +13,8 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import com.project.domain.entity.ImageEntity
 import com.project.laybare.R
 import com.project.laybare.databinding.FragmentHomeBinding
-import com.project.laybare.home.HomeListInterface
-import com.project.laybare.home.adapter.HomeDecorator
-import com.project.laybare.home.viewmodel.HomeViewModel
 import com.project.laybare.util.ImageSelectDialog
 import com.project.laybare.util.ImageSelectDialogListener
 import com.project.laybare.util.PhotoTaker

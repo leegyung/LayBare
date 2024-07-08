@@ -1,4 +1,4 @@
-package com.project.laybare.home.adapter
+package com.project.laybare.home
 
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
@@ -11,15 +11,14 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.project.domain.entity.ImageEntity
-import com.project.laybare.databinding.HomeHorizontalImageViewBinding
-import com.project.laybare.home.HomeListInterface
+import com.project.laybare.databinding.ImageViewMatchParentBinding
 
-class HomeHorizontalAdapter : RecyclerView.Adapter<HomeHorizontalAdapter.ViewHolder>() {
+class HomeBannerAdapter : RecyclerView.Adapter<HomeBannerAdapter.ViewHolder>() {
     private val mImageList = arrayListOf<ImageEntity>()
     private var mListener : HomeListInterface? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = HomeHorizontalImageViewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val view = ImageViewMatchParentBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(view)
     }
 
@@ -44,20 +43,23 @@ class HomeHorizontalAdapter : RecyclerView.Adapter<HomeHorizontalAdapter.ViewHol
         mListener = listener
     }
 
-    inner class ViewHolder(private val mBinding: HomeHorizontalImageViewBinding) : RecyclerView.ViewHolder(mBinding.root) {
+    inner class ViewHolder(private val mBinding: ImageViewMatchParentBinding) : RecyclerView.ViewHolder(mBinding.root) {
         init {
-            mBinding.HorizontalImageView.clipToOutline = true
-            mBinding.HorizontalImageView.setOnClickListener {
-                mImageList.getOrNull(bindingAdapterPosition)?.let{ image ->
-                    mListener?.onImageClicked(if(image.linkError) image.thumbnailLink else image.link)
+            mBinding.MatchParentImageView.clipToOutline = true
+
+
+            mBinding.MatchParentImageView.setOnClickListener {
+                mImageList.getOrNull(bindingAdapterPosition)?.let{
+                    mListener?.onImageClicked(if(it.linkError) it.thumbnailLink else it.link)
                 }
             }
+
         }
 
         fun bind(image : ImageEntity) {
             Glide.with(itemView.context)
                 .load(if(image.linkError) image.thumbnailLink else image.link)
-                .override(200,400)
+                .override(900)
                 .listener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
                         if(!image.linkError){
@@ -72,7 +74,7 @@ class HomeHorizontalAdapter : RecyclerView.Adapter<HomeHorizontalAdapter.ViewHol
                 })
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .error(Glide.with(itemView.context).load(image.thumbnailLink))
-                .into(mBinding.HorizontalImageView)
+                .into(mBinding.MatchParentImageView)
         }
     }
 
