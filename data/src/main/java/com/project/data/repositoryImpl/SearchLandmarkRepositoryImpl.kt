@@ -1,5 +1,6 @@
 package com.project.data.repositoryImpl
 
+import android.util.Log
 import com.project.data.apiService.ApiService
 import com.project.data.mapper.LandmarkDataMapper
 import com.project.data.model.RequestFeatureData
@@ -38,7 +39,8 @@ class SearchLandmarkRepositoryImpl@Inject constructor(private val mApiService : 
             }else{
                 emit(ApiResult.ResponseError("데이터 로딩 실패"))
             }
-        }catch (_ : Exception) {
+        }catch (e : Exception) {
+            Log.v("애러", e.message.toString())
             emit(ApiResult.ResponseError("데이터 로딩 실패"))
         }
     }.flowOn(Dispatchers.IO)

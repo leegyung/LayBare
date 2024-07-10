@@ -3,4 +3,6 @@
     <string name="search">검색</string>
     <string name="takePicture">사진찍기</string>
     <string name="selectAlbum">앨범선택</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

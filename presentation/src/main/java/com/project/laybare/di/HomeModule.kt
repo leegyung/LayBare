@@ -1,7 +1,9 @@
 package com.project.laybare.di
 
 import com.project.domain.repository.SearchImageRepository
+import com.project.domain.repository.SearchLandmarkRepository
 import com.project.domain.usecase.SearchImageUseCase
+import com.project.domain.usecase.SearchLandmarkUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,4 +18,11 @@ object HomeModule {
     fun providePictureListUseCase(repository : SearchImageRepository): SearchImageUseCase {
         return SearchImageUseCase(repository)
     }
+
+    @Provides
+    @Singleton
+    fun provideLandmarkUseCase(repository : SearchLandmarkRepository): SearchLandmarkUseCase {
+        return SearchLandmarkUseCase(repository)
+    }
+
 }

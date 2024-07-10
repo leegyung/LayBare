@@ -32,10 +32,18 @@
         <action
             android:id="@+id/action_imageDetail_to_textResult"
             app:destination="@id/textResult" />
+        <action
+            android:id="@+id/action_imageDetail_to_location"
+            app:destination="@id/location" />
     </fragment>
     <fragment
         android:id="@+id/textResult"
         android:name="com.project.laybare.textResult.TextResult"
         android:label="fragment_text_result"
         tools:layout="@layout/fragment_text_result" />
+    <fragment
+        android:id="@+id/location"
+        android:name="com.project.laybare.Location.Location"
+        android:label="fragment_location"
+        tools:layout="@layout/fragment_location" />
 </navigation>

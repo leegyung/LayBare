@@ -2,6 +2,7 @@ package com.project.laybare.ImageDetail
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -17,10 +18,11 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.project.laybare.R
 import com.project.laybare.databinding.FragmentImageDetailBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-
+@AndroidEntryPoint
 class ImageDetail : Fragment() {
     private var _binding : FragmentImageDetailBinding? = null
     private val mBinding get() = _binding!!
@@ -99,6 +101,17 @@ class ImageDetail : Fragment() {
             }
         }
 
+        viewLifecycleOwner.lifecycleScope.launch {
+            mViewModel.mLandmarkResult.collectLatest { result ->
+                if(result != null){
+
+                    findNavController().navigate(R.id.action_imageDetail_to_location)
+
+                    mViewModel.mLandmarkResult.value = null
+                }
+            }
+        }
+
 
     }
 
@@ -110,6 +123,10 @@ class ImageDetail : Fragment() {
         // 사진 텍스트 추출 리스너
         mBinding.ImageDetailTextRecognize.setOnClickListener {
             mViewModel.extractText(mBinding.ImageDetailImage.drawable?.toBitmap())
+        }
+        // 위치 찾기 버튼 리스너
+        mBinding.ImageDetailLocation.setOnClickListener {
+            mViewModel.getLocationData(mBinding.ImageDetailImage.drawable?.toBitmap())
         }
     }
 

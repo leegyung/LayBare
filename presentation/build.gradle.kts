@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.ir.backend.js.compile
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -22,12 +23,14 @@ android {
     }
 
 
-
-
     buildTypes {
+
+        val properties = Properties()
+        properties.load(project.rootProject.file("local.properties").inputStream())
+
         debug {
-            buildConfigField("String", "API_KEY", "\"AIzaSyB5ntJ9Y746soDRsp2X_Nn6j9SVOBc3h0E\"")
-            buildConfigField("String", "SEARCH_ENGINE", "\"d10408af688e24e47\"")
+            buildConfigField("String", "API_KEY", "\"${properties.getProperty("API_KEY")}\"")
+            buildConfigField("String", "SEARCH_ENGINE", "\"${properties.getProperty("SEARCH_ENGINE")}\"")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -36,8 +39,8 @@ android {
         }
 
         release {
-            buildConfigField("String", "API_KEY", "\"AIzaSyB5ntJ9Y746soDRsp2X_Nn6j9SVOBc3h0E\"")
-            buildConfigField("String", "SEARCH_ENGINE", "\"d10408af688e24e47\"")
+            buildConfigField("String", "API_KEY", "\"${properties.getProperty("API_KEY")}\"")
+            buildConfigField("String", "SEARCH_ENGINE", "\"${properties.getProperty("SEARCH_ENGINE")}\"")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -49,6 +52,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
+
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
@@ -85,5 +91,6 @@ dependencies {
     implementation(libs.gson)
 
     implementation(libs.imageRecognition)
+    implementation(libs.google.map)
 
 }
