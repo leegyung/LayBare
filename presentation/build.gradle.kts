@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.ir.backend.js.compile
 import java.util.Properties
 
 plugins {
@@ -6,6 +5,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -25,6 +25,7 @@ android {
 
     buildTypes {
 
+        // local.properties 파일을 로드해서 값을 가져다 쓰는 방법.
         val properties = Properties()
         properties.load(project.rootProject.file("local.properties").inputStream())
 
@@ -53,6 +54,13 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
+
+    secrets {
+        propertiesFileName = "secrets.properties"
+        defaultPropertiesFileName = "local.defaults.properties"
+        ignoreList.add("keyToIgnore")
+        ignoreList.add("sdk.*")
+    }
 
 
     kotlinOptions {

@@ -105,6 +105,8 @@ class ImageDetail : Fragment() {
             mViewModel.mLandmarkResult.collectLatest { result ->
                 if(result != null){
 
+                    Log.v("위치", result.toString())
+
                     findNavController().navigate(R.id.action_imageDetail_to_location)
 
                     mViewModel.mLandmarkResult.value = null

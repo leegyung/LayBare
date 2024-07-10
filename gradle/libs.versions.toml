@@ -20,6 +20,7 @@ recyclerView = "1.3.2"
 imageView = "2.3.0"
 image_text_recognition = "16.0.0"
 google_map = "19.0.0"
+secretsGradlePlugin = "2.0.1"
 
 
 
@@ -46,6 +47,7 @@ photoView = {group = "com.github.chrisbanes", name = "PhotoView", version.ref = 
 
 imageRecognition = {group = "com.google.mlkit", name = "text-recognition-korean", version.ref = "image_text_recognition"}
 google_map = {group = "com.google.android.gms", name = "play-services-maps", version.ref = "google_map"}
+secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
 
 
 

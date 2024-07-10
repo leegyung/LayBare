@@ -8,3 +8,8 @@ plugins {
     alias(libs.plugins.ksp) apply false
 }
 
+buildscript {
+    dependencies {
+        classpath(libs.secrets.gradle.plugin)
+    }
+}
