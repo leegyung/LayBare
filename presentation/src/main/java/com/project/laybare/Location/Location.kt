@@ -1,16 +1,20 @@
 package com.project.laybare.Location
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.gson.Gson
+import com.project.domain.entity.LandmarkEntity
 import com.project.laybare.R
 import com.project.laybare.databinding.FragmentLocationBinding
 
@@ -18,8 +22,16 @@ import com.project.laybare.databinding.FragmentLocationBinding
 class Location : Fragment(), OnMapReadyCallback{
     private var _binding : FragmentLocationBinding? = null
     private val mBinding get() = _binding!!
+    private val mViewModel : LocationViewModel by viewModels()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
+        val dataJson = arguments?.getString("location", "")
+        val data = Gson().fromJson(dataJson, LandmarkEntity::class.java)
+
+        mViewModel.setLocationData(data)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,15 +45,33 @@ class Location : Fragment(), OnMapReadyCallback{
         return _binding?.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+
+    }
+
+
     override fun onMapReady(p0: GoogleMap) {
-        val sydney = LatLng(48.85837, 2.2944813)
+        val data = mViewModel.getLocationData()
+
+        val latlng = LatLng(data?.latitude?.toDouble()?:0.0, data?.longitude?.toDouble()?:0.0)
         p0.addMarker(
             MarkerOptions()
-                .position(sydney)
-                .title("Marker in Sydney")
+                .position(latlng)
+                .title(data?.description?:"")
         )
-        p0.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 16f))
+        p0.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 16f))
     }
+
+    private fun initUI(){
+
+    }
+
+
+
+
+
 
     override fun onPause() {
         super.onPause()

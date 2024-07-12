@@ -5,7 +5,8 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
-    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    alias(libs.plugins.secret.gradle)
+    alias(libs.plugins.safe.arg)
 }
 
 android {
@@ -61,6 +62,7 @@ android {
         ignoreList.add("keyToIgnore")
         ignoreList.add("sdk.*")
     }
+
 
 
     kotlinOptions {

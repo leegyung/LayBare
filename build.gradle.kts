@@ -6,10 +6,6 @@ plugins {
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.ksp) apply false
-}
-
-buildscript {
-    dependencies {
-        classpath(libs.secrets.gradle.plugin)
-    }
+    alias(libs.plugins.secret.gradle) apply false
+    alias(libs.plugins.safe.arg) apply false
 }

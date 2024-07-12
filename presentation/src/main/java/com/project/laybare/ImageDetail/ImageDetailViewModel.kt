@@ -16,7 +16,9 @@ import com.project.domain.usecase.SearchLandmarkUseCase
 import com.project.domain.util.ApiResult
 import com.project.laybare.BuildConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
@@ -25,10 +27,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ImageDetailViewModel @Inject constructor(private val mUseCase: SearchLandmarkUseCase) : ViewModel() {
-    private val _createToast = MutableStateFlow("")
+    private val _createToast = MutableSharedFlow<String>()
     private val _textRecognitionResult = MutableStateFlow("")
     private val _landmarkResult = MutableStateFlow<LandmarkEntity?>(null)
-    val mCreateToast get() = _createToast
+    val mCreateToast = _createToast.asSharedFlow()
     val mTextRecognitionResult get() = _textRecognitionResult
     val mLandmarkResult get() = _landmarkResult
 
@@ -70,9 +72,9 @@ class ImageDetailViewModel @Inject constructor(private val mUseCase: SearchLandm
             val date = LocalDateTime.now()
             val name = date.second.toString() + date.nano.toString()
             if(downloadManger.downloadAndSaveImage(mImageUrl, name)){
-                _createToast.value = "이미지 다운로드 완료"
+                _createToast.emit("이미지 다운로드 완료")
             }else{
-                _createToast.value = "이미지 다운로드 애러"
+                _createToast.emit("이미지 다운로드 완료")
             }
         }
     }
@@ -80,7 +82,9 @@ class ImageDetailViewModel @Inject constructor(private val mUseCase: SearchLandm
 
     fun extractText(bitmap: Bitmap?) {
         if(bitmap == null){
-            _createToast.value = "텍스트 추출 오류"
+            viewModelScope.launch {
+                _createToast.emit("텍스트 추출 오류")
+            }
             return
         }
 
@@ -88,21 +92,31 @@ class ImageDetailViewModel @Inject constructor(private val mUseCase: SearchLandm
         val recognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
         recognizer.process(inputImage)
             .addOnSuccessListener { text ->
-                _textRecognitionResult.value = text.text
+                if(text.text.isEmpty()){
+                    viewModelScope.launch {
+                        _createToast.emit("텍스트 없음")
+                    }
+                }else{
+                    _textRecognitionResult.value = text.text
+                }
             }
-            .addOnFailureListener { e ->
-                _createToast.value = "텍스트 추출 오류"
+            .addOnFailureListener { _ ->
+                viewModelScope.launch {
+                    _createToast.emit("텍스트 추출 오류")
+                }
             }
     }
 
 
     fun getLocationData(bitmap: Bitmap?) {
-        if(bitmap == null){
-            _createToast.value = "랜드마크 사진 오류"
-            return
-        }
 
         viewModelScope.launch {
+            if(bitmap == null){
+                _createToast.emit("랜드마크 사진 오류")
+                return@launch
+            }
+
+
             val byteArrayOutputStream = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.JPEG, 70, byteArrayOutputStream)
             val byteArray = byteArrayOutputStream.toByteArray()
@@ -112,7 +126,7 @@ class ImageDetailViewModel @Inject constructor(private val mUseCase: SearchLandm
                 if(result is ApiResult.ResponseSuccess){
                     _landmarkResult.value = result.data
                 }else{
-                    Log.v("위치 데이터", "오류")
+                    _createToast.emit("위치 데이터 오류")
                 }
 
             }

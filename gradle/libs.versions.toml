@@ -21,6 +21,7 @@ imageView = "2.3.0"
 image_text_recognition = "16.0.0"
 google_map = "19.0.0"
 secretsGradlePlugin = "2.0.1"
+safe_arg = "2.7.7"
 
 
 
@@ -44,10 +45,10 @@ retrofitConverter = { group = "com.squareup.retrofit2", name = "converter-gson",
 glide = { group = "com.github.bumptech.glide", name = "glide",  version.ref = "glide" }
 gson = {group = "com.google.code.gson", name = "gson", version.ref = "gson"}
 photoView = {group = "com.github.chrisbanes", name = "PhotoView", version.ref = "imageView"}
-
 imageRecognition = {group = "com.google.mlkit", name = "text-recognition-korean", version.ref = "image_text_recognition"}
 google_map = {group = "com.google.android.gms", name = "play-services-maps", version.ref = "google_map"}
-secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
+
+
 
 
 
@@ -59,4 +60,6 @@ jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrai
 android-library = { id = "com.android.library", version.ref = "agp" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+secret-gradle = {id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secretsGradlePlugin"}
+safe_arg = { id = "androidx.navigation.safeargs", version.ref = "safe_arg" }
 

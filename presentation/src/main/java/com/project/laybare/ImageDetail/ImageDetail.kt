@@ -14,8 +14,11 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
 import com.project.laybare.R
 import com.project.laybare.databinding.FragmentImageDetailBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -85,10 +88,7 @@ class ImageDetail : Fragment() {
     private fun initObserver() {
         viewLifecycleOwner.lifecycleScope.launch {
             mViewModel.mCreateToast.collectLatest {
-                if(it.isNotEmpty()){
-                    Toast.makeText(mContext, it, Toast.LENGTH_SHORT).show()
-                    mViewModel.mCreateToast.value = ""
-                }
+                Snackbar.make(mBinding.root, it, Snackbar.LENGTH_SHORT).show()
             }
         }
 
@@ -105,9 +105,10 @@ class ImageDetail : Fragment() {
             mViewModel.mLandmarkResult.collectLatest { result ->
                 if(result != null){
 
-                    Log.v("위치", result.toString())
-
-                    findNavController().navigate(R.id.action_imageDetail_to_location)
+                    val bundle = Bundle().apply {
+                        putString("location", Gson().toJson(result))
+                    }
+                    findNavController().navigate(R.id.action_imageDetail_to_location, bundle)
 
                     mViewModel.mLandmarkResult.value = null
                 }
