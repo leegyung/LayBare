@@ -3,6 +3,7 @@ package com.project.laybare.ImageDetail
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.view.Display
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +22,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.project.laybare.R
 import com.project.laybare.databinding.FragmentImageDetailBinding
+import com.project.laybare.dialog.AlertDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -104,11 +106,13 @@ class ImageDetail : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             mViewModel.mLandmarkResult.collectLatest { result ->
                 if(result != null){
+                    mBinding.ImageDetailProgress.isVisible = false
 
                     val bundle = Bundle().apply {
                         putString("location", Gson().toJson(result))
                     }
                     findNavController().navigate(R.id.action_imageDetail_to_location, bundle)
+
 
                     mViewModel.mLandmarkResult.value = null
                 }
@@ -129,8 +133,30 @@ class ImageDetail : Fragment() {
         }
         // 위치 찾기 버튼 리스너
         mBinding.ImageDetailLocation.setOnClickListener {
+            mBinding.ImageDetailProgress.isVisible = true
             mViewModel.getLocationData(mBinding.ImageDetailImage.drawable?.toBitmap())
         }
+    }
+
+    private fun createDialog(msg : String, isPop : Boolean) {
+
+        val width = resources.displayMetrics.widthPixels
+        val constructor = AlertDialog(mContext, width)
+        val dialog = constructor.createDialog(msg, "확인", "취소")
+        dialog.setCancelable(!isPop)
+
+        constructor.setItemClickListener(object : AlertDialog.AlertDialogClickListener{
+            override fun onClickOk() {
+                dialog.dismiss()
+            }
+
+            override fun onClickCancel() {
+                dialog.dismiss()
+            }
+        })
+
+        dialog.show()
+
     }
 
 

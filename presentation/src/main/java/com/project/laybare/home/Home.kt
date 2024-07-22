@@ -15,8 +15,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.project.laybare.R
 import com.project.laybare.databinding.FragmentHomeBinding
-import com.project.laybare.util.ImageSelectDialog
-import com.project.laybare.util.ImageSelectDialogListener
+import com.project.laybare.dialog.ImageSelectDialog
+import com.project.laybare.dialog.ImageSelectDialogListener
 import com.project.laybare.util.PhotoTaker
 import dagger.hilt.android.AndroidEntryPoint
 

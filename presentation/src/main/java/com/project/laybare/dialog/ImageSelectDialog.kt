@@ -1,4 +1,4 @@
-package com.project.laybare.util
+package com.project.laybare.dialog
 
 import android.app.Dialog
 import android.content.Context

@@ -31,10 +31,14 @@
         tools:layout="@layout/fragment_image_detail" >
         <action
             android:id="@+id/action_imageDetail_to_textResult"
-            app:destination="@id/textResult" />
+            app:destination="@id/textResult"
+            app:enterAnim="@anim/slide_up"
+            app:popExitAnim="@anim/slide_down"/>
         <action
             android:id="@+id/action_imageDetail_to_location"
-            app:destination="@id/location" />
+            app:destination="@id/location"
+            app:enterAnim="@anim/slide_up"
+            app:popExitAnim="@anim/slide_down"/>
     </fragment>
     <fragment
         android:id="@+id/textResult"
