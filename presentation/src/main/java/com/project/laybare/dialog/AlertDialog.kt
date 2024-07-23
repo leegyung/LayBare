@@ -18,7 +18,7 @@ class AlertDialog(private val mContext : Context, private val mDeviceWidth : Int
     private var itemClickListener : AlertDialogClickListener? = null
 
 
-    fun createDialog(content : String, ok : String, cancel : String?) : Dialog {
+    fun createDialog(optionNo : Int, content : String, ok : String, cancel : String? = null) : Dialog {
         dialog = Dialog(mContext).apply {
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             window?.requestFeature(Window.FEATURE_NO_TITLE)
@@ -40,9 +40,12 @@ class AlertDialog(private val mContext : Context, private val mDeviceWidth : Int
         contentText.text = content
 
         setOkBtn(ok, okBtn)
-        setCancelBtn(cancel, cancelBtn)
 
-
+        if(optionNo < 2){
+            cancelBtn.isVisible = false
+        }else{
+            setCancelBtn(cancel, cancelBtn)
+        }
 
         return dialog
     }
@@ -78,7 +81,7 @@ class AlertDialog(private val mContext : Context, private val mDeviceWidth : Int
      */
     private fun getDialogWidth(): Int {
         val density = mContext.resources.displayMetrics.density
-        return mDeviceWidth!! - (40f * density).toInt()
+        return mDeviceWidth!! - (60f * density).toInt()
     }
 
 

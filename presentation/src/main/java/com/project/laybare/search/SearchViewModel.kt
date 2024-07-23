@@ -10,6 +10,8 @@ import com.project.domain.util.ApiResult
 import com.project.laybare.BuildConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,6 +19,10 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchViewModel @Inject constructor(private val mUseCase: SearchImageUseCase) : ViewModel() {
     private var mNetworkingJob : Job? = null
+    private val _createAlert = MutableSharedFlow<String>()
+
+    val mCreateAlert = _createAlert.asSharedFlow()
+
 
     private var mKeyword = ""
     private val mSearchResult = arrayListOf<ImageEntity>()
@@ -53,7 +59,7 @@ class SearchViewModel @Inject constructor(private val mUseCase: SearchImageUseCa
                     setNewImagePage(data)
                     mAdapter.notifyDataSetChanged()
                 }else{
-
+                    _createAlert.emit(result.errorMessage?:"데이터 로딩 실패")
                 }
             }
 
@@ -73,7 +79,7 @@ class SearchViewModel @Inject constructor(private val mUseCase: SearchImageUseCa
                     setNewImagePage(data)
                     mAdapter.notifyItemRangeInserted(oldSize, mSearchResult.size - 1)
                 }else{
-
+                    _createAlert.emit(result.errorMessage?:"데이터 로딩 실패")
                 }
             }
         }

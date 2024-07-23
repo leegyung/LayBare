@@ -21,21 +21,22 @@ import com.project.laybare.util.PhotoTaker
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class Home : Fragment(), ImageSelectDialogListener {
+class Home : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val mBinding get() = _binding!!
     private val mViewModel : HomeViewModel by viewModels()
     private lateinit var mNavController: NavController
     private var mListInterface : HomeListInterface? = null
-
     private lateinit var mPhotoTaker : PhotoTaker
+
+    // 사진 촬영 어플에서 사진 찍은 결과 리스너
     private val mTakePictureResult = registerForActivityResult(ActivityResultContracts.TakePicture()) { success: Boolean ->
         if (success) {
             val bundle = bundleOf("imageUri" to mPhotoTaker.getPhotoUri().toString(), "imageType" to "URI")
             findNavController().navigate(R.id.action_home_to_imageDetail, bundle)
         }
     }
-
+    // 이미지 선택 다이얼로그에서 선택된 이미지 리스너
     private val mPickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
             val bundle = bundleOf("imageUri" to it.toString(), "imageType" to "URI")
@@ -57,7 +58,6 @@ class Home : Fragment(), ImageSelectDialogListener {
         super.onViewCreated(view, savedInstanceState)
 
         mNavController = findNavController()
-        mPhotoTaker = PhotoTaker(requireActivity())
 
         initUI()
 
@@ -93,32 +93,11 @@ class Home : Fragment(), ImageSelectDialogListener {
 
         // 사진기 버튼 클릭 리스너
         mBinding.HomeCameraBtn.setOnClickListener {
-            val dialog = ImageSelectDialog()
-            dialog.show(childFragmentManager, dialog.tag)
+            createImageSelectOptionDialog()
         }
 
 
     }
-
-    /**
-     * 하단 다이얼로그에서 앨범 선택 리스너
-     */
-    override fun onAlbumClicked() {
-        mPickImage.launch("image/*")
-    }
-
-    /**
-     * 하단 다이얼로그에서 카메라 선택 리스너
-     */
-    override fun onCameraClicked() {
-        val permissionGranted = mPhotoTaker.checkCameraPermission()
-        if(permissionGranted){
-            mPhotoTaker.dispatchTakePictureIntent(mTakePictureResult)
-        }
-    }
-
-
-
 
     private fun initUI() {
         initObserver()
@@ -145,6 +124,28 @@ class Home : Fragment(), ImageSelectDialogListener {
             this.layoutManager =layoutManager
             this.adapter = adapter
         }
+    }
+
+
+    private fun createImageSelectOptionDialog() {
+        val dialog = ImageSelectDialog()
+        dialog.setImageSelectDialogListener(object : ImageSelectDialogListener{
+            override fun onAlbumClicked() {
+                mPickImage.launch("image/*")
+            }
+            override fun onCameraClicked() {
+                if(!::mPhotoTaker.isInitialized){
+                    mPhotoTaker = PhotoTaker(requireActivity())
+                }
+
+                val permissionGranted = mPhotoTaker.checkCameraPermission()
+                if(permissionGranted){
+                    mPhotoTaker.dispatchTakePictureIntent(mTakePictureResult)
+                }
+            }
+
+        })
+        dialog.show(childFragmentManager, dialog.tag)
     }
 
 

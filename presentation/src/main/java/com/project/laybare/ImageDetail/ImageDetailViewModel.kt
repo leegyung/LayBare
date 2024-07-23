@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Base64
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.mlkit.vision.common.InputImage
@@ -27,12 +26,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ImageDetailViewModel @Inject constructor(private val mUseCase: SearchLandmarkUseCase) : ViewModel() {
-    private val _createToast = MutableSharedFlow<String>()
-    private val _textRecognitionResult = MutableStateFlow("")
-    private val _landmarkResult = MutableStateFlow<LandmarkEntity?>(null)
-    val mCreateToast = _createToast.asSharedFlow()
-    val mTextRecognitionResult get() = _textRecognitionResult
-    val mLandmarkResult get() = _landmarkResult
+    private val _createAlert = MutableSharedFlow<String>()
+    private val _textRecognitionResult = MutableSharedFlow<String>()
+    private val _landmarkResult = MutableSharedFlow<LandmarkEntity?>()
+    val mCreateAlert = _createAlert.asSharedFlow()
+    val mTextRecognitionResult = _textRecognitionResult.asSharedFlow()
+    val mLandmarkResult = _landmarkResult.asSharedFlow()
 
     private var mType = ""
     private var mImageUrl = ""
@@ -72,9 +71,9 @@ class ImageDetailViewModel @Inject constructor(private val mUseCase: SearchLandm
             val date = LocalDateTime.now()
             val name = date.second.toString() + date.nano.toString()
             if(downloadManger.downloadAndSaveImage(mImageUrl, name)){
-                _createToast.emit("이미지 다운로드 완료")
+                _createAlert.emit("이미지 다운로드 완료")
             }else{
-                _createToast.emit("이미지 다운로드 완료")
+                _createAlert.emit("이미지 다운로드 실패")
             }
         }
     }
@@ -83,28 +82,35 @@ class ImageDetailViewModel @Inject constructor(private val mUseCase: SearchLandm
     fun extractText(bitmap: Bitmap?) {
         if(bitmap == null){
             viewModelScope.launch {
-                _createToast.emit("텍스트 추출 오류")
+                _createAlert.emit("텍스트 추출 오류")
             }
             return
         }
 
-        val inputImage = InputImage.fromBitmap(bitmap, 0)
-        val recognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
-        recognizer.process(inputImage)
-            .addOnSuccessListener { text ->
-                if(text.text.isEmpty()){
-                    viewModelScope.launch {
-                        _createToast.emit("텍스트 없음")
+        viewModelScope.launch {
+            val inputImage = InputImage.fromBitmap(bitmap, 0)
+            val recognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
+            recognizer.process(inputImage)
+                .addOnSuccessListener { text ->
+                    if(text.text.isEmpty()){
+                        viewModelScope.launch {
+                            _createAlert.emit("텍스트 없음")
+                        }
+                    }else{
+                        viewModelScope.launch {
+                            _textRecognitionResult.emit(text.text)
+                        }
+
                     }
-                }else{
-                    _textRecognitionResult.value = text.text
                 }
-            }
-            .addOnFailureListener { _ ->
-                viewModelScope.launch {
-                    _createToast.emit("텍스트 추출 오류")
+                .addOnFailureListener { _ ->
+                    viewModelScope.launch {
+                        _createAlert.emit("텍스트 추출 오류")
+                    }
                 }
-            }
+        }
+
+
     }
 
 
@@ -112,7 +118,7 @@ class ImageDetailViewModel @Inject constructor(private val mUseCase: SearchLandm
 
         viewModelScope.launch {
             if(bitmap == null){
-                _createToast.emit("랜드마크 사진 오류")
+                _createAlert.emit("랜드마크 사진 오류")
                 return@launch
             }
 
@@ -124,9 +130,9 @@ class ImageDetailViewModel @Inject constructor(private val mUseCase: SearchLandm
 
             mUseCase.getLandmarkLocation(BuildConfig.API_KEY, base64Image, 1).collectLatest { result ->
                 if(result is ApiResult.ResponseSuccess){
-                    _landmarkResult.value = result.data
+                    _landmarkResult.emit(result.data)
                 }else{
-                    _createToast.emit("위치 데이터 오류")
+                    _createAlert.emit("위치 찾기 오류")
                 }
 
             }

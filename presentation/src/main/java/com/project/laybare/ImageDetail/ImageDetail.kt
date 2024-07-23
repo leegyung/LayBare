@@ -2,8 +2,6 @@ package com.project.laybare.ImageDetail
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
-import android.view.Display
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +13,6 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
@@ -89,33 +86,27 @@ class ImageDetail : Fragment() {
 
     private fun initObserver() {
         viewLifecycleOwner.lifecycleScope.launch {
-            mViewModel.mCreateToast.collectLatest {
-                Snackbar.make(mBinding.root, it, Snackbar.LENGTH_SHORT).show()
+            mViewModel.mCreateAlert.collectLatest {
+                mBinding.ImageDetailProgress.isVisible = false
+                createDialog(it)
+                //Snackbar.make(mBinding.root, it, Snackbar.LENGTH_SHORT).show()
             }
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
             mViewModel.mTextRecognitionResult.collectLatest { result ->
-                if(result.isNotEmpty()){
-                    findNavController().navigate(R.id.action_imageDetail_to_textResult, bundleOf("ExtractedText" to result))
-                    mViewModel.mTextRecognitionResult.value = ""
-                }
+                findNavController().navigate(R.id.action_imageDetail_to_textResult, bundleOf("ExtractedText" to result))
             }
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
             mViewModel.mLandmarkResult.collectLatest { result ->
-                if(result != null){
-                    mBinding.ImageDetailProgress.isVisible = false
+                mBinding.ImageDetailProgress.isVisible = false
 
-                    val bundle = Bundle().apply {
-                        putString("location", Gson().toJson(result))
-                    }
-                    findNavController().navigate(R.id.action_imageDetail_to_location, bundle)
-
-
-                    mViewModel.mLandmarkResult.value = null
+                val bundle = Bundle().apply {
+                    putString("location", Gson().toJson(result))
                 }
+                findNavController().navigate(R.id.action_imageDetail_to_location, bundle)
             }
         }
 
@@ -138,12 +129,12 @@ class ImageDetail : Fragment() {
         }
     }
 
-    private fun createDialog(msg : String, isPop : Boolean) {
+    private fun createDialog(msg : String) {
 
         val width = resources.displayMetrics.widthPixels
         val constructor = AlertDialog(mContext, width)
-        val dialog = constructor.createDialog(msg, "확인", "취소")
-        dialog.setCancelable(!isPop)
+        val dialog = constructor.createDialog(1, msg, "확인")
+        dialog.setCancelable(true)
 
         constructor.setItemClickListener(object : AlertDialog.AlertDialogClickListener{
             override fun onClickOk() {

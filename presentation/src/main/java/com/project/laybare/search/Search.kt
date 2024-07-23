@@ -16,6 +16,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -23,7 +24,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.project.laybare.R
 import com.project.laybare.databinding.FragmentSearchBinding
+import com.project.laybare.dialog.AlertDialog
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class Search : Fragment() {
@@ -53,7 +57,6 @@ class Search : Fragment() {
 
         mNavController = findNavController()
 
-        initListener()
         initUI()
 
     }
@@ -109,6 +112,14 @@ class Search : Fragment() {
 
 
     }
+
+    private fun initObserver() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            mViewModel.mCreateAlert.collectLatest {
+                createAlertDialog(it)
+            }
+        }
+    }
     
     private fun initUI() {
         val keyword = mViewModel.getKeyword()
@@ -124,11 +135,27 @@ class Search : Fragment() {
 
             adapter = mViewModel.getAdapter(mListListener)
         }
+
+        initObserver()
+        initListener()
     }
 
     private fun hideKeyboard(view: View) {
         val inputMethodManager = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    private fun createAlertDialog(msg : String) {
+        val constructor = AlertDialog(requireContext(), resources.displayMetrics.widthPixels)
+        val dialog = constructor.createDialog(1, msg, "확인")
+        constructor.setItemClickListener(object : AlertDialog.AlertDialogClickListener{
+            override fun onClickOk() {
+                dialog.dismiss()
+            }
+            override fun onClickCancel() {}
+        })
+
+        dialog.show()
     }
 
 

@@ -1,7 +1,6 @@
 package com.project.laybare.dialog
 
 import android.app.Dialog
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,18 +20,7 @@ interface ImageSelectDialogListener{
 
 class ImageSelectDialog : BottomSheetDialogFragment() {
 
-    private var listener: ImageSelectDialogListener? = null
-
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        listener = try {
-            parentFragment as? ImageSelectDialogListener
-        } catch (e: ClassCastException) {
-            throw ClassCastException("$context must implement BottomSheetDialogListener")
-        }
-    }
-
+    private var mListener: ImageSelectDialogListener? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return layoutInflater.inflate(R.layout.bottom_dialog_image_select, container, false)
@@ -42,12 +30,12 @@ class ImageSelectDialog : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         view.findViewById<ImageView>(R.id.ImageSelectDialogAlbum).setOnClickListener {
-            listener?.onAlbumClicked()
+            mListener?.onAlbumClicked()
             dismiss()
         }
 
         view.findViewById<ImageView>(R.id.ImageSelectDialogCamera).setOnClickListener {
-            listener?.onCameraClicked()
+            mListener?.onCameraClicked()
             dismiss()
         }
 
@@ -60,6 +48,10 @@ class ImageSelectDialog : BottomSheetDialogFragment() {
         return dialog
     }
 
+    fun setImageSelectDialogListener(listener : ImageSelectDialogListener){
+        mListener = listener
+    }
+
 
     override fun getTheme(): Int {
         return R.style.BottomSheetDialog
@@ -68,7 +60,7 @@ class ImageSelectDialog : BottomSheetDialogFragment() {
 
     override fun onDetach() {
         super.onDetach()
-        listener = null
+        mListener = null
     }
 
 }
