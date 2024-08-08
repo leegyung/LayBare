@@ -65,7 +65,7 @@ class HomeViewModel @Inject constructor(private val mUseCase: SearchImageUseCase
 
 
 
-            mUseCase.getImageList(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, "벚꽃", 1, 5).collectLatest {
+            mUseCase.getImageList(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, "광화문", 1, 5).collectLatest {
                 val sections = arrayListOf<HomeListSectionData>()
                 it.data?.let { data ->
                     getArraySectionData(data, "BANNER")?.let { section -> sections.add(section) }

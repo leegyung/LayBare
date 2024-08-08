@@ -1,8 +1,12 @@
 package com.project.data.di
 
-import com.project.data.apiService.ApiService
+import com.project.data.api.SearchAddressApi
+import com.project.data.api.SearchImageApi
+import com.project.data.api.SearchLandmarkApi
+import com.project.data.repositoryImpl.SearchAddressRepositoryImpl
 import com.project.data.repositoryImpl.SearchImageRepositoryImpl
 import com.project.data.repositoryImpl.SearchLandmarkRepositoryImpl
+import com.project.domain.repository.SearchAddressRepository
 import com.project.domain.repository.SearchImageRepository
 import com.project.domain.repository.SearchLandmarkRepository
 import dagger.Module
@@ -14,23 +18,24 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object RepositoryModule {
-    @Provides
-    @Singleton
-    fun provideApiService() : ApiService {
-        return ApiService
-    }
-
 
     @Provides
     @Singleton
-    fun provideImageListRepository(apiService: ApiService) : SearchImageRepository {
-        return SearchImageRepositoryImpl(apiService)
+    fun provideImageListRepository(api: SearchImageApi) : SearchImageRepository {
+        return SearchImageRepositoryImpl(api)
     }
 
     @Provides
     @Singleton
-    fun provideLandmarkRepository(apiService: ApiService) : SearchLandmarkRepository {
-        return SearchLandmarkRepositoryImpl(apiService)
+    fun provideLandmarkRepository(api: SearchLandmarkApi) : SearchLandmarkRepository {
+        return SearchLandmarkRepositoryImpl(api)
     }
+
+    @Provides
+    @Singleton
+    fun provideAddressRepository(api: SearchAddressApi) : SearchAddressRepository {
+        return SearchAddressRepositoryImpl(api)
+    }
+
 
 }

@@ -1,7 +1,9 @@
 package com.project.laybare.di
 
+import com.project.domain.repository.SearchAddressRepository
 import com.project.domain.repository.SearchImageRepository
 import com.project.domain.repository.SearchLandmarkRepository
+import com.project.domain.usecase.SearchAddressUseCase
 import com.project.domain.usecase.SearchImageUseCase
 import com.project.domain.usecase.SearchLandmarkUseCase
 import dagger.Module
@@ -23,6 +25,12 @@ object HomeModule {
     @Singleton
     fun provideLandmarkUseCase(repository : SearchLandmarkRepository): SearchLandmarkUseCase {
         return SearchLandmarkUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAddressUseCase(repository: SearchAddressRepository) : SearchAddressUseCase {
+        return SearchAddressUseCase(repository)
     }
 
 }

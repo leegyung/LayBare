@@ -10,13 +10,12 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import com.project.data.util.ImageDownloader
-import com.project.domain.entity.LandmarkEntity
+import com.project.domain.entity.SearchLandmarkEntity
 import com.project.domain.usecase.SearchLandmarkUseCase
 import com.project.domain.util.ApiResult
 import com.project.laybare.BuildConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -28,7 +27,7 @@ import javax.inject.Inject
 class ImageDetailViewModel @Inject constructor(private val mUseCase: SearchLandmarkUseCase) : ViewModel() {
     private val _createAlert = MutableSharedFlow<String>()
     private val _textRecognitionResult = MutableSharedFlow<String>()
-    private val _landmarkResult = MutableSharedFlow<LandmarkEntity?>()
+    private val _landmarkResult = MutableSharedFlow<SearchLandmarkEntity?>()
     val mCreateAlert = _createAlert.asSharedFlow()
     val mTextRecognitionResult = _textRecognitionResult.asSharedFlow()
     val mLandmarkResult = _landmarkResult.asSharedFlow()

@@ -1,7 +1,7 @@
 package com.project.domain.entity
 
 
-data class LandmarkEntity(
+data class SearchLandmarkEntity(
     val description : String?,
     val score : Float,
     val latitude : Float,

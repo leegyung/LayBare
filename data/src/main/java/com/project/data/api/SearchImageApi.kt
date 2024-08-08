@@ -16,7 +16,7 @@ interface SearchImageApi{
     ): Response<SearchImageResultDto>
 
     /*
-    // 이렇게 안헤 여러가지 api를 추가 할수있음
+    // 이렇게 여러가지 api를 추가 할수있음
     @GET("/customsearch/v1")
     suspend fun searchImage(
         @Query("key") apiKey : String,

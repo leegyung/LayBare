@@ -40,8 +40,7 @@ class SearchViewModel @Inject constructor(private val mUseCase: SearchImageUseCa
         mKeyword = str
     }
 
-    fun getAdapter(listener : SearchAdapterInterface?) : SearchAdapter {
-        mAdapter.setListener(listener)
+    fun getAdapter() : SearchAdapter {
         return mAdapter
     }
 

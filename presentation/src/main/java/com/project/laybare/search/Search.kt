@@ -97,8 +97,8 @@ class Search : Fragment() {
             }
         })
 
-        // 검색 결과 목록 리스너
-        mListListener = object : SearchAdapterInterface {
+
+        mViewModel.getAdapter().setListener(object : SearchAdapterInterface{
             override fun onImageClicked(url: String) {
                 val bundle = bundleOf("imageUrl" to url, "imageType" to "URL")
                 val navOption = NavOptions.Builder()
@@ -108,7 +108,7 @@ class Search : Fragment() {
 
                 mNavController.navigate(R.id.imageDetail, bundle, navOption)
             }
-        }
+        })
 
 
     }
@@ -133,7 +133,7 @@ class Search : Fragment() {
                 addItemDecoration(SearchAdapterDecorator(resources.getDimensionPixelSize(R.dimen.dp_10)))
             }
 
-            adapter = mViewModel.getAdapter(mListListener)
+            adapter = mViewModel.getAdapter()
         }
 
         initObserver()

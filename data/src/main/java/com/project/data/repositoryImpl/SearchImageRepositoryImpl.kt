@@ -1,6 +1,6 @@
 package com.project.data.repositoryImpl
 
-import com.project.data.apiService.ApiService
+import com.project.data.api.SearchImageApi
 import com.project.data.mapper.ImageListMapper
 import com.project.domain.entity.SearchImageResultEntity
 import com.project.domain.repository.SearchImageRepository
@@ -11,11 +11,11 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
-class SearchImageRepositoryImpl @Inject constructor(private val mApiService : ApiService) : SearchImageRepository {
+class SearchImageRepositoryImpl @Inject constructor(private val mApiService : SearchImageApi) : SearchImageRepository {
 
     override suspend fun getImageList(apiKey : String, searchEngine : String, keyword: String, page: Int, size: Int): Flow<ApiResult<SearchImageResultEntity>> = flow {
         try{
-            val response = mApiService.getSearchImageApi().searchImage(apiKey, searchEngine, keyword, size, page)
+            val response = mApiService.searchImage(apiKey, searchEngine, keyword, size, page)
             if(response.isSuccessful){
                 val body = response.body()
                 if(body != null){
