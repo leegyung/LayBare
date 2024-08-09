@@ -4,10 +4,11 @@ import com.project.domain.entity.SearchAddressEntity
 import com.project.domain.repository.SearchAddressRepository
 import com.project.domain.util.ApiResult
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class SearchAddressUseCase @Inject constructor(private val mRepository: SearchAddressRepository) {
-    suspend fun getAddress(key : String, geocode : String) : Flow<ApiResult<SearchAddressEntity>> {
-        return mRepository.getAddressData(key, geocode)
+    suspend fun getAddress(key : String, geocode : String) : ApiResult<SearchAddressEntity> {
+        return mRepository.getAddressData(key, geocode).first()
     }
 }

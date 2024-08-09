@@ -19,11 +19,13 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object RepositoryModule {
 
+
     @Provides
     @Singleton
     fun provideImageListRepository(api: SearchImageApi) : SearchImageRepository {
         return SearchImageRepositoryImpl(api)
     }
+
 
     @Provides
     @Singleton

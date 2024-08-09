@@ -1,6 +1,5 @@
 package com.project.data.repositoryImpl
 
-import android.util.Log
 import com.project.data.api.SearchLandmarkApi
 import com.project.data.mapper.LandmarkDataMapper
 import com.project.data.model.RequestFeatureData
@@ -16,7 +15,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
-class SearchLandmarkRepositoryImpl@Inject constructor(private val mApiService : SearchLandmarkApi) : SearchLandmarkRepository {
+class SearchLandmarkRepositoryImpl @Inject constructor(private val mApiService : SearchLandmarkApi) : SearchLandmarkRepository {
     override suspend fun searchLandmark(apiKey: String, image: String, maxResult: Int) : Flow<ApiResult<SearchLandmarkEntity>> = flow {
         try{
             val data = SearchLandmarkRequestData(
@@ -34,13 +33,12 @@ class SearchLandmarkRepositoryImpl@Inject constructor(private val mApiService : 
                 if(entity != null){
                     emit(ApiResult.ResponseSuccess(entity))
                 }else{
-                    emit(ApiResult.ResponseError("데이터 로딩 실패"))
+                    emit(ApiResult.ResponseError("위치를 찾을 수 없어요..."))
                 }
             }else{
-                emit(ApiResult.ResponseError("데이터 로딩 실패"))
+                emit(ApiResult.ResponseError("위치를 찾기 애러"))
             }
         }catch (e : Exception) {
-            Log.v("애러", e.message.toString())
             emit(ApiResult.ResponseError("데이터 로딩 실패"))
         }
     }.flowOn(Dispatchers.IO)

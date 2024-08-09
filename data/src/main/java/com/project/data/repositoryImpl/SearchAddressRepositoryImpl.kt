@@ -19,7 +19,7 @@ class SearchAddressRepositoryImpl @Inject constructor(private val mApiService : 
                 val entity = AddressDataMapper.getAddressEntity(response.body())
                 emit(ApiResult.ResponseSuccess(entity))
             }else{
-                emit(ApiResult.ResponseError("데이터 로딩 실패"))
+                emit(ApiResult.ResponseError("주소 검색 애러"))
             }
         }catch (_:Exception){
             emit(ApiResult.ResponseError("데이터 로딩 실패"))

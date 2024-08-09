@@ -64,24 +64,19 @@ class HomeViewModel @Inject constructor(private val mUseCase: SearchImageUseCase
              */
 
 
-
-            mUseCase.getImageList(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, "광화문", 1, 5).collectLatest {
-                val sections = arrayListOf<HomeListSectionData>()
-                it.data?.let { data ->
-                    getArraySectionData(data, "BANNER")?.let { section -> sections.add(section) }
-                    getArraySectionData(data, "HORIZONTAL")?.let { section -> sections.add(section) }
-                    getArraySectionData(data, "HORIZONTAL")?.let { section -> sections.add(section) }
-                    getArraySectionData(data, "HORIZONTAL")?.let { section -> sections.add(section) }
-                    data.imageList.forEach { image ->
-                        sections.add(getSingleImageSectionData(image))
-                    }
+            val result = mUseCase.getImageList(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, "광화문", 1, 5)
+            val sections = arrayListOf<HomeListSectionData>()
+            result.data?.let { data ->
+                getArraySectionData(data, "BANNER")?.let { section -> sections.add(section) }
+                getArraySectionData(data, "HORIZONTAL")?.let { section -> sections.add(section) }
+                getArraySectionData(data, "HORIZONTAL")?.let { section -> sections.add(section) }
+                getArraySectionData(data, "HORIZONTAL")?.let { section -> sections.add(section) }
+                data.imageList.forEach { image ->
+                    sections.add(getSingleImageSectionData(image))
                 }
-                mSectionList.addAll(sections)
-                mHomeAdapter.notifyItemRangeInserted (0, mSectionList.size - 1)
             }
-
-
-
+            mSectionList.addAll(sections)
+            mHomeAdapter.notifyItemRangeInserted (0, mSectionList.size - 1)
 
 
         }

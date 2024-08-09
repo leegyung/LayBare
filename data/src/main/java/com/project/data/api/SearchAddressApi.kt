@@ -9,6 +9,7 @@ interface SearchAddressApi {
     @GET("maps/api/geocode/json")
     suspend fun getAddressData(
         @Query("latlng") latlng : String,
-        @Query("key") apiKey : String
+        @Query("key") apiKey : String,
+        @Query("language") language : String = "ko"
     ): Response<SearchAddressDto>
 }

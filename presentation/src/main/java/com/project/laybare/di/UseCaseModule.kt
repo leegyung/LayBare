@@ -14,7 +14,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object HomeModule {
+object UseCaseModule {
     @Provides
     @Singleton
     fun providePictureListUseCase(repository : SearchImageRepository): SearchImageUseCase {

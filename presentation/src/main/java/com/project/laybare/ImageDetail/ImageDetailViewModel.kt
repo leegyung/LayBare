@@ -62,8 +62,6 @@ class ImageDetailViewModel @Inject constructor(private val mUseCase: SearchLandm
 
 
 
-
-
     fun downloadImage(context: Context) {
         viewModelScope.launch {
             val downloadManger = ImageDownloader(context)
@@ -117,24 +115,23 @@ class ImageDetailViewModel @Inject constructor(private val mUseCase: SearchLandm
 
         viewModelScope.launch {
             if(bitmap == null){
-                _createAlert.emit("랜드마크 사진 오류")
+                _createAlert.emit("사진 오류")
                 return@launch
             }
-
 
             val byteArrayOutputStream = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.JPEG, 70, byteArrayOutputStream)
             val byteArray = byteArrayOutputStream.toByteArray()
             val base64Image = Base64.encodeToString(byteArray, Base64.DEFAULT)
 
-            mUseCase.getLandmarkLocation(BuildConfig.API_KEY, base64Image, 1).collectLatest { result ->
-                if(result is ApiResult.ResponseSuccess){
-                    _landmarkResult.emit(result.data)
-                }else{
-                    _createAlert.emit("위치 찾기 오류")
-                }
+            val result = mUseCase.getLandmarkLocation(BuildConfig.API_KEY, base64Image, 1)
 
+            if(result is ApiResult.ResponseSuccess){
+                _landmarkResult.emit(result.data)
+            }else{
+                _createAlert.emit(result.errorMessage?:"위치 찾기 오류")
             }
+
         }
 
     }

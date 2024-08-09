@@ -52,16 +52,13 @@ class SearchViewModel @Inject constructor(private val mUseCase: SearchImageUseCa
             mTotalCount = 0
             mCurrentPage = 0
 
-            mUseCase.getImageList(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, mKeyword, 1, 10).collectLatest { result ->
-                val data = result.data
-                if(result is ApiResult.ResponseSuccess && data != null){
-                    setNewImagePage(data)
-                    mAdapter.notifyDataSetChanged()
-                }else{
-                    _createAlert.emit(result.errorMessage?:"데이터 로딩 실패")
-                }
+            val result = mUseCase.getImageList(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, mKeyword, 1, 10)
+            if(result is ApiResult.ResponseSuccess && result.data != null){
+                setNewImagePage(result.data!!)
+                mAdapter.notifyDataSetChanged()
+            }else{
+                _createAlert.emit(result.errorMessage?:"데이터 로딩 실패")
             }
-
         }
     }
 
@@ -71,15 +68,14 @@ class SearchViewModel @Inject constructor(private val mUseCase: SearchImageUseCa
         }
         mNetworkingJob?.cancel()
         mNetworkingJob = viewModelScope.launch {
-            mUseCase.getImageList(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, mKeyword, mCurrentPage + 1, 10).collectLatest { result ->
-                val data = result.data
-                if(result is ApiResult.ResponseSuccess && data != null){
-                    val oldSize = mSearchResult.size
-                    setNewImagePage(data)
-                    mAdapter.notifyItemRangeInserted(oldSize, mSearchResult.size - 1)
-                }else{
-                    _createAlert.emit(result.errorMessage?:"데이터 로딩 실패")
-                }
+            val result = mUseCase.getImageList(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, mKeyword, mCurrentPage + 1, 10)
+
+            if (result is ApiResult.ResponseSuccess && result.data != null) {
+                val oldSize = mSearchResult.size
+                setNewImagePage(result.data!!)
+                mAdapter.notifyItemRangeInserted(oldSize, mSearchResult.size - 1)
+            } else {
+                _createAlert.emit(result.errorMessage ?: "데이터 로딩 실패")
             }
         }
     }
