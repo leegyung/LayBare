@@ -1,4 +1,4 @@
-package com.project.laybare.home
+package com.project.laybare.fragment.home
 
 import com.project.domain.entity.ImageEntity
 

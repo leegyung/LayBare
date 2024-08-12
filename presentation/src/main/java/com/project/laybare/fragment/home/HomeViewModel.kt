@@ -1,4 +1,4 @@
-package com.project.laybare.home
+package com.project.laybare.fragment.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

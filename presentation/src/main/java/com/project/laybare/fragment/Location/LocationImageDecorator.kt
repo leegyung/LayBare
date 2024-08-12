@@ -1,4 +1,4 @@
-package com.project.laybare.Location
+package com.project.laybare.fragment.Location
 
 import android.graphics.Rect
 import android.view.View

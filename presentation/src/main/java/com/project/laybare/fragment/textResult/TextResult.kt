@@ -1,4 +1,4 @@
-package com.project.laybare.textResult
+package com.project.laybare.fragment.textResult
 
 import android.os.Bundle
 import android.text.Editable

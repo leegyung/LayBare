@@ -1,4 +1,4 @@
-package com.project.laybare.textResult
+package com.project.laybare.fragment.textResult
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -1,4 +1,4 @@
-package com.project.laybare.Location
+package com.project.laybare.fragment.Location
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

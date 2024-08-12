@@ -1,4 +1,4 @@
-package com.project.laybare.search
+package com.project.laybare.fragment.search
 
 import android.content.Context
 import android.os.Bundle

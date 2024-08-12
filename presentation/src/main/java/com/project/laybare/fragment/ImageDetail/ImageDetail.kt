@@ -1,4 +1,4 @@
-package com.project.laybare.ImageDetail
+package com.project.laybare.fragment.ImageDetail
 
 import android.content.Context
 import android.os.Bundle
