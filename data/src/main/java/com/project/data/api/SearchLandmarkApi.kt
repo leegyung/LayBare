@@ -13,5 +13,5 @@ interface SearchLandmarkApi {
     suspend fun searchLandmark(
         @Query("key") key : String,
         @Body body : SearchLandmarkRequestBody
-    ): Response<SearchLandmarkResultDto>
+    ): SearchLandmarkResultDto
 }

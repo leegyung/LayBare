@@ -51,7 +51,6 @@ class Location : Fragment(), OnMapReadyCallback{
 
             mViewModel.setLocationData(data)
             mViewModel.getAddress()
-            mViewModel.getImageList()
         }
 
         initUI()

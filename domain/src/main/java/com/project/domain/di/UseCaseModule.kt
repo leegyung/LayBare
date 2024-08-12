@@ -1,4 +1,4 @@
-package com.project.laybare.di
+package com.project.domain.di
 
 import com.project.domain.repository.SearchAddressRepository
 import com.project.domain.repository.SearchImageRepository

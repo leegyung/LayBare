@@ -5,5 +5,5 @@ import com.project.domain.util.ApiResult
 import kotlinx.coroutines.flow.Flow
 
 interface SearchAddressRepository {
-    suspend fun getAddressData(key : String, geocode : String) : Flow<ApiResult<SearchAddressEntity>>
+    suspend fun getAddressData(key : String, geocode : String) : SearchAddressEntity
 }

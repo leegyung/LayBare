@@ -10,11 +10,15 @@ import com.project.domain.usecase.SearchImageUseCase
 import com.project.domain.util.ApiResult
 import com.project.laybare.BuildConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -60,36 +64,48 @@ class LocationViewModel @Inject constructor(private val mAddressUseCase: SearchA
             return
         }
 
-        viewModelScope.launch {
-            val geocode = "${mLocationData!!.latitude},${mLocationData!!.longitude}"
-            val result = mAddressUseCase.getAddress(BuildConfig.API_KEY, geocode)
+        val geocode = "${mLocationData!!.latitude},${mLocationData!!.longitude}"
 
-            if(result is ApiResult.ResponseSuccess){
-                mAddressData = result.data
-                _setAddressText.emit(mAddressData?.fullAddress?:"")
-            }else{
+        mAddressUseCase(BuildConfig.API_KEY, geocode).onEach { result ->
+            when(result){
+                is ApiResult.ResponseLoading -> {
 
+                }
+                is ApiResult.ResponseSuccess -> {
+                    mAddressData = result.data
+                    _setAddressText.emit(mAddressData?.fullAddress?:"")
+                    getImageList()
+                }
+                is ApiResult.ResponseError -> {
+
+                }
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
-    fun getImageList() {
+    private fun getImageList() {
         val locationName = getLocationName()
+
         if(locationName.isEmpty()){
             return
         }
 
-        viewModelScope.launch {
-            val result = mPictureUseCase.getImageList(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, locationName, 1, 10)
-            if(result is ApiResult.ResponseSuccess){
-                result.data?.imageList?.let{
-                    mImageList.addAll(it)
-                    mImageAdapter.notifyItemRangeInserted(0, it.size - 1)
+        mPictureUseCase(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, locationName, 1, 10).onEach { result ->
+            when(result){
+                is ApiResult.ResponseLoading -> {
+
                 }
-            }else{
-                _apiError.emit(result.errorMessage?:"주소 검색 애러")
+                is ApiResult.ResponseSuccess -> {
+                    result.data?.imageList?.let{
+                        mImageList.addAll(it)
+                        mImageAdapter.notifyItemRangeInserted(0, it.size - 1)
+                    }
+                }
+                is ApiResult.ResponseError -> {
+                    _apiError.emit(result.errorMessage?:"사진 검색 애러")
+                }
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
 }

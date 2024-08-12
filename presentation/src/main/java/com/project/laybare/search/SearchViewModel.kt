@@ -12,12 +12,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SearchViewModel @Inject constructor(private val mUseCase: SearchImageUseCase) : ViewModel() {
+class SearchViewModel @Inject constructor(private val mSearchPictureUseCase: SearchImageUseCase) : ViewModel() {
     private var mNetworkingJob : Job? = null
     private val _createAlert = MutableSharedFlow<String>()
 
@@ -47,19 +48,27 @@ class SearchViewModel @Inject constructor(private val mUseCase: SearchImageUseCa
     @SuppressLint("NotifyDataSetChanged")
     fun getNewKeyword() {
         mNetworkingJob?.cancel()
-        mNetworkingJob = viewModelScope.launch {
-            mSearchResult.clear()
-            mTotalCount = 0
-            mCurrentPage = 0
 
-            val result = mUseCase.getImageList(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, mKeyword, 1, 10)
-            if(result is ApiResult.ResponseSuccess && result.data != null){
-                setNewImagePage(result.data!!)
-                mAdapter.notifyDataSetChanged()
-            }else{
-                _createAlert.emit(result.errorMessage?:"데이터 로딩 실패")
+        mSearchResult.clear()
+        mTotalCount = 0
+        mCurrentPage = 0
+
+        mNetworkingJob = mSearchPictureUseCase(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, mKeyword, 1, 10).onEach { result ->
+            when(result){
+                is ApiResult.ResponseLoading -> {
+
+                }
+                is ApiResult.ResponseSuccess -> {
+                    result.data?.let{
+                        setNewImagePage(it)
+                        mAdapter.notifyDataSetChanged()
+                    }
+                }
+                is ApiResult.ResponseError -> {
+                    _createAlert.emit(result.errorMessage?:"이미지 로딩 실패")
+                }
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
     fun getNextPage() {
@@ -67,17 +76,23 @@ class SearchViewModel @Inject constructor(private val mUseCase: SearchImageUseCa
             return
         }
         mNetworkingJob?.cancel()
-        mNetworkingJob = viewModelScope.launch {
-            val result = mUseCase.getImageList(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, mKeyword, mCurrentPage + 1, 10)
+        mNetworkingJob = mSearchPictureUseCase(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, mKeyword, mCurrentPage + 1, 10).onEach { result ->
+            when(result){
+                is ApiResult.ResponseLoading -> {
 
-            if (result is ApiResult.ResponseSuccess && result.data != null) {
-                val oldSize = mSearchResult.size
-                setNewImagePage(result.data!!)
-                mAdapter.notifyItemRangeInserted(oldSize, mSearchResult.size - 1)
-            } else {
-                _createAlert.emit(result.errorMessage ?: "데이터 로딩 실패")
+                }
+                is ApiResult.ResponseSuccess -> {
+                    result.data?.let{
+                        val oldSize = mSearchResult.size
+                        setNewImagePage(it)
+                        mAdapter.notifyItemRangeInserted(oldSize, mSearchResult.size - 1)
+                    }
+                }
+                is ApiResult.ResponseError -> {
+                    _createAlert.emit(result.errorMessage?:"다음 페이지 로딩 실패")
+                }
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
 

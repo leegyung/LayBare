@@ -4,8 +4,8 @@ import com.project.data.model.SearchLandmarkResultDto
 import com.project.domain.entity.SearchLandmarkEntity
 
 object LandmarkDataMapper {
-    fun getLandmarkEntity(dto : SearchLandmarkResultDto?) : SearchLandmarkEntity? {
-        val data = dto?.responses?.getOrNull(0)?.landmarkAnnotations?.getOrNull(0) ?: return null
+    fun getLandmarkEntity(dto : SearchLandmarkResultDto) : SearchLandmarkEntity? {
+        val data = dto.responses?.getOrNull(0)?.landmarkAnnotations?.getOrNull(0)?: return null
         val location = data.locations?.getOrNull(0)?.latLng
 
 

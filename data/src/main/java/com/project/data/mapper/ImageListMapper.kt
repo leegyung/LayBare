@@ -10,8 +10,9 @@ object ImageListMapper {
         val total = dto?.queries?.request?.getOrNull(0)?.totalResults?:0
         val nextPageIndex = dto?.queries?.nextPage?.getOrNull(0)?.startIndex?:0
         val correctionQuery = dto?.spelling?.correctedQuery?:""
-
         val images = arrayListOf<ImageEntity>()
+
+
         dto?.items?.forEach {
             images.add(getImageEntity(it))
         }

@@ -9,16 +9,21 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.project.laybare.R
 import com.project.laybare.databinding.FragmentHomeBinding
+import com.project.laybare.dialog.AlertDialog
 import com.project.laybare.dialog.ImageSelectDialog
 import com.project.laybare.dialog.ImageSelectDialogListener
 import com.project.laybare.util.PhotoTaker
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class Home : Fragment() {
@@ -68,7 +73,11 @@ class Home : Fragment() {
     }
 
     private fun initObserver() {
-
+        viewLifecycleOwner.lifecycleScope.launch {
+            mViewModel.mApiError.collectLatest {
+                imageLoadErrorDialog(it)
+            }
+        }
     }
 
 
@@ -146,6 +155,21 @@ class Home : Fragment() {
 
         })
         dialog.show(childFragmentManager, dialog.tag)
+    }
+
+    private fun imageLoadErrorDialog(msg : String){
+        val constructor = AlertDialog(requireContext(), resources.displayMetrics.widthPixels)
+        val dialog = constructor.createDialog(2, msg, "제시도", "취소")
+        constructor.setItemClickListener(object : AlertDialog.AlertDialogClickListener{
+            override fun onClickOk() {
+                mViewModel.getInitialData()
+                dialog.dismiss()
+            }
+            override fun onClickCancel() {
+                dialog.dismiss()
+            }
+        })
+        dialog.show()
     }
 
 

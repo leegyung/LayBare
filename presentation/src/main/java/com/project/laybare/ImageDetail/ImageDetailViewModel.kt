@@ -17,14 +17,15 @@ import com.project.laybare.BuildConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
-class ImageDetailViewModel @Inject constructor(private val mUseCase: SearchLandmarkUseCase) : ViewModel() {
+class ImageDetailViewModel @Inject constructor(private val mSearchLandMarkUseCase: SearchLandmarkUseCase) : ViewModel() {
     private val _createAlert = MutableSharedFlow<String>()
     private val _textRecognitionResult = MutableSharedFlow<String>()
     private val _landmarkResult = MutableSharedFlow<SearchLandmarkEntity?>()
@@ -112,28 +113,23 @@ class ImageDetailViewModel @Inject constructor(private val mUseCase: SearchLandm
 
 
     fun getLocationData(bitmap: Bitmap?) {
-
-        viewModelScope.launch {
-            if(bitmap == null){
-                _createAlert.emit("사진 오류")
-                return@launch
-            }
-
-            val byteArrayOutputStream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 70, byteArrayOutputStream)
-            val byteArray = byteArrayOutputStream.toByteArray()
-            val base64Image = Base64.encodeToString(byteArray, Base64.DEFAULT)
-
-            val result = mUseCase.getLandmarkLocation(BuildConfig.API_KEY, base64Image, 1)
-
-            if(result is ApiResult.ResponseSuccess){
-                _landmarkResult.emit(result.data)
-            }else{
-                _createAlert.emit(result.errorMessage?:"위치 찾기 오류")
-            }
-
+        if(bitmap == null){
+            return
         }
 
+        mSearchLandMarkUseCase(BuildConfig.API_KEY, bitmap).onEach { result ->
+            when(result){
+                is ApiResult.ResponseLoading -> {
+
+                }
+                is ApiResult.ResponseSuccess -> {
+                    _landmarkResult.emit(result.data)
+                }
+                is ApiResult.ResponseError -> {
+                    _createAlert.emit(result.errorMessage?:"위치 찾기 오류")
+                }
+            }
+        }.launchIn(viewModelScope)
     }
 
 

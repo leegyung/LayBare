@@ -13,7 +13,7 @@ interface SearchImageApi{
         @Query("q") keyword : String,
         @Query("num") pageSize : Int,
         @Query("start") pageNum : Int
-    ): Response<SearchImageResultDto>
+    ): SearchImageResultDto
 
     /*
     // 이렇게 여러가지 api를 추가 할수있음

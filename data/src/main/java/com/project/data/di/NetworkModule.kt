@@ -15,14 +15,12 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    private val mRetrofit = Retrofit.Builder()
-        .addConverterFactory(GsonConverterFactory.create())
-
     @Provides
     @Singleton
     fun provideSearchImageApi(): SearchImageApi {
-        return mRetrofit
+        return Retrofit.Builder()
             .baseUrl("https://www.googleapis.com/")
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(SearchImageApi::class.java)
     }
@@ -30,8 +28,9 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideSearchLandmarkApi(): SearchLandmarkApi {
-        return mRetrofit
+        return Retrofit.Builder()
             .baseUrl("https://vision.googleapis.com/")
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(SearchLandmarkApi::class.java)
     }
@@ -39,8 +38,9 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideSearchAddressApi(): SearchAddressApi {
-        return mRetrofit
+        return Retrofit.Builder()
             .baseUrl("https://maps.googleapis.com/")
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(SearchAddressApi::class.java)
     }
