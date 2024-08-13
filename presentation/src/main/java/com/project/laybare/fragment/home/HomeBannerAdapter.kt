@@ -15,7 +15,7 @@ import com.project.laybare.databinding.ImageViewMatchParentBinding
 
 class HomeBannerAdapter : RecyclerView.Adapter<HomeBannerAdapter.ViewHolder>() {
     private val mImageList = arrayListOf<ImageEntity>()
-    private var mListener : HomeListInterface? = null
+    private var mListener : HomeImageListListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = ImageViewMatchParentBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -39,7 +39,7 @@ class HomeBannerAdapter : RecyclerView.Adapter<HomeBannerAdapter.ViewHolder>() {
         }
     }
 
-    fun setListener(listener : HomeListInterface?) {
+    fun setListener(listener : HomeImageListListener?) {
         mListener = listener
     }
 

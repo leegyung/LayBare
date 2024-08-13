@@ -18,13 +18,16 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val mSearchImageUseCase: SearchImageUseCase) : ViewModel() {
     private val _apiError = MutableSharedFlow<String>()
+    private val _loadingState = MutableSharedFlow<Boolean>()
+
     val mApiError = _apiError.asSharedFlow()
+    val mLoadingState = _loadingState.asSharedFlow()
 
     private val mSectionList = arrayListOf<HomeListSectionData>()
     private val mHomeAdapter = HomeAdapter(mSectionList)
 
-    fun requireImageData() : Boolean {
-        return mSectionList.isEmpty()
+    init {
+        getInitialData()
     }
 
     /**
@@ -37,7 +40,7 @@ class HomeViewModel @Inject constructor(private val mSearchImageUseCase: SearchI
 
         mSectionList.clear()
 
-        val words = RandomWordGenerator.getRandomWord(4)
+        val words = RandomWordGenerator().getRandomWord(4)
         /*
         val response1 = mUseCase.getImageList(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, words[0], 1, 5)
         val response2 = mUseCase.getImageList(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, words[1], 1, 10)
@@ -71,7 +74,7 @@ class HomeViewModel @Inject constructor(private val mSearchImageUseCase: SearchI
         mSearchImageUseCase(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, "Museum", 1, 5).onEach { result ->
             when(result){
                 is ApiResult.ResponseLoading -> {
-
+                    _loadingState.emit(true)
                 }
                 is ApiResult.ResponseSuccess -> {
                     result.data?.let { data ->
@@ -81,9 +84,11 @@ class HomeViewModel @Inject constructor(private val mSearchImageUseCase: SearchI
                         getArraySectionData(data, "HORIZONTAL")?.let { section -> mSectionList.add(section) }
                         mHomeAdapter.notifyItemRangeInserted (0, mSectionList.size - 1)
                     }
+                    _loadingState.emit(false)
                 }
                 is ApiResult.ResponseError -> {
                     _apiError.emit(result.errorMessage?:"이미지 로딩 오류")
+                    _loadingState.emit(false)
                 }
             }
         }.launchIn(viewModelScope)
@@ -101,18 +106,8 @@ class HomeViewModel @Inject constructor(private val mSearchImageUseCase: SearchI
         )
     }
 
-    private fun getSingleImageSectionData(data : ImageEntity) : HomeListSectionData {
-        return HomeListSectionData(
-            "IMAGE",
-            "",
-            data,
-            null
-        )
-    }
 
-
-    fun getHomeAdapter(listener : HomeListInterface?) : HomeAdapter {
-        mHomeAdapter.setListener(listener)
+    fun getHomeAdapter() : HomeAdapter {
         return mHomeAdapter
     }
 

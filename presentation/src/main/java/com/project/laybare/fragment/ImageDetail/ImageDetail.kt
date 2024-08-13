@@ -12,7 +12,10 @@ import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
@@ -29,6 +32,7 @@ class ImageDetail : Fragment() {
     private var _binding : FragmentImageDetailBinding? = null
     private val mBinding get() = _binding!!
     private lateinit var mContext : Context
+    private lateinit var mNavController: NavController
     private val mViewModel : ImageDetailViewModel by viewModels()
 
 
@@ -44,12 +48,13 @@ class ImageDetail : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if(mViewModel.requireImageDataSetting()){
+        mNavController = findNavController()
+
+        if(mViewModel.requireImageDataSetting()) {
             checkResource()
-            initUI()
-        }else{
-            initUI()
         }
+
+        initUI()
     }
 
 
@@ -95,7 +100,7 @@ class ImageDetail : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             mViewModel.mTextRecognitionResult.collectLatest { result ->
-                findNavController().navigate(R.id.action_imageDetail_to_textResult, bundleOf("ExtractedText" to result))
+                mNavController.navigate(R.id.action_imageDetail_to_textResult, bundleOf("ExtractedText" to result))
             }
         }
 
@@ -106,7 +111,7 @@ class ImageDetail : Fragment() {
                 val bundle = Bundle().apply {
                     putString("location", Gson().toJson(result))
                 }
-                findNavController().navigate(R.id.action_imageDetail_to_location, bundle)
+                mNavController.navigate(R.id.action_imageDetail_to_location, bundle)
             }
         }
 
@@ -114,6 +119,10 @@ class ImageDetail : Fragment() {
     }
 
     private fun initListener() {
+        mBinding.ImageDetailBackBtn.setOnClickListener {
+            mNavController.popBackStack()
+        }
+
         // 사진 다운로드 버튼 클릭 리스너
         mBinding.ImageDetailDownload.setOnClickListener {
             mViewModel.downloadImage(mContext)

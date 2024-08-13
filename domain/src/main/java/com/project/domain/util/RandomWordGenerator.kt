@@ -3,7 +3,7 @@ package com.project.domain.util
 import java.time.LocalDateTime
 import kotlin.random.Random
 
-object RandomWordGenerator {
+class RandomWordGenerator {
     private val keywords = arrayListOf(
         "Nature",
         "Landscape",

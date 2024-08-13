@@ -22,6 +22,7 @@ image_text_recognition = "16.0.1"
 google_map = "19.0.0"
 secretsGradlePlugin = "2.0.1"
 safe_arg = "2.7.7"
+legacySupportV4 = "1.0.0"
 
 
 
@@ -47,6 +48,7 @@ gson = {group = "com.google.code.gson", name = "gson", version.ref = "gson"}
 photoView = {group = "com.github.chrisbanes", name = "PhotoView", version.ref = "imageView"}
 imageRecognition = {group = "com.google.mlkit", name = "text-recognition-korean", version.ref = "image_text_recognition"}
 google_map = {group = "com.google.android.gms", name = "play-services-maps", version.ref = "google_map"}
+androidx-legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacySupportV4" }
 
 
 

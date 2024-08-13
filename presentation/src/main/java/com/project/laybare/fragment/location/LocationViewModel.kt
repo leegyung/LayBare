@@ -1,4 +1,4 @@
-package com.project.laybare.fragment.Location
+package com.project.laybare.fragment.location
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,21 +10,19 @@ import com.project.domain.usecase.SearchImageUseCase
 import com.project.domain.util.ApiResult
 import com.project.laybare.BuildConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @HiltViewModel
-class LocationViewModel @Inject constructor(private val mAddressUseCase: SearchAddressUseCase, private val mPictureUseCase: SearchImageUseCase) : ViewModel() {
+class LocationViewModel @Inject constructor(
+    private val mAddressUseCase: SearchAddressUseCase,
+    private val mPictureUseCase: SearchImageUseCase
+) : ViewModel() {
 
     private var mLocationData : SearchLandmarkEntity? = null
     private var mAddressData : SearchAddressEntity? = null
@@ -77,7 +75,7 @@ class LocationViewModel @Inject constructor(private val mAddressUseCase: SearchA
                     getImageList()
                 }
                 is ApiResult.ResponseError -> {
-
+                    _apiError.emit(result.errorMessage?:"주소 검색 애러")
                 }
             }
         }.launchIn(viewModelScope)

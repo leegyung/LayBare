@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
@@ -21,7 +22,6 @@ import com.project.laybare.dialog.ImageSelectDialog
 import com.project.laybare.dialog.ImageSelectDialogListener
 import com.project.laybare.util.PhotoTaker
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -31,7 +31,6 @@ class Home : Fragment() {
     private val mBinding get() = _binding!!
     private val mViewModel : HomeViewModel by viewModels()
     private lateinit var mNavController: NavController
-    private var mListInterface : HomeListInterface? = null
     private lateinit var mPhotoTaker : PhotoTaker
 
     // 사진 촬영 어플에서 사진 찍은 결과 리스너
@@ -63,13 +62,7 @@ class Home : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         mNavController = findNavController()
-
         initUI()
-
-        if(mViewModel.requireImageData()){
-            mViewModel.getInitialData()
-        }
-
     }
 
     private fun initObserver() {
@@ -78,18 +71,24 @@ class Home : Fragment() {
                 imageLoadErrorDialog(it)
             }
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            mViewModel.mLoadingState.collectLatest {
+                mBinding.HomeProgressBar.isVisible = it
+            }
+        }
     }
 
 
 
     private fun initListener(){
         // 사진 리스트 리스너
-        mListInterface = object : HomeListInterface{
+        mViewModel.getHomeAdapter().setListener(object : HomeImageListListener{
             override fun onImageClicked(image: String) {
                 val bundle = bundleOf("imageUrl" to image, "imageType" to "URL")
                 findNavController().navigate(R.id.action_home_to_imageDetail, bundle)
             }
-        }
+        })
 
         // 검색 버튼 클릭 리스너
         mBinding.HomeSearchBtn.setOnClickListener {
@@ -114,7 +113,7 @@ class Home : Fragment() {
 
 
         val layoutManager = GridLayoutManager(this.context, 2)
-        val adapter = mViewModel.getHomeAdapter(mListInterface)
+        val adapter = mViewModel.getHomeAdapter()
 
         layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {

@@ -1,7 +1,7 @@
 package com.project.laybare.fragment.home
 
 
-interface HomeListInterface {
+interface HomeImageListListener {
     fun onImageClicked(image : String)
 
 }

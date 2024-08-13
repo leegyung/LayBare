@@ -19,7 +19,7 @@ import com.project.laybare.databinding.HomeNormalImageViewBinding
 
 class HomeAdapter(private val mSections : ArrayList<HomeListSectionData>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private var mListener : HomeListInterface? = null
+    private var mListener : HomeImageListListener? = null
 
     private val BANNER_TYPE = 1
     private val HORIZONTAL_TYPE = 2
@@ -54,7 +54,7 @@ class HomeAdapter(private val mSections : ArrayList<HomeListSectionData>) : Recy
         return mSections.size
     }
 
-    fun setListener(listener : HomeListInterface?) {
+    fun setListener(listener : HomeImageListListener?) {
         mListener = listener
     }
 

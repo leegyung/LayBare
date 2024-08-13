@@ -1,4 +1,4 @@
-package com.project.laybare.fragment.Location
+package com.project.laybare.fragment.location
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,7 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -26,6 +27,7 @@ import kotlinx.coroutines.launch
 class Location : Fragment(), OnMapReadyCallback{
     private var _binding : FragmentLocationBinding? = null
     private val mBinding get() = _binding!!
+    private lateinit var mNavController: NavController
     private val mViewModel : LocationViewModel by viewModels()
 
     override fun onCreateView(
@@ -43,14 +45,19 @@ class Location : Fragment(), OnMapReadyCallback{
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        mNavController = findNavController()
+
         initObserver()
 
         if(mViewModel.dataInitializeRequire()){
             val dataJson = arguments?.getString("location", "")
-            val data = Gson().fromJson(dataJson, SearchLandmarkEntity::class.java)
-
-            mViewModel.setLocationData(data)
-            mViewModel.getAddress()
+            if(dataJson.isNullOrEmpty()){
+                createDialog("위치 정보를 받아오지 못했습니다.", true)
+            }else{
+                val data = Gson().fromJson(dataJson, SearchLandmarkEntity::class.java)
+                mViewModel.setLocationData(data)
+                mViewModel.getAddress()
+            }
         }
 
         initUI()
@@ -61,18 +68,21 @@ class Location : Fragment(), OnMapReadyCallback{
         val data = mViewModel.getLocationData()
 
         val latlng = LatLng(data?.latitude?.toDouble()?:0.0, data?.longitude?.toDouble()?:0.0)
-        map.addMarker(
-            MarkerOptions()
-                .position(latlng)
-                .title(data?.description?:"")
-        )
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 16f))
+        map.apply {
+            addMarker(
+                MarkerOptions()
+                    .position(latlng)
+                    .title(data?.description?:"")
+            )
+            moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 16f))
+        }
+        map.uiSettings.isScrollGesturesEnabled = false
     }
 
     private fun initObserver(){
         viewLifecycleOwner.lifecycleScope.launch {
             mViewModel.mApiError.collectLatest {
-                createDialog(it)
+                createDialog(it, false)
             }
         }
 
@@ -82,6 +92,7 @@ class Location : Fragment(), OnMapReadyCallback{
             }
         }
     }
+
 
     private fun initUI(){
         mBinding.LocationName.text = mViewModel.getLocationName()
@@ -94,15 +105,20 @@ class Location : Fragment(), OnMapReadyCallback{
             }
             adapter = imageAdapter
         }
+
     }
 
 
-    private fun createDialog(msg : String) {
+    private fun createDialog(msg : String, isPop : Boolean) {
         val constructor = AlertDialog(requireContext(), resources.displayMetrics.widthPixels)
         val dialog = constructor.createDialog(1, msg, "확인")
+        dialog.setCancelable(!isPop)
         constructor.setItemClickListener(object  : AlertDialog.AlertDialogClickListener{
             override fun onClickOk() {
                 dialog.dismiss()
+                if(isPop){
+                    mNavController.popBackStack()
+                }
             }
             override fun onClickCancel() {}
         })

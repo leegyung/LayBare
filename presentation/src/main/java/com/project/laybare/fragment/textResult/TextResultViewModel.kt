@@ -6,11 +6,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TextResultViewModel @Inject constructor() : ViewModel() {
-    private var mTextResult = ""
+    private var mOriginalText = ""
     private var mEditedText = ""
 
+    fun requireTextData() : Boolean {
+        return mOriginalText.isEmpty() && mEditedText.isEmpty()
+    }
+
     fun setTextResult(text : String) {
-        mTextResult = text
+        mOriginalText = text
         mEditedText = text
     }
 
@@ -23,7 +27,7 @@ class TextResultViewModel @Inject constructor() : ViewModel() {
     }
 
     fun resetText() : String {
-        mEditedText = mTextResult
-        return mTextResult
+        mEditedText = mOriginalText
+        return mOriginalText
     }
 }

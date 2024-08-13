@@ -1,4 +1,4 @@
-package com.project.laybare.fragment.Location
+package com.project.laybare.fragment.location
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

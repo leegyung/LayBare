@@ -35,7 +35,6 @@ class Search : Fragment() {
     private val mBinding get() = _binding!!
     private val mViewModel : SearchViewModel by viewModels()
     private lateinit var mNavController: NavController
-    private var mListListener : SearchAdapterInterface? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,7 +96,7 @@ class Search : Fragment() {
             }
         })
 
-
+        // 리사이클러뷰 아이템 클릭 리스너
         mViewModel.getAdapter().setListener(object : SearchAdapterInterface{
             override fun onImageClicked(url: String) {
                 val bundle = bundleOf("imageUrl" to url, "imageType" to "URL")
