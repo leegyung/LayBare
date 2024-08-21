@@ -12,13 +12,10 @@ import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
-import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.project.laybare.R
 import com.project.laybare.databinding.FragmentImageDetailBinding
@@ -92,9 +89,14 @@ class ImageDetail : Fragment() {
     private fun initObserver() {
         viewLifecycleOwner.lifecycleScope.launch {
             mViewModel.mCreateAlert.collectLatest {
-                mBinding.ImageDetailProgress.isVisible = false
                 createDialog(it)
                 //Snackbar.make(mBinding.root, it, Snackbar.LENGTH_SHORT).show()
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            mViewModel.mApiLoading.collectLatest {
+                mBinding.ImageDetailProgress.isVisible = it
             }
         }
 
@@ -133,8 +135,7 @@ class ImageDetail : Fragment() {
         }
         // 위치 찾기 버튼 리스너
         mBinding.ImageDetailLocation.setOnClickListener {
-            mBinding.ImageDetailProgress.isVisible = true
-            mViewModel.getLocationData(mBinding.ImageDetailImage.drawable?.toBitmap())
+            mViewModel.getLandmarkData(mBinding.ImageDetailImage.drawable?.toBitmap())
         }
     }
 

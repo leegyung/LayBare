@@ -3,7 +3,6 @@ package com.project.laybare.fragment.ImageDetail
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
-import android.util.Base64
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.mlkit.vision.common.InputImage
@@ -20,16 +19,17 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.io.ByteArrayOutputStream
 import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
 class ImageDetailViewModel @Inject constructor(private val mSearchLandMarkUseCase: SearchLandmarkUseCase) : ViewModel() {
     private val _createAlert = MutableSharedFlow<String>()
+    private val _apiLoading = MutableSharedFlow<Boolean>()
     private val _textRecognitionResult = MutableSharedFlow<String>()
     private val _landmarkResult = MutableSharedFlow<SearchLandmarkEntity?>()
     val mCreateAlert = _createAlert.asSharedFlow()
+    val mApiLoading = _apiLoading.asSharedFlow()
     val mTextRecognitionResult = _textRecognitionResult.asSharedFlow()
     val mLandmarkResult = _landmarkResult.asSharedFlow()
 
@@ -112,27 +112,30 @@ class ImageDetailViewModel @Inject constructor(private val mSearchLandMarkUseCas
     }
 
 
-    fun getLocationData(bitmap: Bitmap?) {
+    fun getLandmarkData(bitmap: Bitmap?) {
         if(bitmap == null){
+            viewModelScope.launch {
+                _createAlert.emit("장소 이미지 파일 오류")
+            }
             return
         }
 
         mSearchLandMarkUseCase(BuildConfig.API_KEY, bitmap).onEach { result ->
             when(result){
                 is ApiResult.ResponseLoading -> {
-
+                    _apiLoading.emit(true)
                 }
                 is ApiResult.ResponseSuccess -> {
                     _landmarkResult.emit(result.data)
+                    _apiLoading.emit(false)
                 }
                 is ApiResult.ResponseError -> {
                     _createAlert.emit(result.errorMessage?:"위치 찾기 오류")
+                    _apiLoading.emit(false)
                 }
             }
         }.launchIn(viewModelScope)
     }
-
-
 
 
 }

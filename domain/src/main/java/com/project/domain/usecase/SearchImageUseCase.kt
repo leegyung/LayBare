@@ -20,9 +20,9 @@ class SearchImageUseCase @Inject constructor(private val mRepository : SearchIma
             val response = mRepository.getImageList(apiKey, searchEngine, keyword, page, size)
             emit(ApiResult.ResponseSuccess(response))
         }catch (e : HttpException){
-            emit(ApiResult.ResponseError(e.localizedMessage))
+            emit(ApiResult.ResponseError(e.localizedMessage?:"알 수 없는 오류가 발생했어요."))
         }catch (e : IOException){
-            emit(ApiResult.ResponseError("인터넷 연결을 확인 해 주세요."))
+            emit(ApiResult.ResponseError("인터넷 연결을 확인해 주세요."))
         }
     }.flowOn(Dispatchers.IO)
 
