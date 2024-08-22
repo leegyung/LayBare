@@ -17,7 +17,7 @@ class PhotoTaker(private val activity: Activity) {
         private const val CAMERA_PERMISSION_CODE = 100
     }
 
-    private lateinit var currentPhotoUri: Uri
+    private var currentPhotoUri: Uri? = null
 
 
     fun checkCameraPermission() : Boolean {
@@ -46,7 +46,7 @@ class PhotoTaker(private val activity: Activity) {
         }
     }
 
-    fun getPhotoUri() : Uri {
+    fun getPhotoUri() : Uri? {
         return currentPhotoUri
     }
 }

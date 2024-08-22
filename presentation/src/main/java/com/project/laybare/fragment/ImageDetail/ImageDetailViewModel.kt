@@ -2,7 +2,6 @@ package com.project.laybare.fragment.ImageDetail
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.mlkit.nl.entityextraction.EntityExtraction
@@ -11,13 +10,12 @@ import com.google.mlkit.nl.entityextraction.EntityExtractorOptions
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
-import com.project.domain.entity.SearchLandmarkEntity
 import com.project.domain.usecase.SearchLandmarkUseCase
 import com.project.domain.util.ApiResult
 import com.project.laybare.BuildConfig
 import com.project.data.util.ImageDownloader
 import com.project.laybare.ssot.ImageDetailData
-import com.project.laybare.util.ContractCreator
+import com.project.laybare.util.ContactCreator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -117,7 +115,7 @@ class ImageDetailViewModel @Inject constructor(private val mSearchLandMarkUseCas
                 entityExtractor.annotate(params)
                     .addOnSuccessListener { result ->
                         viewModelScope.launch {
-                            val contactData = ContractCreator().switchToContactData(result)
+                            val contactData = ContactCreator().switchToContactData(result)
                             if(contactData.isNotEmpty()){
                                 ImageDetailData.setContactData(contactData)
                                 _contractResult.emit(true)

@@ -11,10 +11,10 @@ class PermissionChecker {
         private const val CONTACT_PERMISSION_CODE = 100
     }
     fun checkContactPermission(context: Context, launcher : ActivityResultLauncher<String>) : Boolean{
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             launcher.launch(Manifest.permission.WRITE_CONTACTS)
-            return true
+            return false
         }
-        return false
+        return true
     }
 }

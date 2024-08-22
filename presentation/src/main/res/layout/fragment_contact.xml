@@ -19,18 +19,18 @@
 
     <ImageView
         android:id="@+id/imageView7"
-        android:layout_width="54dp"
-        android:layout_height="26dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="74dp"
+        android:layout_height="46dp"
         android:layout_marginEnd="20dp"
         android:src="@drawable/lay_bare"
+        app:layout_constraintBottom_toTopOf="@+id/ContactImage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/ContactAddBtn"
         android:layout_width="0dp"
-        android:layout_height="41dp"
+        android:layout_height="44dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
@@ -38,37 +38,39 @@
         android:backgroundTint="@color/gray50"
         android:text="@string/create_contact"
         android:textColor="@color/white"
-        android:textSize="14dp"
+        android:textSize="16dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <com.github.chrisbanes.photoview.PhotoView
+        android:id="@+id/ContactImage"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/gray_bg"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ContactBackBtn" />
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
         android:fillViewport="true"
         app:layout_constraintBottom_toTopOf="@+id/ContactAddBtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ContactBackBtn">
+        app:layout_constraintTop_toBottomOf="@+id/ContactImage">
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="30dp">
 
-            <com.github.chrisbanes.photoview.PhotoView
-                android:id="@+id/ContactImage"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:background="@color/gray10"
-                android:scaleType="fitCenter"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/ContactProfileImage"
@@ -76,9 +78,10 @@
                 android:layout_height="100dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
-                android:background="@drawable/empty_profile"
+                android:background="@drawable/oval_gray"
+                android:scaleType="centerCrop"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ContactImage" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/ContactSelectProfile"
@@ -91,7 +94,7 @@
 
 
             <EditText
-                android:id="@+id/editTextText"
+                android:id="@+id/ContactName"
                 android:layout_width="0dp"
                 android:layout_height="40dp"
                 android:layout_marginStart="20dp"
@@ -149,6 +152,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="20dp"
+                android:nestedScrollingEnabled="false"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -176,6 +180,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="20dp"
+                android:nestedScrollingEnabled="false"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -185,4 +190,15 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <ProgressBar
+        android:id="@+id/ContactProgress"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

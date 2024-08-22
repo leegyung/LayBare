@@ -3,11 +3,12 @@ package com.project.laybare.fragment.contact
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.project.laybare.R
 import com.project.laybare.databinding.ContactViewBinding
 
 
 interface ContactListListListener{
-    fun onContactSelected(type : String, contact : String)
+    fun onContactSelected(contact : String)
 }
 
 
@@ -40,14 +41,30 @@ class ContactListAdapter(private val mContactList : ArrayList<ContactListData>) 
         init {
             mBinding.ContactListText.setOnClickListener {
                 mContactList.getOrNull(bindingAdapterPosition)?.let {
-                    mListener?.onContactSelected(it.type, it.text)
+                    if(!it.isSelected){
+                        mListener?.onContactSelected(it.text)
+                    }
                 }
             }
         }
 
         fun bind(contact : ContactListData) {
             mBinding.ContactListText.text = contact.text
+            val isSelected = contact.isSelected
+            setSelectedUI(isSelected)
         }
+
+        private fun setSelectedUI(isSelected : Boolean){
+            if(isSelected){
+                mBinding.ContactListText.setBackgroundResource(R.drawable.box_contact_selected)
+                mBinding.ContactListText.setTextColor(itemView.context.getColor(R.color.textBlack))
+            }else{
+                mBinding.ContactListText.setBackgroundResource(R.drawable.box_gray_6dp)
+                mBinding.ContactListText.setTextColor(itemView.context.getColor(R.color.gray30))
+            }
+        }
+
+
     }
 
 
