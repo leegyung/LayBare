@@ -36,7 +36,7 @@ class HomeViewModel @Inject constructor(private val mSearchImageUseCase: SearchI
     private val mHomeAdapter = HomeAdapter(mSectionList)
 
     init {
-        getInitialData()
+        //getInitialData()
     }
 
     /**

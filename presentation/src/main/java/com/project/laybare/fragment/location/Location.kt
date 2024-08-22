@@ -30,6 +30,8 @@ class Location : Fragment(), OnMapReadyCallback{
     private lateinit var mNavController: NavController
     private val mViewModel : LocationViewModel by viewModels()
 
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -47,20 +49,14 @@ class Location : Fragment(), OnMapReadyCallback{
 
         mNavController = findNavController()
 
-        initObserver()
-
-        if(mViewModel.dataInitializeRequire()){
-            val dataJson = arguments?.getString("location", "")
-            if(dataJson.isNullOrEmpty()){
-                createDialog("위치 정보를 받아오지 못했습니다.", true)
-            }else{
-                val data = Gson().fromJson(dataJson, SearchLandmarkEntity::class.java)
-                mViewModel.setLocationData(data)
-                mViewModel.getAddress()
-            }
+        if(mViewModel.isLocationDataValid()){
+            initObserver()
+            initUI()
+        }else{
+            createDialog("위치 데이터를 가져오지 못했어요...", true)
         }
 
-        initUI()
+
     }
 
 
@@ -80,6 +76,7 @@ class Location : Fragment(), OnMapReadyCallback{
     }
 
     private fun initObserver(){
+
         viewLifecycleOwner.lifecycleScope.launch {
             mViewModel.mApiError.collectLatest {
                 createDialog(it, false)

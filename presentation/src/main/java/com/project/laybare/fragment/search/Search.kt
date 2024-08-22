@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.project.laybare.R
 import com.project.laybare.databinding.FragmentSearchBinding
 import com.project.laybare.dialog.AlertDialog
+import com.project.laybare.ssot.ImageDetailData
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -99,13 +100,13 @@ class Search : Fragment() {
         // 리사이클러뷰 아이템 클릭 리스너
         mViewModel.getAdapter().setListener(object : SearchAdapterInterface{
             override fun onImageClicked(url: String) {
-                val bundle = bundleOf("imageUrl" to url, "imageType" to "URL")
+                ImageDetailData.setNewImageData(url)
                 val navOption = NavOptions.Builder()
                     .setEnterAnim(R.anim.slide_up)
                     .setPopExitAnim(R.anim.slide_down)
                     .build()
 
-                mNavController.navigate(R.id.imageDetail, bundle, navOption)
+                mNavController.navigate(R.id.imageDetail, null, navOption)
             }
         })
 

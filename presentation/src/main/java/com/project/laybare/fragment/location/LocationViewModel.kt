@@ -9,6 +9,7 @@ import com.project.domain.usecase.SearchAddressUseCase
 import com.project.domain.usecase.SearchImageUseCase
 import com.project.domain.util.ApiResult
 import com.project.laybare.BuildConfig
+import com.project.laybare.ssot.ImageDetailData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,8 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LocationViewModel @Inject constructor(
     private val mAddressUseCase: SearchAddressUseCase,
-    private val mPictureUseCase: SearchImageUseCase
-) : ViewModel() {
+    private val mPictureUseCase: SearchImageUseCase) : ViewModel() {
 
     private var mLocationData : SearchLandmarkEntity? = null
     private var mAddressData : SearchAddressEntity? = null
@@ -37,13 +37,18 @@ class LocationViewModel @Inject constructor(
     private val mImageList = arrayListOf<ImageEntity>()
     private val mImageAdapter = LocationImageAdapter(mImageList)
 
-    fun dataInitializeRequire() : Boolean {
-        return mLocationData == null && mAddressData == null
+    init {
+        mLocationData = ImageDetailData.getLocationData()
+        if(mLocationData != null){
+            getAddress()
+            getImageList()
+        }
     }
 
-    fun setLocationData(data : SearchLandmarkEntity) {
-        mLocationData = data
+    fun isLocationDataValid() : Boolean {
+        return mLocationData != null
     }
+
 
     fun getLocationData() : SearchLandmarkEntity? {
         return mLocationData
@@ -57,12 +62,8 @@ class LocationViewModel @Inject constructor(
         return mImageAdapter
     }
 
-    fun getAddress() {
-        if(mLocationData == null){
-            return
-        }
-
-        val geocode = "${mLocationData!!.latitude},${mLocationData!!.longitude}"
+    private fun getAddress() {
+        val geocode = "${mLocationData?.latitude},${mLocationData?.longitude}"
 
         mAddressUseCase(BuildConfig.API_KEY, geocode).onEach { result ->
             when(result){
@@ -72,7 +73,6 @@ class LocationViewModel @Inject constructor(
                 is ApiResult.ResponseSuccess -> {
                     mAddressData = result.data
                     _setAddressText.emit(mAddressData?.fullAddress?:"")
-                    getImageList()
                 }
                 is ApiResult.ResponseError -> {
                     _apiError.emit(result.errorMessage?:"주소 검색 애러")
@@ -94,7 +94,7 @@ class LocationViewModel @Inject constructor(
 
                 }
                 is ApiResult.ResponseSuccess -> {
-                    result.data?.imageList?.let{
+                    result.data.imageList.let{
                         mImageList.addAll(it)
                         mImageAdapter.notifyItemRangeInserted(0, it.size - 1)
                     }

@@ -1,6 +1,7 @@
 package com.project.laybare.fragment.ImageDetail
 
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -33,6 +34,8 @@ class ImageDetail : Fragment() {
     private val mViewModel : ImageDetailViewModel by viewModels()
 
 
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -47,40 +50,22 @@ class ImageDetail : Fragment() {
 
         mNavController = findNavController()
 
-        if(mViewModel.requireImageDataSetting()) {
-            checkResource()
+        if(mViewModel.getImageUrl().isEmpty()){
+            createDialog("이미지 데이터를 가져오지 못했어요...", true)
+        }else{
+            initUI()
         }
-
-        initUI()
     }
 
-
-    private fun checkResource() {
-        val type = arguments?.getString("imageType")?:""
-        val url = arguments?.getString("imageUrl")?:""
-        val uri = arguments?.getString("imageUri")?:""
-
-        if(type.isEmpty() && url.isEmpty() && uri.isEmpty()){
-            Toast.makeText(mContext, "이미지 로딩 애러", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        mViewModel.setImageData(type, url, uri.toUri())
-    }
 
 
     private fun initUI(){
-        val isUrlType = mViewModel.isUrlType()
+        val image = mViewModel.getImageUrl()
 
-        Glide.with(this).load(
-            if(isUrlType){
-                mViewModel.getImageUrl()
-            }else{
-                mViewModel.getImageUri()
-            }
-        ).into(mBinding.ImageDetailImage)
+        Glide.with(this)
+            .load(image)
+            .into(mBinding.ImageDetailImage)
 
-        mBinding.ImageDetailDownload.isVisible = isUrlType
 
         initListener()
         initObserver()
@@ -89,7 +74,7 @@ class ImageDetail : Fragment() {
     private fun initObserver() {
         viewLifecycleOwner.lifecycleScope.launch {
             mViewModel.mCreateAlert.collectLatest {
-                createDialog(it)
+                createDialog(it, false)
                 //Snackbar.make(mBinding.root, it, Snackbar.LENGTH_SHORT).show()
             }
         }
@@ -101,19 +86,20 @@ class ImageDetail : Fragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            mViewModel.mTextRecognitionResult.collectLatest { result ->
-                mNavController.navigate(R.id.action_imageDetail_to_textResult, bundleOf("ExtractedText" to result))
+            mViewModel.mTextRecognitionResult.collectLatest {
+                mNavController.navigate(R.id.action_imageDetail_to_textResult)
             }
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            mViewModel.mLandmarkResult.collectLatest { result ->
-                mBinding.ImageDetailProgress.isVisible = false
+            mViewModel.mLandmarkResult.collectLatest {
+                mNavController.navigate(R.id.action_imageDetail_to_location)
+            }
+        }
 
-                val bundle = Bundle().apply {
-                    putString("location", Gson().toJson(result))
-                }
-                mNavController.navigate(R.id.action_imageDetail_to_location, bundle)
+        viewLifecycleOwner.lifecycleScope.launch {
+            mViewModel.mContractResult.collectLatest {
+                mNavController.navigate(R.id.action_imageDetail_to_contact)
             }
         }
 
@@ -131,29 +117,34 @@ class ImageDetail : Fragment() {
         }
         // 사진 텍스트 추출 리스너
         mBinding.ImageDetailTextRecognize.setOnClickListener {
-            mViewModel.extractText(mBinding.ImageDetailImage.drawable?.toBitmap())
+            mViewModel.extractText(mBinding.ImageDetailImage.drawable?.toBitmap(), false)
         }
         // 위치 찾기 버튼 리스너
         mBinding.ImageDetailLocation.setOnClickListener {
             mViewModel.getLandmarkData(mBinding.ImageDetailImage.drawable?.toBitmap())
         }
+
+        mBinding.ImageDetailContact.setOnClickListener {
+            mViewModel.extractText(mBinding.ImageDetailImage.drawable?.toBitmap(), true)
+        }
     }
 
-    private fun createDialog(msg : String) {
+    private fun createDialog(msg : String, isPop : Boolean) {
 
         val width = resources.displayMetrics.widthPixels
         val constructor = AlertDialog(mContext, width)
         val dialog = constructor.createDialog(1, msg, "확인")
-        dialog.setCancelable(true)
+        dialog.setCancelable(!isPop)
 
         constructor.setItemClickListener(object : AlertDialog.AlertDialogClickListener{
             override fun onClickOk() {
                 dialog.dismiss()
+                if(isPop){
+                    mNavController.popBackStack()
+                }
             }
 
-            override fun onClickCancel() {
-                dialog.dismiss()
-            }
+            override fun onClickCancel() {}
         })
 
         dialog.show()

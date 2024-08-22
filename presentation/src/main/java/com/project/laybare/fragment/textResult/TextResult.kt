@@ -1,6 +1,7 @@
 package com.project.laybare.fragment.textResult
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
@@ -26,6 +28,7 @@ class TextResult : Fragment() {
     private lateinit var mNavController: NavController
     private val mViewModel : TextResultViewModel by viewModels()
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -41,16 +44,13 @@ class TextResult : Fragment() {
 
         mNavController = findNavController()
 
-        if(mViewModel.requireTextData()) {
-            val text = arguments?.getString("ExtractedText", "")
-            if(text.isNullOrEmpty()) {
-                createDialog("텍스트 정보를 받아오지 못했습니다.")
-            }else{
-                mViewModel.setTextResult(text)
-            }
+        if(mViewModel.isOriginalTextValid()){
+            initUI()
+        }else{
+            createDialog("텍스트 데이터를 가져오지 못했어요...", true)
         }
 
-        initUI()
+
     }
 
     private fun initUI() {
@@ -71,19 +71,24 @@ class TextResult : Fragment() {
             mViewModel.resetText()
             mBinding.TextResultText.setText(mViewModel.getEditedText())
         }
+
     }
 
-    private fun createDialog(msg : String) {
+
+
+    private fun createDialog(msg : String, isPop : Boolean) {
 
         val width = resources.displayMetrics.widthPixels
         val constructor = AlertDialog(mContext, width)
         val dialog = constructor.createDialog(1, msg, "확인")
-        dialog.setCancelable(false)
+        dialog.setCancelable(!isPop)
 
         constructor.setItemClickListener(object : AlertDialog.AlertDialogClickListener{
             override fun onClickOk() {
                 dialog.dismiss()
-                mNavController.popBackStack()
+                if(isPop){
+                    mNavController.popBackStack()
+                }
             }
             override fun onClickCancel() {}
         })

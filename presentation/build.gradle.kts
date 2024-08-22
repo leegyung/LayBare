@@ -102,5 +102,6 @@ dependencies {
 
     implementation(libs.imageRecognition)
     implementation(libs.google.map)
+    implementation(libs.entity.extraction)
 
 }

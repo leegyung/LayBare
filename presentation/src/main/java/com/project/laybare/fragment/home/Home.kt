@@ -20,6 +20,7 @@ import com.project.laybare.databinding.FragmentHomeBinding
 import com.project.laybare.dialog.AlertDialog
 import com.project.laybare.dialog.ImageSelectDialog
 import com.project.laybare.dialog.ImageSelectDialogListener
+import com.project.laybare.ssot.ImageDetailData
 import com.project.laybare.util.PhotoTaker
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -36,15 +37,15 @@ class Home : Fragment() {
     // 사진 촬영 어플에서 사진 찍은 결과 리스너
     private val mTakePictureResult = registerForActivityResult(ActivityResultContracts.TakePicture()) { success: Boolean ->
         if (success) {
-            val bundle = bundleOf("imageUri" to mPhotoTaker.getPhotoUri().toString(), "imageType" to "URI")
-            findNavController().navigate(R.id.action_home_to_imageDetail, bundle)
+            ImageDetailData.setNewImageData(mPhotoTaker.getPhotoUri().toString())
+            findNavController().navigate(R.id.action_home_to_imageDetail)
         }
     }
     // 이미지 선택 다이얼로그에서 선택된 이미지 리스너
     private val mPickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
-            val bundle = bundleOf("imageUri" to it.toString(), "imageType" to "URI")
-            findNavController().navigate(R.id.action_home_to_imageDetail, bundle)
+            ImageDetailData.setNewImageData(uri.toString())
+            findNavController().navigate(R.id.action_home_to_imageDetail)
         }
     }
 
@@ -85,8 +86,8 @@ class Home : Fragment() {
         // 사진 리스트 리스너
         mViewModel.getHomeAdapter().setListener(object : HomeImageListListener{
             override fun onImageClicked(image: String) {
-                val bundle = bundleOf("imageUrl" to image, "imageType" to "URL")
-                findNavController().navigate(R.id.action_home_to_imageDetail, bundle)
+                ImageDetailData.setNewImageData(image)
+                findNavController().navigate(R.id.action_home_to_imageDetail)
             }
         })
 

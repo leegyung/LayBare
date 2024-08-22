@@ -1,6 +1,7 @@
 package com.project.laybare.fragment.textResult
 
 import androidx.lifecycle.ViewModel
+import com.project.laybare.ssot.ImageDetailData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -9,13 +10,14 @@ class TextResultViewModel @Inject constructor() : ViewModel() {
     private var mOriginalText = ""
     private var mEditedText = ""
 
-    fun requireTextData() : Boolean {
-        return mOriginalText.isEmpty() && mEditedText.isEmpty()
+    init {
+        val extractedText = ImageDetailData.getExtractedText()
+        mOriginalText = extractedText
+        mEditedText = extractedText
     }
 
-    fun setTextResult(text : String) {
-        mOriginalText = text
-        mEditedText = text
+    fun isOriginalTextValid() : Boolean {
+        return mOriginalText.isNotEmpty()
     }
 
     fun setEditedText(text: String) {
@@ -30,4 +32,7 @@ class TextResultViewModel @Inject constructor() : ViewModel() {
         mEditedText = mOriginalText
         return mOriginalText
     }
+
+
+
 }

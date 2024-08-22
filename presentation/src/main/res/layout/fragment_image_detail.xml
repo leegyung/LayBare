@@ -17,19 +17,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
     <View
         android:id="@+id/view"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="16dp"
         android:background="@drawable/box_gray_8dp"
         android:backgroundTint="#80000000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent" />
-
 
     <ImageButton
         android:id="@+id/ImageDetailDownload"
@@ -39,7 +40,9 @@
         android:backgroundTint="@color/white"
         app:layout_constraintBottom_toBottomOf="@+id/view"
         app:layout_constraintEnd_toStartOf="@+id/ImageDetailTextRecognize"
-        app:layout_constraintStart_toStartOf="@+id/ImageDetailImage"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/ImageDetailImage"
+        app:layout_constraintStart_toStartOf="@+id/view"
         app:layout_constraintTop_toTopOf="@+id/view" />
 
     <ImageView
@@ -61,15 +64,27 @@
         android:background="@drawable/location_icon"
         android:backgroundTint="@color/white"
         app:layout_constraintBottom_toBottomOf="@+id/view"
-        app:layout_constraintEnd_toEndOf="@+id/view"
+        app:layout_constraintEnd_toStartOf="@+id/ImageDetailContact"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/ImageDetailTextRecognize"
         app:layout_constraintTop_toTopOf="@+id/view" />
 
-    <ImageButton
-        android:id="@+id/ImageDetailBackBtn"
+    <ImageView
+        android:id="@+id/ImageDetailContact"
         android:layout_width="35dp"
         android:layout_height="35dp"
+        android:background="@drawable/business_card"
+        android:backgroundTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/view"
+        app:layout_constraintEnd_toEndOf="@+id/view"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/ImageDetailLocation"
+        app:layout_constraintTop_toTopOf="@+id/view" />
+
+    <ImageButton
+        android:id="@+id/ImageDetailBackBtn"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/back_arrow"
