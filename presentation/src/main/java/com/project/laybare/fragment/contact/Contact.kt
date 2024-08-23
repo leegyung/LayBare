@@ -10,17 +10,19 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.project.laybare.R
 import com.project.laybare.databinding.FragmentContactBinding
+import com.project.laybare.dialog.AlertDialog
 import com.project.laybare.dialog.ImageSelectDialog
 import com.project.laybare.dialog.ImageSelectDialogListener
-import com.project.laybare.ssot.ImageDetailData
-import com.project.laybare.util.PermissionChecker
+import com.project.laybare.util.ContactCreator
 import com.project.laybare.util.PhotoTaker
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -34,7 +36,7 @@ class Contact : Fragment() {
     private lateinit var mNavController: NavController
     private lateinit var mPhotoTaker : PhotoTaker
 
-    // 사진 촬영 어플에서 사진 찍은 결과 리스너
+    // 카메라 어플에서 찍은 사진 결과
     private val mTakePictureResult = registerForActivityResult(ActivityResultContracts.TakePicture()) { success: Boolean ->
         if (success) {
             mPhotoTaker.getPhotoUri()?.let {
@@ -43,20 +45,27 @@ class Contact : Fragment() {
             }
         }
     }
-    // 이미지 선택 다이얼로그에서 선택된 이미지 리스너
+    // 앨범에서 선택한 사진 선택 결과
     private val mPickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let{
             mViewModel.setProfileImage(it.toString())
             setProfileImage()
         }
     }
-
-    private val requestContactPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-
+    // 연락처 write 권한 요청 결과
+    private val mContactPermissionResult = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
         if (isGranted) {
             mViewModel.addContact(requireActivity().contentResolver, requireContext())
         } else {
             Snackbar.make(mBinding.root, "연락처를 저장하기 위해 권한이 필요해요", Snackbar.LENGTH_SHORT).show()
+        }
+    }
+    // 카메라 사용 권한 요청 결과
+    private val mCameraPermissionResult = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        if(isGranted){
+            mPhotoTaker.dispatchTakePictureIntent(requireContext(), mTakePictureResult)
+        }else{
+            Snackbar.make(mBinding.root, "사진 촬영을 위해 권한이 필요해요", Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -73,32 +82,30 @@ class Contact : Fragment() {
 
         mNavController = findNavController()
         initUI()
-
-
     }
 
     private fun initListener() {
-
+        // 이름 입력 텍스트 리스너
         mBinding.ContactName.addTextChangedListener { text ->
             mViewModel.setEditedName(text.toString())
         }
-
+        // 연락처 추가 버튼 리스너
         mBinding.ContactAddBtn.setOnClickListener {
-            if(PermissionChecker().checkContactPermission(requireActivity(), requestContactPermission)) {
+            if(ContactCreator().checkContactPermission(requireActivity(), mContactPermissionResult)) {
                 mViewModel.addContact(requireActivity().contentResolver, requireContext())
             }
         }
-
+        // 프로필 사진 선택 버튼 리스너
         mBinding.ContactSelectProfile.setOnClickListener {
             createImageSelectOptionDialog()
         }
-
+        // 전화 번호 리스트 리스너
         mViewModel.getNumberAdapter().setAdapterListener(object : ContactListListListener{
             override fun onContactSelected(contact: String) {
                 mViewModel.contactSelected("number", contact)
             }
         })
-
+        // 이메일 리스트 리스너
         mViewModel.getEmailAdapter().setAdapterListener(object : ContactListListListener{
             override fun onContactSelected(contact: String) {
                 mViewModel.contactSelected("email", contact)
@@ -108,14 +115,25 @@ class Contact : Fragment() {
 
     private fun initObserver() {
         viewLifecycleOwner.lifecycleScope.launch {
-            mViewModel.mProgressVisibility.collectLatest {
-                mBinding.ContactProgress.isVisible = it
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            mViewModel.mCreateSnackBar.collectLatest {
-                Snackbar.make(mBinding.root, it, Snackbar.LENGTH_SHORT).show()
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                // 로딩 바 visibility 설정
+                launch {
+                    mViewModel.mProgressVisibility.collectLatest {
+                        mBinding.ContactProgress.isVisible = it
+                    }
+                }
+                // 스넥바 생성
+                launch {
+                    mViewModel.mCreateSnackBar.collectLatest {
+                        Snackbar.make(mBinding.root, it, Snackbar.LENGTH_SHORT).show()
+                    }
+                }
+                // 다이얼로그 생성
+                launch {
+                    mViewModel.mCreateDialog.collectLatest {
+                        createDialog(it)
+                    }
+                }
             }
         }
     }
@@ -126,8 +144,10 @@ class Contact : Fragment() {
             .load(mViewModel.getImageUrl())
             .into(mBinding.ContactImage)
 
-        mBinding.ContactName.setText(mViewModel.getEditedName())
         mBinding.ContactProfileImage.clipToOutline = true
+        setProfileImage()
+
+        mBinding.ContactName.setText(mViewModel.getEditedName())
 
         mBinding.ContactNumberList.apply {
             if(itemDecorationCount == 0){
@@ -143,7 +163,6 @@ class Contact : Fragment() {
             adapter = mViewModel.getEmailAdapter()
         }
 
-        setProfileImage()
 
         initListener()
         initObserver()
@@ -166,18 +185,31 @@ class Contact : Fragment() {
             }
             override fun onCameraClicked() {
                 if(!::mPhotoTaker.isInitialized){
-                    mPhotoTaker = PhotoTaker(requireActivity())
+                    mPhotoTaker = PhotoTaker()
                 }
 
-                val permissionGranted = mPhotoTaker.checkCameraPermission()
+                val permissionGranted = mPhotoTaker.checkCameraPermission(requireContext(), mCameraPermissionResult)
                 if(permissionGranted){
-                    mPhotoTaker.dispatchTakePictureIntent(mTakePictureResult)
+                    mPhotoTaker.dispatchTakePictureIntent(requireContext(), mTakePictureResult)
                 }
             }
         })
         dialog.show(childFragmentManager, dialog.tag)
     }
 
+
+    private fun createDialog(msg : String){
+        val constructor = AlertDialog(requireContext(), resources.displayMetrics.widthPixels)
+        val dialog = constructor.createDialog(1, msg, "확인")
+        constructor.setItemClickListener(object : AlertDialog.AlertDialogClickListener{
+            override fun onClickOk() {
+                mNavController.popBackStack()
+                dialog.dismiss()
+            }
+            override fun onClickCancel() {}
+        })
+        dialog.show()
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

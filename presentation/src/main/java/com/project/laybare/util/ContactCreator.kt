@@ -1,10 +1,14 @@
 package com.project.laybare.util
 
+import android.Manifest
 import android.content.ContentProviderOperation
 import android.content.ContentResolver
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.provider.ContactsContract
+import androidx.activity.result.ActivityResultLauncher
+import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.google.mlkit.nl.entityextraction.EntityAnnotation
 import kotlinx.coroutines.Dispatchers
@@ -12,6 +16,14 @@ import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 
 class ContactCreator {
+
+    fun checkContactPermission(context: Context, launcher : ActivityResultLauncher<String>) : Boolean{
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            launcher.launch(Manifest.permission.WRITE_CONTACTS)
+            return false
+        }
+        return true
+    }
 
     fun switchToContactData(extractedEntity : List<EntityAnnotation>) : HashMap<String, ArrayList<String>> {
         val result = hashMapOf<String, ArrayList<String>>()

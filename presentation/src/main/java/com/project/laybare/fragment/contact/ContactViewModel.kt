@@ -22,6 +22,7 @@ class ContactViewModel @Inject constructor() : ViewModel() {
 
     val mProgressVisibility = _progressVisibility.asSharedFlow()
     val mCreateSnackBar = _createSnackBar.asSharedFlow()
+    val mCreateDialog = _createDialog.asSharedFlow()
 
 
     private var mImageUrl = ""
@@ -113,7 +114,7 @@ class ContactViewModel @Inject constructor() : ViewModel() {
             _progressVisibility.emit(true)
             val contactCreated = ContactCreator().addNewContact(mName, mSelectedNumber, mSelectedEmail, mProfileImage, contentResolver, context)
             if(contactCreated){
-                _createSnackBar.emit("연락처 추가 완료")
+                _createDialog.emit("연락처 추가 완료")
             }else{
                 _createSnackBar.emit("연락처 추가 오류")
             }

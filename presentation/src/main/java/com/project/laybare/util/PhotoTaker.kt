@@ -12,32 +12,35 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
-class PhotoTaker(private val activity: Activity) {
-    companion object {
-        private const val CAMERA_PERMISSION_CODE = 100
-    }
-
+class PhotoTaker {
+    // 사진 촬영을 위해 만든 파일의 uri
     private var currentPhotoUri: Uri? = null
 
-
-    fun checkCameraPermission() : Boolean {
-        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA)
-            != PackageManager.PERMISSION_GRANTED) {
+    /**
+     * 카메라 어플 사용 권한 체크
+     * 권한이 있다면 ActivityResultLauncher 를 통한 카메라 어플 실행
+     */
+    fun checkCameraPermission(context: Context, launcher : ActivityResultLauncher<String>) : Boolean {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             // 권한이 없는 경우 권한을 요청
-            ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_CODE)
+            launcher.launch(Manifest.permission.CAMERA)
             return false
         }
         return true
     }
 
-    fun dispatchTakePictureIntent(resultListener : ActivityResultLauncher<Uri>) {
+    /**
+     * 촬영을 위해 파일을 생성
+     * ActivityResultLauncher에 생성한 uri를 전달 후 카메라 어플 실행
+     */
+    fun dispatchTakePictureIntent(context : Context, resultListener : ActivityResultLauncher<Uri>) {
         val contentValues = ContentValues().apply {
             put(MediaStore.Images.Media.DISPLAY_NAME, "JPEG_${System.currentTimeMillis()}.jpg")
             put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
             put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
         }
 
-        val resolver = activity.contentResolver
+        val resolver = context.contentResolver
         val imageUri: Uri? = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
 
         imageUri?.let { uri ->

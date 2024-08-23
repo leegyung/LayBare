@@ -10,11 +10,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.project.laybare.R
 import com.project.laybare.databinding.FragmentHomeBinding
 import com.project.laybare.dialog.AlertDialog
@@ -34,18 +37,26 @@ class Home : Fragment() {
     private lateinit var mNavController: NavController
     private lateinit var mPhotoTaker : PhotoTaker
 
-    // 사진 촬영 어플에서 사진 찍은 결과 리스너
+    // 촬영 어플에서 찍은 사진 결과
     private val mTakePictureResult = registerForActivityResult(ActivityResultContracts.TakePicture()) { success: Boolean ->
         if (success) {
             ImageDetailData.setNewImageData(mPhotoTaker.getPhotoUri().toString())
             findNavController().navigate(R.id.action_home_to_imageDetail)
         }
     }
-    // 이미지 선택 다이얼로그에서 선택된 이미지 리스너
+    // 앨범에서 선택한 사진 선택 결과
     private val mPickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
             ImageDetailData.setNewImageData(uri.toString())
             findNavController().navigate(R.id.action_home_to_imageDetail)
+        }
+    }
+    // 카메라 사용 권한 요청 결과
+    private val mPermissionResult = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        if(isGranted){
+            mPhotoTaker.dispatchTakePictureIntent(requireContext(), mTakePictureResult)
+        }else{
+            Snackbar.make(mBinding.root, "사진 촬영을 위해 권한이 필요해요", Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -68,14 +79,19 @@ class Home : Fragment() {
 
     private fun initObserver() {
         viewLifecycleOwner.lifecycleScope.launch {
-            mViewModel.mApiError.collectLatest {
-                imageLoadErrorDialog(it)
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            mViewModel.mLoadingState.collectLatest {
-                mBinding.HomeProgressBar.isVisible = it
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                // 다이얼로그 생성
+                launch {
+                    mViewModel.mApiError.collectLatest {
+                        imageLoadErrorDialog(it)
+                    }
+                }
+                // 프로그레스 바 visibility 설정
+                launch {
+                    mViewModel.mLoadingState.collectLatest {
+                        mBinding.HomeProgressBar.isVisible = it
+                    }
+                }
             }
         }
     }
@@ -144,15 +160,14 @@ class Home : Fragment() {
             }
             override fun onCameraClicked() {
                 if(!::mPhotoTaker.isInitialized){
-                    mPhotoTaker = PhotoTaker(requireActivity())
+                    mPhotoTaker = PhotoTaker()
                 }
 
-                val permissionGranted = mPhotoTaker.checkCameraPermission()
+                val permissionGranted = mPhotoTaker.checkCameraPermission(requireContext(), mPermissionResult)
                 if(permissionGranted){
-                    mPhotoTaker.dispatchTakePictureIntent(mTakePictureResult)
+                    mPhotoTaker.dispatchTakePictureIntent(requireContext(), mTakePictureResult)
                 }
             }
-
         })
         dialog.show(childFragmentManager, dialog.tag)
     }
