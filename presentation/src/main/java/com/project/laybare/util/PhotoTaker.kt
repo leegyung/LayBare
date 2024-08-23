@@ -13,12 +13,13 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
 class PhotoTaker {
+
     // 사진 촬영을 위해 만든 파일의 uri
     private var currentPhotoUri: Uri? = null
 
     /**
      * 카메라 어플 사용 권한 체크
-     * 권한이 있다면 ActivityResultLauncher 를 통한 카메라 어플 실행
+     * 권한이 없다면 ActivityResultLauncher 를 통해 요청
      */
     fun checkCameraPermission(context: Context, launcher : ActivityResultLauncher<String>) : Boolean {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {

@@ -1,7 +1,7 @@
 package com.project.domain.usecase
 
 import com.project.domain.entity.SearchAddressEntity
-import com.project.domain.repository.SearchAddressRepository
+import com.project.domain.repository.api.SearchAddressRepository
 import com.project.domain.util.ApiResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

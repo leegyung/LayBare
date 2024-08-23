@@ -150,6 +150,8 @@ class Contact : Fragment() {
         mBinding.ContactName.setText(mViewModel.getEditedName())
 
         mBinding.ContactNumberList.apply {
+            animation = null
+            itemAnimator = null
             if(itemDecorationCount == 0){
                 addItemDecoration(ContactListDecorator(resources.getDimensionPixelSize(R.dimen.dp_10)))
             }
@@ -157,6 +159,8 @@ class Contact : Fragment() {
         }
 
         mBinding.ContactEmailList.apply {
+            animation = null
+            itemAnimator = null
             if(itemDecorationCount == 0){
                 addItemDecoration(ContactListDecorator(resources.getDimensionPixelSize(R.dimen.dp_10)))
             }

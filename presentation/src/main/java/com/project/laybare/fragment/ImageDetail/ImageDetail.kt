@@ -1,23 +1,20 @@
 package com.project.laybare.fragment.ImageDetail
 
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.graphics.drawable.toBitmap
-import androidx.core.net.toUri
-import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
-import com.google.gson.Gson
 import com.project.laybare.R
 import com.project.laybare.databinding.FragmentImageDetailBinding
 import com.project.laybare.dialog.AlertDialog
@@ -73,36 +70,38 @@ class ImageDetail : Fragment() {
 
     private fun initObserver() {
         viewLifecycleOwner.lifecycleScope.launch {
-            mViewModel.mCreateAlert.collectLatest {
-                createDialog(it, false)
-                //Snackbar.make(mBinding.root, it, Snackbar.LENGTH_SHORT).show()
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                launch {
+                    mViewModel.mCreateAlert.collectLatest {
+                        createDialog(it, false)
+                    }
+                }
+
+                launch {
+                    mViewModel.mApiLoading.collectLatest {
+                        mBinding.ImageDetailProgress.isVisible = it
+                    }
+                }
+
+                launch {
+                    mViewModel.mTextRecognitionResult.collectLatest {
+                        mNavController.navigate(R.id.action_imageDetail_to_textResult)
+                    }
+                }
+
+                launch {
+                    mViewModel.mLandmarkResult.collectLatest {
+                        mNavController.navigate(R.id.action_imageDetail_to_location)
+                    }
+                }
+
+                launch {
+                    mViewModel.mContractResult.collectLatest {
+                        mNavController.navigate(R.id.action_imageDetail_to_contact)
+                    }
+                }
             }
         }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            mViewModel.mApiLoading.collectLatest {
-                mBinding.ImageDetailProgress.isVisible = it
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            mViewModel.mTextRecognitionResult.collectLatest {
-                mNavController.navigate(R.id.action_imageDetail_to_textResult)
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            mViewModel.mLandmarkResult.collectLatest {
-                mNavController.navigate(R.id.action_imageDetail_to_location)
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            mViewModel.mContractResult.collectLatest {
-                mNavController.navigate(R.id.action_imageDetail_to_contact)
-            }
-        }
-
 
     }
 
@@ -123,7 +122,7 @@ class ImageDetail : Fragment() {
         mBinding.ImageDetailLocation.setOnClickListener {
             mViewModel.getLandmarkData(mBinding.ImageDetailImage.drawable?.toBitmap())
         }
-
+        // 연락처 추출 버튼 리스너
         mBinding.ImageDetailContact.setOnClickListener {
             mViewModel.extractText(mBinding.ImageDetailImage.drawable?.toBitmap(), true)
         }

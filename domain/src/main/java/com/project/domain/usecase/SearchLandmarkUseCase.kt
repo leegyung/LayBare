@@ -2,11 +2,10 @@ package com.project.domain.usecase
 
 import android.graphics.Bitmap
 import com.project.domain.entity.SearchLandmarkEntity
-import com.project.domain.repository.SearchLandmarkRepository
+import com.project.domain.repository.api.SearchLandmarkRepository
 import com.project.domain.util.ApiResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import retrofit2.HttpException

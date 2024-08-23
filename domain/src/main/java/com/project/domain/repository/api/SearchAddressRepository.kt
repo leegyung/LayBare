@@ -1,4 +1,4 @@
-package com.project.domain.repository
+package com.project.domain.repository.api
 
 import com.project.domain.entity.SearchAddressEntity
 import com.project.domain.util.ApiResult

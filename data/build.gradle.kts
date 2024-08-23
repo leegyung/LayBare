@@ -49,5 +49,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofitConverter)
     implementation(libs.glide)
+    implementation(libs.imageRecognition)
+    implementation(libs.entity.extraction)
 
 }

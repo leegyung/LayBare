@@ -1,4 +1,4 @@
-package com.project.data.repositoryImpl
+package com.project.data.repositoryImpl.api
 
 import android.graphics.Bitmap
 import android.util.Base64
@@ -9,18 +9,12 @@ import com.project.data.model.RequestImageData
 import com.project.data.model.SearchLandmarkRequestBody
 import com.project.data.model.SearchLandmarkRequestData
 import com.project.domain.entity.SearchLandmarkEntity
-import com.project.domain.repository.SearchLandmarkRepository
-import com.project.domain.util.ApiResult
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import retrofit2.HttpException
+import com.project.domain.repository.api.SearchLandmarkRepository
 import java.io.ByteArrayOutputStream
-import java.io.IOException
 import javax.inject.Inject
 
-class SearchLandmarkRepositoryImpl @Inject constructor(private val mApiService : SearchLandmarkApi) : SearchLandmarkRepository {
+class SearchLandmarkRepositoryImpl @Inject constructor(private val mApiService : SearchLandmarkApi) :
+    SearchLandmarkRepository {
     override suspend fun searchLandmark(apiKey: String, image: Bitmap) : SearchLandmarkEntity? {
         val byteArrayOutputStream = ByteArrayOutputStream()
         image.compress(Bitmap.CompressFormat.JPEG, 70, byteArrayOutputStream)

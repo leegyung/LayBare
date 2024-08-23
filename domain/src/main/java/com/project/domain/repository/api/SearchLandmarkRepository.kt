@@ -1,4 +1,4 @@
-package com.project.domain.repository
+package com.project.domain.repository.api
 
 import android.graphics.Bitmap
 import com.project.domain.entity.SearchLandmarkEntity

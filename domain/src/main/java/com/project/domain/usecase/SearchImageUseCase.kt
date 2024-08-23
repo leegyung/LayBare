@@ -1,11 +1,10 @@
 package com.project.domain.usecase
 
 import com.project.domain.entity.SearchImageResultEntity
-import com.project.domain.repository.SearchImageRepository
+import com.project.domain.repository.api.SearchImageRepository
 import com.project.domain.util.ApiResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import retrofit2.HttpException

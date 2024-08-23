@@ -4,30 +4,31 @@ import android.content.Context
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.mlkit.nl.entityextraction.EntityExtraction
-import com.google.mlkit.nl.entityextraction.EntityExtractionParams
-import com.google.mlkit.nl.entityextraction.EntityExtractorOptions
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import com.project.domain.usecase.SearchLandmarkUseCase
 import com.project.domain.util.ApiResult
 import com.project.laybare.BuildConfig
 import com.project.data.util.ImageDownloader
+import com.project.domain.usecase.ExtractTextEntityUseCase
+import com.project.domain.usecase.ExtractTextUseCase
 import com.project.laybare.ssot.ImageDetailData
-import com.project.laybare.util.ContactCreator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
-class ImageDetailViewModel @Inject constructor(private val mSearchLandMarkUseCase: SearchLandmarkUseCase) : ViewModel() {
+class ImageDetailViewModel @Inject constructor(
+    private val mSearchLandMarkUseCase: SearchLandmarkUseCase,
+    private val mExtractTextUseCase: ExtractTextUseCase,
+    private val mExtractTextEntityUseCase: ExtractTextEntityUseCase
+) : ViewModel() {
+
+
     private val _createAlert = MutableSharedFlow<String>()
     private val _apiLoading = MutableSharedFlow<Boolean>()
     private val _textRecognitionResult = MutableSharedFlow<Boolean>()
@@ -60,77 +61,59 @@ class ImageDetailViewModel @Inject constructor(private val mSearchLandMarkUseCas
         }
     }
 
-
-    fun extractText(bitmap: Bitmap?, extractContact : Boolean) {
-        if(bitmap == null){
-            viewModelScope.launch {
-                _createAlert.emit("텍스트 추출 오류")
-            }
-            return
-        }
-
+    fun extractText(bitmap: Bitmap?, extractEntity : Boolean) {
         viewModelScope.launch {
-            val inputImage = InputImage.fromBitmap(bitmap, 0)
-            val recognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
-            recognizer.process(inputImage)
-                .addOnSuccessListener { text ->
-                    val fullText = text.text
-                    if(fullText.isEmpty()){
-                        viewModelScope.launch {
-                            _createAlert.emit("텍스트 없음")
-                        }
-                    }else{
-                        if(extractContact){
-                            extractEntity(fullText)
+            if(bitmap == null){
+                _createAlert.emit("텍스트 추출 오류")
+                return@launch
+            }
+
+            mExtractTextUseCase(bitmap).collectLatest { result ->
+                when(result){
+                    is ApiResult.ResponseLoading -> {
+                        _apiLoading.emit(true)
+                    }
+                    is ApiResult.ResponseSuccess -> {
+                        if(extractEntity){
+                            extractEntity(result.data)
                         }else{
-                            viewModelScope.launch {
-                                ImageDetailData.setExtractedText(fullText)
-                                _textRecognitionResult.emit(true)
-                            }
+                            ImageDetailData.setExtractedText(result.data)
+                            _apiLoading.emit(false)
+                            _textRecognitionResult.emit(true)
                         }
                     }
-                }
-                .addOnFailureListener { _ ->
-                    viewModelScope.launch {
-                        _createAlert.emit("텍스트 추출 오류")
+                    is ApiResult.ResponseError -> {
+                        _apiLoading.emit(false)
+                        _createAlert.emit(result.errorMessage)
                     }
                 }
+            }
         }
-
-
     }
 
+
     private fun extractEntity(extractText : String) {
-        val entityExtractor = EntityExtraction.getClient(EntityExtractorOptions.Builder(EntityExtractorOptions.KOREAN).build())
-
-        entityExtractor
-            .downloadModelIfNeeded()
-            .addOnSuccessListener { _ ->
-                val params = EntityExtractionParams
-                    .Builder(extractText)
-                    .setEntityTypesFilter(setOf(8, 3))
-                    .setPreferredLocale(Locale.KOREAN)
-                    .build()
-
-                entityExtractor.annotate(params)
-                    .addOnSuccessListener { result ->
-                        viewModelScope.launch {
-                            val contactData = ContactCreator().switchToContactData(result)
-                            if(contactData.isNotEmpty()){
-                                ImageDetailData.setContactData(contactData)
-                                _contractResult.emit(true)
-                            }else{
-                                _createAlert.emit("검색된 연락처가 없어요...")
-                            }
-                        }
+        mExtractTextEntityUseCase(extractText).onEach { result ->
+            when(result){
+                is ApiResult.ResponseLoading -> {
+                    _apiLoading.emit(true)
+                }
+                is ApiResult.ResponseSuccess -> {
+                    val data = result.data
+                    if(data.isNotEmpty()){
+                        ImageDetailData.setContactData(data)
+                        _contractResult.emit(true)
+                    }else{
+                        _createAlert.emit("검색된 연락처가 없어요...")
                     }
-                    .addOnFailureListener {  e ->
-
-                    }
+                    _apiLoading.emit(false)
+                }
+                is ApiResult.ResponseError -> {
+                    _apiLoading.emit(false)
+                    _createAlert.emit(result.errorMessage)
+                }
             }
-            .addOnFailureListener { _ ->
-
-            }
+        }.launchIn(viewModelScope)
     }
 
 

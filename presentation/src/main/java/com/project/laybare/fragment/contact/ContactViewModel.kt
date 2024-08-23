@@ -106,13 +106,16 @@ class ContactViewModel @Inject constructor() : ViewModel() {
                 _createSnackBar.emit("연락처 이름을 입력 해 주세요")
                 return@launch
             }
-            if(mSelectedNumber.isEmpty() && mSelectedEmail.isEmpty()) {
-                _createSnackBar.emit("연락처를 선택 해 주세요")
+
+            val formattedNumber = mSelectedNumber.filter { it.isDigit() }
+
+            if(formattedNumber.isEmpty() && mSelectedEmail.isEmpty()) {
+                _createSnackBar.emit("선택된 번호/이메일이 없어요...")
                 return@launch
             }
 
             _progressVisibility.emit(true)
-            val contactCreated = ContactCreator().addNewContact(mName, mSelectedNumber, mSelectedEmail, mProfileImage, contentResolver, context)
+            val contactCreated = ContactCreator().addNewContact(mName, formattedNumber, mSelectedEmail, mProfileImage, contentResolver, context)
             if(contactCreated){
                 _createDialog.emit("연락처 추가 완료")
             }else{
