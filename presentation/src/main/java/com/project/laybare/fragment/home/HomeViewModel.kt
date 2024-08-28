@@ -47,46 +47,13 @@ class HomeViewModel @Inject constructor(private val mSearchImageUseCase: SearchI
      */
     fun getInitialData() {
 
-        /*
-        viewModelScope.launch {
-            mSectionList.clear()
-            val words = RandomWordGenerator().getRandomWord(4)
-
-            val result = awaitAll(
-                async { mSearchImageUseCase(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, words[0], 1, 5)
-                    .filterIsInstance<ApiResult.ResponseSuccess<SearchImageResultEntity>>().first() },
-                async { mSearchImageUseCase(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, words[1], 1, 10)
-                    .filterIsInstance<ApiResult.ResponseSuccess<SearchImageResultEntity>>().first() },
-                async { mSearchImageUseCase(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, words[2], 1, 10)
-                    .filterIsInstance<ApiResult.ResponseSuccess<SearchImageResultEntity>>().first() },
-                async { mSearchImageUseCase(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, words[3], 1, 10)
-                    .filterIsInstance<ApiResult.ResponseSuccess<SearchImageResultEntity>>().first() }
-            )
-
-            result.forEach { successResult ->
-                if(mSectionList.isEmpty()){
-                    successResult.data?.let{
-                        getArraySectionData(it, "BANNER")?.let { section -> mSectionList.add(section) }
-                    }
-                }else{
-                    successResult.data?.let{
-                        getArraySectionData(it, "HORIZONTAL")?.let { section -> mSectionList.add(section) }
-                    }
-                }
-            }
-
-            mHomeAdapter.notifyItemRangeInserted (0, mSectionList.size - 1)
-        }
-         */
-
-
         mSearchImageUseCase(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, "Museum", 1, 5).onEach { result ->
             when(result){
                 is ApiResult.ResponseLoading -> {
                     _loadingState.emit(true)
                 }
                 is ApiResult.ResponseSuccess -> {
-                    result.data?.let { data ->
+                    result.data.let { data ->
                         getArraySectionData(data, "BANNER")?.let { section -> mSectionList.add(section) }
                         getArraySectionData(data, "HORIZONTAL")?.let { section -> mSectionList.add(section) }
                         getArraySectionData(data, "HORIZONTAL")?.let { section -> mSectionList.add(section) }
@@ -96,7 +63,7 @@ class HomeViewModel @Inject constructor(private val mSearchImageUseCase: SearchI
                     _loadingState.emit(false)
                 }
                 is ApiResult.ResponseError -> {
-                    _apiError.emit(result.errorMessage?:"이미지 로딩 오류")
+                    _apiError.emit(result.errorMessage)
                     _loadingState.emit(false)
                 }
             }

@@ -6,90 +6,84 @@
     android:layout_height="match_parent"
     tools:context=".fragment.location.Location">
 
-
-    <com.google.android.material.appbar.AppBarLayout
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/LocationMap"
+        app:layout_collapseMode="parallax"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:stateListAnimator="@null">
-
-        <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll">
-
-            <com.google.android.gms.maps.MapView
-                android:id="@+id/LocationMap"
-                android:layout_width="match_parent"
-                android:layout_height="600dp"
-                app:layout_collapseMode="parallax"/>
+        android:layout_height="match_parent"/>
 
 
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
-
-    </com.google.android.material.appbar.AppBarLayout>
-
-
-    <androidx.core.widget.NestedScrollView
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/LocationBottomSheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:background="@drawable/bottom_dialog_bg"
+        android:paddingBottom="20dp"
+        android:elevation="10dp"
+        app:behavior_halfExpandedRatio="0.5"
+        app:behavior_hideable="false"
+        app:behavior_peekHeight="100dp"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+        <View
+            android:id="@+id/view3"
+            android:layout_width="70dp"
+            android:layout_height="8dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/box_gray_15dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/brush1"
+            app:layout_constraintBottom_toBottomOf="@+id/LocationName"
+            app:layout_constraintStart_toStartOf="@+id/LocationName"
+            app:layout_constraintTop_toTopOf="@+id/LocationName" />
+
+        <TextView
+            android:id="@+id/LocationName"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:paddingBottom="50dp">
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:textColor="@color/textBlack"
+            android:textSize="30dp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view3" />
 
-            <ImageView
-                android:id="@+id/imageView5"
-                android:layout_width="100dp"
-                android:layout_height="30dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/brush1"
-                app:layout_constraintBottom_toBottomOf="@+id/LocationName"
-                app:layout_constraintStart_toStartOf="@+id/LocationName"
-                app:layout_constraintTop_toTopOf="@+id/LocationName" />
+        <TextView
+            android:id="@+id/LocationAddress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="25dp"
+            android:textColor="@color/textBlack"
+            android:textSize="15dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/LocationName" />
 
-            <TextView
-                android:id="@+id/LocationName"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
-                android:textColor="@color/textBlack"
-                android:textSize="30dp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/LocationPictureList"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/LocationAddress" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
-                android:id="@+id/LocationAddress"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="25dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="25dp"
-                android:textColor="@color/textBlack"
-                android:textSize="15dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/LocationName" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/LocationPictureList"
-                android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:layout_marginTop="15dp"
-                android:orientation="horizontal"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/LocationAddress" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
 
 
 

@@ -14,6 +14,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class TextRecognitionRepositoryImpl : TextRecognitionRepository {
+
     override suspend fun extractText(bitmap: Bitmap): String? {
         val inputImage = InputImage.fromBitmap(bitmap, 0)
         val recognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
@@ -38,10 +39,13 @@ class TextRecognitionRepositoryImpl : TextRecognitionRepository {
 
 
     override suspend fun extractTextEntity(text: String): HashMap<String, ArrayList<String>>? {
-        val entityExtractor = EntityExtraction.getClient(EntityExtractorOptions.Builder(EntityExtractorOptions.KOREAN).build())
+        val entityExtractor = EntityExtraction.getClient(EntityExtractorOptions
+            .Builder(EntityExtractorOptions.KOREAN).build())
 
         val result = suspendCoroutine { continuation ->
-            entityExtractor.downloadModelIfNeeded()
+            entityExtractor
+                .downloadModelIfNeeded()
+                // 모델 다운로드 성공
                 .addOnSuccessListener { _ ->
                     val params = EntityExtractionParams
                         .Builder(text)
@@ -50,14 +54,17 @@ class TextRecognitionRepositoryImpl : TextRecognitionRepository {
                         .build()
 
                     entityExtractor.annotate(params)
+                        // 텍스트 엔티티 추출 성공
                         .addOnSuccessListener { result ->
                             val contactData = switchToContactData(result)
                             continuation.resume(contactData)
                         }
+                        // 텍스트 엔티티 추출 실패
                         .addOnFailureListener { _ ->
                             continuation.resume(null)
                         }
                 }
+                // 모델 다운로드 실패
                 .addOnFailureListener { _ ->
                     continuation.resume(null)
                 }

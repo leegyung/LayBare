@@ -14,6 +14,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.gson.Gson
 import com.project.domain.entity.SearchLandmarkEntity
 import com.project.laybare.R
@@ -51,6 +52,7 @@ class Location : Fragment(), OnMapReadyCallback{
 
         if(mViewModel.isLocationDataValid()){
             initObserver()
+            initListener()
             initUI()
         }else{
             createDialog("위치 데이터를 가져오지 못했어요...", true)
@@ -72,7 +74,6 @@ class Location : Fragment(), OnMapReadyCallback{
             )
             moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 16f))
         }
-        map.uiSettings.isScrollGesturesEnabled = false
     }
 
     private fun initObserver(){
@@ -90,6 +91,34 @@ class Location : Fragment(), OnMapReadyCallback{
         }
     }
 
+    private fun initListener() {
+        val bottomSheetBehavior = BottomSheetBehavior.from(mBinding.LocationBottomSheet)
+
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                when(newState){
+                    BottomSheetBehavior.STATE_EXPANDED -> {
+                        mBinding.LocationBottomSheet.setBackgroundResource(R.color.white)
+                    }
+
+                    BottomSheetBehavior.STATE_HALF_EXPANDED -> {
+                        mBinding.LocationBottomSheet.setBackgroundResource(R.drawable.bottom_dialog_bg)
+                    }
+
+                    BottomSheetBehavior.STATE_COLLAPSED -> {
+                        mBinding.LocationBottomSheet.setBackgroundResource(R.drawable.bottom_dialog_bg)
+                    }
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                if (slideOffset > 0.3f && slideOffset < 0.6f) {
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED)
+                }
+            }
+        })
+    }
+
 
     private fun initUI(){
         mBinding.LocationName.text = mViewModel.getLocationName()
@@ -102,6 +131,9 @@ class Location : Fragment(), OnMapReadyCallback{
             }
             adapter = imageAdapter
         }
+
+
+
 
     }
 
