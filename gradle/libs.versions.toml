@@ -24,6 +24,7 @@ secretsGradlePlugin = "2.0.1"
 safe_arg = "2.7.7"
 legacySupportV4 = "1.0.0"
 entity_extraction = "16.0.0-beta5"
+image-labeling = "17.0.9"
 
 
 
@@ -51,6 +52,7 @@ imageRecognition = {group = "com.google.mlkit", name = "text-recognition-korean"
 google_map = {group = "com.google.android.gms", name = "play-services-maps", version.ref = "google_map"}
 androidx-legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacySupportV4" }
 entity-extraction = {group = "com.google.mlkit", name = "entity-extraction", version.ref = "entity_extraction"}
+image-labeling = {group = "com.google.mlkit", name = "image-labeling", version.ref = "image-labeling"}
 
 
 [plugins]

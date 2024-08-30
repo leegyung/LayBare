@@ -3,7 +3,9 @@ package com.project.laybare.di
 import com.project.domain.repository.api.SearchAddressRepository
 import com.project.domain.repository.api.SearchImageRepository
 import com.project.domain.repository.api.SearchLandmarkRepository
+import com.project.domain.repository.library.ImageRecognitionRepository
 import com.project.domain.repository.library.TextRecognitionRepository
+import com.project.domain.usecase.ExtractImageLabelUseCase
 import com.project.domain.usecase.ExtractTextEntityUseCase
 import com.project.domain.usecase.ExtractTextUseCase
 import com.project.domain.usecase.SearchAddressUseCase
@@ -46,6 +48,12 @@ object UseCaseModule {
     @Singleton
     fun provideExtractTextEntityUseCase(repository: TextRecognitionRepository) : ExtractTextEntityUseCase {
         return ExtractTextEntityUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideExtractImageLabelUseCase(repository : ImageRecognitionRepository) : ExtractImageLabelUseCase {
+        return ExtractImageLabelUseCase(repository)
     }
 
 }

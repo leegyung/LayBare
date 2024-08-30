@@ -8,8 +8,10 @@ import com.project.domain.usecase.SearchLandmarkUseCase
 import com.project.domain.util.ApiResult
 import com.project.laybare.BuildConfig
 import com.project.data.util.ImageDownloader
+import com.project.domain.usecase.ExtractImageLabelUseCase
 import com.project.domain.usecase.ExtractTextEntityUseCase
 import com.project.domain.usecase.ExtractTextUseCase
+import com.project.domain.util.LibraryResult
 import com.project.laybare.ssot.ImageDetailData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,7 +27,8 @@ import javax.inject.Inject
 class ImageDetailViewModel @Inject constructor(
     private val mSearchLandMarkUseCase: SearchLandmarkUseCase,
     private val mExtractTextUseCase: ExtractTextUseCase,
-    private val mExtractTextEntityUseCase: ExtractTextEntityUseCase
+    private val mExtractTextEntityUseCase: ExtractTextEntityUseCase,
+    private val mExtractImageLabelUseCase: ExtractImageLabelUseCase
 ) : ViewModel() {
 
 
@@ -42,11 +45,15 @@ class ImageDetailViewModel @Inject constructor(
 
     private var mImageUrl = ""
 
+    private val mOptionAdapter = ImageDetailOptionAdapter()
+
     init{
         mImageUrl = ImageDetailData.getImageUrl()
     }
 
     fun getImageUrl() : String = mImageUrl
+
+    fun getOptionAdapter() : ImageDetailOptionAdapter = mOptionAdapter
 
     fun downloadImage(context: Context) {
         viewModelScope.launch {
@@ -143,6 +150,32 @@ class ImageDetailViewModel @Inject constructor(
                 }
             }
         }.launchIn(viewModelScope)
+    }
+
+
+
+    fun extractImageLabel(bitmap: Bitmap?) {
+        if(bitmap == null){
+            viewModelScope.launch {
+                _createAlert.emit("이미지 파일 오류")
+            }
+            return
+        }
+
+        mExtractImageLabelUseCase(bitmap).onEach { result ->
+            when(result){
+                is LibraryResult.ResponseLoading -> {
+                    _apiLoading.emit(true)
+                }
+                is LibraryResult.ResponseSuccess -> {
+                    println(result.data)
+                }
+                is LibraryResult.ResponseError -> {
+
+                }
+            }
+        }.launchIn(viewModelScope)
+
     }
 
 

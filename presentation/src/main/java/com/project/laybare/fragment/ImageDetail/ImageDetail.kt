@@ -63,6 +63,15 @@ class ImageDetail : Fragment() {
             .load(image)
             .into(mBinding.ImageDetailImage)
 
+        mBinding.ImageDetailOptionList.apply {
+            itemAnimator = null
+            animation = null
+            adapter = mViewModel.getOptionAdapter()
+            if(itemDecorationCount == 0) {
+                addItemDecoration(ImageDetailOptionDecorator(resources.getDimensionPixelSize(R.dimen.dp_50)))
+            }
+        }
+
 
         initListener()
         initObserver()
@@ -110,22 +119,29 @@ class ImageDetail : Fragment() {
             mNavController.popBackStack()
         }
 
-        // 사진 다운로드 버튼 클릭 리스너
-        mBinding.ImageDetailDownload.setOnClickListener {
-            mViewModel.downloadImage(mContext)
-        }
-        // 사진 텍스트 추출 리스너
-        mBinding.ImageDetailTextRecognize.setOnClickListener {
-            mViewModel.extractText(mBinding.ImageDetailImage.drawable?.toBitmap(), false)
-        }
-        // 위치 찾기 버튼 리스너
-        mBinding.ImageDetailLocation.setOnClickListener {
-            mViewModel.getLandmarkData(mBinding.ImageDetailImage.drawable?.toBitmap())
-        }
-        // 연락처 추출 버튼 리스너
-        mBinding.ImageDetailContact.setOnClickListener {
-            mViewModel.extractText(mBinding.ImageDetailImage.drawable?.toBitmap(), true)
-        }
+        mViewModel.getOptionAdapter().setOptionClickListener(object : ImageDetailOptionListener{
+            override fun onOptionClicked(option: String) {
+                when(option) {
+                    "download" -> {
+                        mViewModel.downloadImage(mContext)
+                    }
+                    "text" -> {
+                        mViewModel.extractText(mBinding.ImageDetailImage.drawable?.toBitmap(), false)
+                    }
+                    "location" -> {
+                        mViewModel.getLandmarkData(mBinding.ImageDetailImage.drawable?.toBitmap())
+                    }
+                    "contact" -> {
+                        mViewModel.extractText(mBinding.ImageDetailImage.drawable?.toBitmap(), true)
+                    }
+                    "similar" -> {
+                        mViewModel.extractImageLabel(mBinding.ImageDetailImage.drawable?.toBitmap())
+                    }
+                }
+            }
+        })
+
+
     }
 
     private fun createDialog(msg : String, isPop : Boolean) {

@@ -51,5 +51,6 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.imageRecognition)
     implementation(libs.entity.extraction)
+    implementation(libs.image.labeling)
 
 }
