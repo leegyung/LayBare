@@ -15,10 +15,10 @@ class ExtractImageLabelUseCase @Inject constructor(private val mRepository : Ima
             emit(LibraryResult.ResponseLoading())
 
             val result = mRepository.getImageLabelList(bitmap)
-            if(result.isNotEmpty()){
-                emit(LibraryResult.ResponseSuccess(result))
-            }else{
+            if(result.isNullOrEmpty()){
                 emit(LibraryResult.ResponseError("이미지에서 발견한 라벨이 없어요..."))
+            }else{
+                emit(LibraryResult.ResponseSuccess(result))
             }
         }catch (e : Exception) {
             emit(LibraryResult.ResponseError("이미지 라벨링 실패"))

@@ -9,7 +9,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class ImageRecognitionRepositoryImpl : ImageRecognitionRepository {
-    override suspend fun getImageLabelList(image: Bitmap) : List<String> {
+    override suspend fun getImageLabelList(image: Bitmap) : List<String>? {
         val target = InputImage.fromBitmap(image, 0)
         val labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
 
@@ -22,7 +22,7 @@ class ImageRecognitionRepositoryImpl : ImageRecognitionRepository {
                 }
                 .addOnFailureListener { _ ->
 
-                    continuation.resume(emptyList<String>())
+                    continuation.resume(null)
                 }
         }
 
