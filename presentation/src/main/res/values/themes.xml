@@ -15,6 +15,6 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="buttonStyle">@style/Widget.AppCompat.Button.Borderless</item>
-        <item name = "android:indeterminateTint">@color/gray50 </item>
+        <item name="android:indeterminateTint">@color/gray50</item>
     </style>
 </resources>

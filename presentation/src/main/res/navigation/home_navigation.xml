@@ -44,6 +44,9 @@
             app:destination="@id/contract"
             app:enterAnim="@anim/slide_up"
             app:popExitAnim="@anim/slide_down"/>
+        <action
+            android:id="@+id/action_imageDetail_to_similarImage"
+            app:destination="@id/similarImage" />
     </fragment>
     <fragment
         android:id="@+id/textResult"
@@ -62,4 +65,9 @@
         android:label="fragment_contract"
         tools:layout="@layout/fragment_contact" >
     </fragment>
+    <fragment
+        android:id="@+id/similarImage"
+        android:name="com.project.laybare.fragment.similarImage.SimilarImage"
+        android:label="fragment_similar_image"
+        tools:layout="@layout/fragment_similar_image" />
 </navigation>

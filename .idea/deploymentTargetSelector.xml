@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="presentation">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-06-18T01:43:40.721271Z">
+        <DropdownSelection timestamp="2024-09-02T07:39:15.993653Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=/Users/a-/.android/avd/Pixel_8_Pro_API_34.avd" />
@@ -14,6 +14,15 @@
         <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="All Tests">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="GreetingPreview">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="ItemListPreview">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="ItemPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

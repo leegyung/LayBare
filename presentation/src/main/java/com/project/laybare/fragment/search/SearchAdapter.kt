@@ -56,14 +56,25 @@ class SearchAdapter(private val mSearchList : ArrayList<ImageEntity>) : Recycler
                 .load(if(image.linkError) image.thumbnailLink else image.link)
                 .override(900)
                 .listener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>,
+                        isFirstResource: Boolean
+                    ): Boolean {
                         if(!image.linkError){
                             image.linkError = true
                         }
                         return false
                     }
 
-                    override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                    override fun onResourceReady(
+                        resource: Drawable,
+                        model: Any,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource,
+                        isFirstResource: Boolean
+                    ): Boolean {
                         return false
                     }
                 })

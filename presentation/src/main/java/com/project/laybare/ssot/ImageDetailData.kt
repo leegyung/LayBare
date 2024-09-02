@@ -7,6 +7,7 @@ object ImageDetailData {
     private var mExtractedText = ""
     private var mLocationData: SearchLandmarkEntity? = null
     private var mContactData : HashMap<String, ArrayList<String>>? = null
+    private var mLabelList : List<String>? = null
 
 
     fun setNewImageData(url : String){
@@ -14,6 +15,7 @@ object ImageDetailData {
         mExtractedText = ""
         mLocationData = null
         mContactData = null
+        mLabelList = null
     }
 
     fun setExtractedText(text : String) {
@@ -28,8 +30,14 @@ object ImageDetailData {
         mContactData = data
     }
 
+    fun setImageLabelList(labels : List<String>) {
+        mLabelList = labels
+    }
+
     fun getImageUrl() : String = mImageUrl
     fun getExtractedText() : String = mExtractedText
     fun getLocationData() : SearchLandmarkEntity? = mLocationData
     fun getContactList() : HashMap<String, ArrayList<String>>? = mContactData
+
+    fun getImageLabelList() : List<String> = mLabelList?: arrayListOf()
 }

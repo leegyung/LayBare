@@ -8,4 +8,5 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.secret.gradle) apply false
     alias(libs.plugins.safe.arg) apply false
+    alias(libs.plugins.compose.compiler) apply false
 }

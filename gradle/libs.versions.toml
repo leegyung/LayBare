@@ -25,6 +25,14 @@ safe_arg = "2.7.7"
 legacySupportV4 = "1.0.0"
 entity_extraction = "16.0.0-beta5"
 image-labeling = "17.0.9"
+lifecycleRuntimeKtx = "2.8.4"
+activityCompose = "1.9.1"
+composeBom = "2024.08.00"
+lifecycleLivedataKtx = "2.8.4"
+lifecycleViewmodelKtx = "2.8.4"
+fragmentKtx = "1.8.2"
+
+compose_glide = "2.3.6"
 
 
 
@@ -41,6 +49,7 @@ fragment = { group = "androidx.navigation", name = "navigation-fragment-ktx", ve
 navigation = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "nav_version" }
 recyclerView = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerView" }
 
+
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
@@ -53,6 +62,24 @@ google_map = {group = "com.google.android.gms", name = "play-services-maps", ver
 androidx-legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacySupportV4" }
 entity-extraction = {group = "com.google.mlkit", name = "entity-extraction", version.ref = "entity_extraction"}
 image-labeling = {group = "com.google.mlkit", name = "image-labeling", version.ref = "image-labeling"}
+compose-glide = {group = "com.github.skydoves", name = "landscapist-glide", version.ref = "compose_glide"}
+
+
+
+
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycleLivedataKtx" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragmentKtx" }
 
 
 [plugins]
@@ -64,4 +91,5 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 secret-gradle = {id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secretsGradlePlugin"}
 safe_arg = { id = "androidx.navigation.safeargs", version.ref = "safe_arg" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 

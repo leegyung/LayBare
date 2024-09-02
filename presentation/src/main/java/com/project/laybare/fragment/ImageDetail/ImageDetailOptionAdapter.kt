@@ -22,7 +22,7 @@ class ImageDetailOptionAdapter : RecyclerView.Adapter<ImageDetailOptionAdapter.V
         "text",
         "location",
         "contact",
-        "similar"
+        "label"
     )
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -68,7 +68,7 @@ class ImageDetailOptionAdapter : RecyclerView.Adapter<ImageDetailOptionAdapter.V
                 "contact" -> {
                     mBinding.ImageDetailOption.setBackgroundResource(R.drawable.business_card)
                 }
-                "similar" -> {
+                "label" -> {
                     mBinding.ImageDetailOption.setBackgroundResource(R.drawable.similar_image_icon)
                 }
             }

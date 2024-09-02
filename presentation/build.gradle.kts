@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.secret.gradle)
     alias(libs.plugins.safe.arg)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -21,6 +22,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary = true
+        }
     }
 
 
@@ -72,6 +76,15 @@ android {
     buildFeatures {
         viewBinding = true
         buildConfig = true
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.1"
+    }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
     }
 
 }
@@ -84,6 +97,16 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.legacy.support.v4)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.fragment.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -92,6 +115,10 @@ dependencies {
     implementation(project(":domain"))
 
     implementation(libs.hilt.android)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
     ksp(libs.hilt.compiler)
     implementation(libs.fragment)
     implementation(libs.navigation)
@@ -101,5 +128,6 @@ dependencies {
     implementation(libs.gson)
 
     implementation(libs.google.map)
+    implementation(libs.compose.glide)
 
 }

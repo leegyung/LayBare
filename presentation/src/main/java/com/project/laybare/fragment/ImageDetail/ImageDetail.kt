@@ -93,20 +93,13 @@ class ImageDetail : Fragment() {
                 }
 
                 launch {
-                    mViewModel.mTextRecognitionResult.collectLatest {
-                        mNavController.navigate(R.id.action_imageDetail_to_textResult)
-                    }
-                }
-
-                launch {
-                    mViewModel.mLandmarkResult.collectLatest {
-                        mNavController.navigate(R.id.action_imageDetail_to_location)
-                    }
-                }
-
-                launch {
-                    mViewModel.mContractResult.collectLatest {
-                        mNavController.navigate(R.id.action_imageDetail_to_contact)
+                    mViewModel.mPageDirection.collectLatest {
+                        when(it){
+                            "Text" -> mNavController.navigate(R.id.action_imageDetail_to_textResult)
+                            "Contact" -> mNavController.navigate(R.id.action_imageDetail_to_contact)
+                            "Location" -> mNavController.navigate(R.id.action_imageDetail_to_location)
+                            "Label" -> mNavController.navigate(R.id.action_imageDetail_to_similarImage)
+                        }
                     }
                 }
             }
@@ -134,7 +127,7 @@ class ImageDetail : Fragment() {
                     "contact" -> {
                         mViewModel.extractText(mBinding.ImageDetailImage.drawable?.toBitmap(), true)
                     }
-                    "similar" -> {
+                    "label" -> {
                         mViewModel.extractImageLabel(mBinding.ImageDetailImage.drawable?.toBitmap())
                     }
                 }

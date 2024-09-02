@@ -34,14 +34,10 @@ class ImageDetailViewModel @Inject constructor(
 
     private val _createAlert = MutableSharedFlow<String>()
     private val _apiLoading = MutableSharedFlow<Boolean>()
-    private val _textRecognitionResult = MutableSharedFlow<Boolean>()
-    private val _landmarkResult = MutableSharedFlow<Boolean>()
-    private val _contractResult = MutableSharedFlow<Boolean>()
+    private val _pageDirection = MutableSharedFlow<String>()
     val mCreateAlert = _createAlert.asSharedFlow()
     val mApiLoading = _apiLoading.asSharedFlow()
-    val mTextRecognitionResult = _textRecognitionResult.asSharedFlow()
-    val mLandmarkResult = _landmarkResult.asSharedFlow()
-    val mContractResult = _contractResult.asSharedFlow()
+    val mPageDirection = _pageDirection.asSharedFlow()
 
     private var mImageUrl = ""
 
@@ -86,7 +82,7 @@ class ImageDetailViewModel @Inject constructor(
                         }else{
                             ImageDetailData.setExtractedText(result.data)
                             _apiLoading.emit(false)
-                            _textRecognitionResult.emit(true)
+                            _pageDirection.emit("Text")
                         }
                     }
                     is ApiResult.ResponseError -> {
@@ -109,7 +105,7 @@ class ImageDetailViewModel @Inject constructor(
                     val data = result.data
                     if(data.isNotEmpty()){
                         ImageDetailData.setContactData(data)
-                        _contractResult.emit(true)
+                        _pageDirection.emit("Contact")
                     }else{
                         _createAlert.emit("검색된 연락처가 없어요...")
                     }
@@ -142,10 +138,10 @@ class ImageDetailViewModel @Inject constructor(
                 is ApiResult.ResponseSuccess -> {
                     ImageDetailData.setLocationData(result.data)
                     _apiLoading.emit(false)
-                    _landmarkResult.emit(true)
+                    _pageDirection.emit("Location")
                 }
                 is ApiResult.ResponseError -> {
-                    _createAlert.emit(result.errorMessage?:"위치 찾기 오류")
+                    _createAlert.emit(result.errorMessage)
                     _apiLoading.emit(false)
                 }
             }
@@ -168,10 +164,15 @@ class ImageDetailViewModel @Inject constructor(
                     _apiLoading.emit(true)
                 }
                 is LibraryResult.ResponseSuccess -> {
-                    println(result.data)
+
+                    ImageDetailData.setImageLabelList(result.data)
+
+                    _apiLoading.emit(false)
+                    _pageDirection.emit("Label")
                 }
                 is LibraryResult.ResponseError -> {
-
+                    _apiLoading.emit(false)
+                    _createAlert.emit(result.error)
                 }
             }
         }.launchIn(viewModelScope)
