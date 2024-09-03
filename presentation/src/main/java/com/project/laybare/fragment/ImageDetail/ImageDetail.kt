@@ -1,5 +1,6 @@
 package com.project.laybare.fragment.ImageDetail
 
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -106,6 +107,9 @@ class ImageDetail : Fragment() {
         }
 
     }
+
+
+
 
     private fun initListener() {
         mBinding.ImageDetailBackBtn.setOnClickListener {

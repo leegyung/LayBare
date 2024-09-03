@@ -25,7 +25,7 @@ class SimilarImageViewModel @Inject constructor(private val mSearchImageUseCase:
 
     init {
         _keywordList.addAll(ImageDetailData.getImageLabelList())
-        searchImage()
+        //searchImage()
     }
 
     private fun searchImage() {

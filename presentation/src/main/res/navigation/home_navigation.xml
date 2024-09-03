@@ -12,12 +12,18 @@
         tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_home_to_search"
-            app:destination="@id/search" />
+            app:destination="@id/search"
+            app:enterAnim="@anim/next_page_in_anim"
+            app:exitAnim="@anim/previous_page_out_anim"
+            app:popEnterAnim="@anim/previous_page_in_anim"
+            app:popExitAnim="@anim/next_page_out_anim"/>
         <action
             android:id="@+id/action_home_to_imageDetail"
             app:destination="@id/imageDetail"
-            app:enterAnim="@anim/slide_up"
-            app:popExitAnim="@anim/slide_down" />
+            app:enterAnim="@anim/next_page_in_anim"
+            app:exitAnim="@anim/previous_page_out_anim"
+            app:popEnterAnim="@anim/previous_page_in_anim"
+            app:popExitAnim="@anim/next_page_out_anim" />
     </fragment>
     <fragment
         android:id="@+id/search"
@@ -32,21 +38,31 @@
         <action
             android:id="@+id/action_imageDetail_to_textResult"
             app:destination="@id/textResult"
-            app:enterAnim="@anim/slide_up"
-            app:popExitAnim="@anim/slide_down"/>
+            app:enterAnim="@anim/next_page_in_anim"
+            app:exitAnim="@anim/previous_page_out_anim"
+            app:popEnterAnim="@anim/previous_page_in_anim"
+            app:popExitAnim="@anim/next_page_out_anim"/>
         <action
             android:id="@+id/action_imageDetail_to_location"
             app:destination="@id/location"
-            app:enterAnim="@anim/slide_up"
-            app:popExitAnim="@anim/slide_down"/>
+            app:enterAnim="@anim/next_page_in_anim"
+            app:exitAnim="@anim/previous_page_out_anim"
+            app:popEnterAnim="@anim/previous_page_in_anim"
+            app:popExitAnim="@anim/next_page_out_anim"/>
         <action
             android:id="@+id/action_imageDetail_to_contact"
             app:destination="@id/contract"
-            app:enterAnim="@anim/slide_up"
-            app:popExitAnim="@anim/slide_down"/>
+            app:enterAnim="@anim/next_page_in_anim"
+            app:exitAnim="@anim/previous_page_out_anim"
+            app:popEnterAnim="@anim/previous_page_in_anim"
+            app:popExitAnim="@anim/next_page_out_anim"/>
         <action
             android:id="@+id/action_imageDetail_to_similarImage"
-            app:destination="@id/similarImage" />
+            app:destination="@id/similarImage"
+            app:enterAnim="@anim/next_page_in_anim"
+            app:exitAnim="@anim/previous_page_out_anim"
+            app:popEnterAnim="@anim/previous_page_in_anim"
+            app:popExitAnim="@anim/next_page_out_anim" />
     </fragment>
     <fragment
         android:id="@+id/textResult"
