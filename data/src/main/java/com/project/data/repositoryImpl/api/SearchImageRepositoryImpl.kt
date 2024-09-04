@@ -4,6 +4,7 @@ import com.project.data.api.SearchImageApi
 import com.project.data.mapper.ImageListMapper
 import com.project.domain.entity.SearchImageResultEntity
 import com.project.domain.repository.api.SearchImageRepository
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 class SearchImageRepositoryImpl @Inject constructor(private val mApiService : SearchImageApi) :

@@ -1,5 +1,6 @@
 package com.project.laybare.ssot
 
+import com.project.domain.entity.ImageLabelEntity
 import com.project.domain.entity.SearchLandmarkEntity
 
 object ImageDetailData {
@@ -7,7 +8,7 @@ object ImageDetailData {
     private var mExtractedText = ""
     private var mLocationData: SearchLandmarkEntity? = null
     private var mContactData : HashMap<String, ArrayList<String>>? = null
-    private var mLabelList : List<String>? = null
+    private var mLabelList : List<ImageLabelEntity>? = null
 
 
     fun setNewImageData(url : String){
@@ -30,7 +31,7 @@ object ImageDetailData {
         mContactData = data
     }
 
-    fun setImageLabelList(labels : List<String>) {
+    fun setImageLabelList(labels : List<ImageLabelEntity>) {
         mLabelList = labels
     }
 
@@ -39,5 +40,5 @@ object ImageDetailData {
     fun getLocationData() : SearchLandmarkEntity? = mLocationData
     fun getContactList() : HashMap<String, ArrayList<String>>? = mContactData
 
-    fun getImageLabelList() : List<String> = mLabelList?: arrayListOf()
+    fun getImageLabelList() : List<ImageLabelEntity> = mLabelList?: arrayListOf()
 }

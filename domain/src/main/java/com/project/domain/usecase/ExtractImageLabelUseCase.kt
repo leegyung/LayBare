@@ -1,6 +1,7 @@
 package com.project.domain.usecase
 
 import android.graphics.Bitmap
+import com.project.domain.entity.ImageLabelEntity
 import com.project.domain.repository.library.ImageRecognitionRepository
 import com.project.domain.util.LibraryResult
 import kotlinx.coroutines.Dispatchers
@@ -10,7 +11,7 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class ExtractImageLabelUseCase @Inject constructor(private val mRepository : ImageRecognitionRepository) {
-    operator fun invoke(bitmap: Bitmap) : Flow<LibraryResult<List<String>>> = flow {
+    operator fun invoke(bitmap: Bitmap) : Flow<LibraryResult<List<ImageLabelEntity>>> = flow {
         try{
             emit(LibraryResult.ResponseLoading())
 

@@ -102,8 +102,10 @@ class Search : Fragment() {
             override fun onImageClicked(url: String) {
                 ImageDetailData.setNewImageData(url)
                 val navOption = NavOptions.Builder()
-                    .setEnterAnim(R.anim.slide_up)
-                    .setPopExitAnim(R.anim.slide_down)
+                    .setEnterAnim(R.anim.next_page_in_anim)
+                    .setExitAnim(R.anim.previous_page_out_anim)
+                    .setPopEnterAnim(R.anim.previous_page_in_anim)
+                    .setPopExitAnim(R.anim.next_page_out_anim)
                     .build()
 
                 mNavController.navigate(R.id.imageDetail, null, navOption)

@@ -4,12 +4,13 @@ import android.graphics.Bitmap
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.label.ImageLabeling
 import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
+import com.project.domain.entity.ImageLabelEntity
 import com.project.domain.repository.library.ImageRecognitionRepository
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class ImageRecognitionRepositoryImpl : ImageRecognitionRepository {
-    override suspend fun getImageLabelList(image: Bitmap) : List<String>? {
+    override suspend fun getImageLabelList(image: Bitmap) : List<ImageLabelEntity>? {
         val target = InputImage.fromBitmap(image, 0)
         val labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
 
@@ -17,7 +18,7 @@ class ImageRecognitionRepositoryImpl : ImageRecognitionRepository {
             labeler.process(target)
                 .addOnSuccessListener { labels ->
 
-                    val labelList = labels.filter { it.confidence > 0.6f }.map { it.text }
+                    val labelList = labels.filter { it.confidence > 0.6f }.map { ImageLabelEntity(it.text) }
                     continuation.resume(labelList)
                 }
                 .addOnFailureListener { _ ->
