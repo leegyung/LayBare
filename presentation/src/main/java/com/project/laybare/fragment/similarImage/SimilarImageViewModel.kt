@@ -43,16 +43,13 @@ class SimilarImageViewModel @Inject constructor(
     private fun searchImage() {
         mNetworkingJob?.cancel()
 
-
         mNetworkingJob = viewModelScope.launch {
-
-            mImageListState = MutableStateFlow(value = PagingData.empty())
-
-
             val keyword = mKeywordList.filter { it.isSelected }.joinToString(separator = ", ") { it.label }
             if(keyword.isEmpty()){
                 return@launch
             }
+
+            mImageListState.value = PagingData.empty()
 
             mSearchImagePagingUseCase(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, keyword)
                 .cachedIn(viewModelScope)
@@ -61,6 +58,7 @@ class SimilarImageViewModel @Inject constructor(
                     mImageListState.value = result
                 }
         }
+
 
     }
 

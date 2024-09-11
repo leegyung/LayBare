@@ -1,5 +1,6 @@
 package com.project.laybare.fragment.similarImage
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +24,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -39,11 +43,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.project.domain.entity.ImageEntity
 import com.project.domain.entity.ImageLabelEntity
 import com.project.laybare.R
+import com.project.laybare.fragment.search.SearchAdapter
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun SimilarImageCompose(
@@ -160,49 +171,62 @@ fun ImageList(viewModel : SimilarImageViewModel, onImageClicked: (url : Int) -> 
             imagePagingItems[index]?.let{ image ->
                 SimilarImageView(onImageClicked, index, image)
             }
-
         }
     }
+
+
 }
+
+
+
 
 @Composable
 fun SimilarImageView(onItemClicked: (index : Int) -> Unit, index : Int, data : ImageEntity){
-    // 기본 이미지 url 로딩이 실패하면
-    // 썸네일 이미지로 url로 바꿔서 다시 로드하라고 알려주기 위한 변수
-    // *계속 값을 유지 하지 않고 재활용되면 값을 다시 설정
-    var imageUrl by remember { mutableStateOf( if (data.linkError) data.thumbnailLink else data.link) }
 
     Column(
         Modifier.height(350.dp)
     ) {
         Surface(
+            modifier = Modifier
+                .clickable { onItemClicked(index) },
             color = colorResource(id = R.color.gray_bg),
             shape = RoundedCornerShape(8.dp), // 모서리 둥글게
         ) {
+
+
             GlideImage(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .clickable { onItemClicked(index) },
-                imageModel = { imageUrl },
+                    .fillMaxSize(),
+                imageModel = { if(data.linkError) data.thumbnailLink else data.link },
                 imageOptions = ImageOptions(
                     contentScale = ContentScale.Crop,
                     alignment = Alignment.Center,
                     requestSize = IntSize(400, 800)
                 ),
-                loading = {
-
-                },
+                loading = {},
                 failure = {
                     // 썸네일로 한번도 로딩을 시도하지 않았다면
                     if(!data.linkError) {
                         data.linkError = true
-                        imageUrl = data.thumbnailLink
                     }
+                    GlideImage(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clickable { onItemClicked(index) },
+                        imageModel = { data.thumbnailLink },
+                        imageOptions = ImageOptions(
+                            contentScale = ContentScale.Crop,
+                            alignment = Alignment.Center,
+                            requestSize = IntSize(400, 800)
+                        )
+                    )
+
                 }
             )
         }
     }
 }
+
 
 
 @Composable
