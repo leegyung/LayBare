@@ -52,5 +52,6 @@ dependencies {
     implementation(libs.imageRecognition)
     implementation(libs.entity.extraction)
     implementation(libs.image.labeling)
+    implementation(libs.paging3)
 
 }

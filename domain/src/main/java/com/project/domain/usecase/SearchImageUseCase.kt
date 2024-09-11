@@ -16,7 +16,7 @@ class SearchImageUseCase @Inject constructor(private val mRepository : SearchIma
     operator fun invoke(apiKey : String, searchEngine : String, keyword : String, page : Int, size : Int) : Flow<ApiResult<SearchImageResultEntity>> = flow {
         try{
             emit(ApiResult.ResponseLoading())
-            val response = mRepository.getImageList(apiKey, searchEngine, keyword, page, size)
+            val response = mRepository.searchImage(apiKey, searchEngine, keyword, page, size)
             emit(ApiResult.ResponseSuccess(response))
         }catch (e : HttpException){
             emit(ApiResult.ResponseError(e.localizedMessage?:"알 수 없는 오류가 발생했어요."))

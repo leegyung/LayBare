@@ -46,4 +46,5 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    implementation(libs.paging3)
 }

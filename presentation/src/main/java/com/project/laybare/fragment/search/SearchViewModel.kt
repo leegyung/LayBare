@@ -30,7 +30,7 @@ class SearchViewModel @Inject constructor(private val mSearchPictureUseCase: Sea
     private val mAdapter = SearchAdapter(mSearchResult)
 
     private var mTotalCount : Long = 0
-    private var mCurrentPage = 0
+    private var mCurrentPage = 1
 
 
     fun getKeyword() : String {
@@ -51,15 +51,15 @@ class SearchViewModel @Inject constructor(private val mSearchPictureUseCase: Sea
 
         mSearchResult.clear()
         mTotalCount = 0
-        mCurrentPage = 0
+        mCurrentPage = 1
 
-        mNetworkingJob = mSearchPictureUseCase(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, mKeyword, 1, 10).onEach { result ->
+        mNetworkingJob = mSearchPictureUseCase(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, mKeyword, mCurrentPage, 10).onEach { result ->
             when(result){
                 is ApiResult.ResponseLoading -> {
 
                 }
                 is ApiResult.ResponseSuccess -> {
-                    result.data?.let{
+                    result.data.let{
                         setNewImagePage(it)
                         mAdapter.notifyDataSetChanged()
                     }
@@ -82,7 +82,7 @@ class SearchViewModel @Inject constructor(private val mSearchPictureUseCase: Sea
 
                 }
                 is ApiResult.ResponseSuccess -> {
-                    result.data?.let{
+                    result.data.let{
                         val oldSize = mSearchResult.size
                         setNewImagePage(it)
                         mAdapter.notifyItemRangeInserted(oldSize, mSearchResult.size - 1)
@@ -97,7 +97,7 @@ class SearchViewModel @Inject constructor(private val mSearchPictureUseCase: Sea
 
 
     private fun setNewImagePage(data : SearchImageResultEntity) {
-        mCurrentPage ++
+        mCurrentPage += data.imageList.size
         mTotalCount = data.totalResults
         mSearchResult.addAll(data.imageList)
     }

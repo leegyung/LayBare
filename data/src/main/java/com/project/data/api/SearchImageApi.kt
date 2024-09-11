@@ -12,7 +12,8 @@ interface SearchImageApi{
         @Query("cx") searchEngine : String,
         @Query("q") keyword : String,
         @Query("num") pageSize : Int,
-        @Query("start") pageNum : Int
+        @Query("start") pageNum : Int,
+        @Query("filter") filter : Int = 1
     ): SearchImageResultDto
 
     /*

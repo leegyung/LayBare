@@ -7,12 +7,12 @@ import androidx.lifecycle.viewModelScope
 import com.project.domain.usecase.SearchLandmarkUseCase
 import com.project.domain.util.ApiResult
 import com.project.laybare.BuildConfig
-import com.project.data.util.ImageDownloader
 import com.project.domain.usecase.ExtractImageLabelUseCase
 import com.project.domain.usecase.ExtractTextEntityUseCase
 import com.project.domain.usecase.ExtractTextUseCase
 import com.project.domain.util.LibraryResult
 import com.project.laybare.ssot.ImageDetailData
+import com.project.laybare.util.ImageDownloader
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow

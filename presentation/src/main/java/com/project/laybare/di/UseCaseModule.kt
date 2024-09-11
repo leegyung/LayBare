@@ -9,6 +9,7 @@ import com.project.domain.usecase.ExtractImageLabelUseCase
 import com.project.domain.usecase.ExtractTextEntityUseCase
 import com.project.domain.usecase.ExtractTextUseCase
 import com.project.domain.usecase.SearchAddressUseCase
+import com.project.domain.usecase.SearchImagePagingUseCase
 import com.project.domain.usecase.SearchImageUseCase
 import com.project.domain.usecase.SearchLandmarkUseCase
 import dagger.Module
@@ -24,6 +25,12 @@ object UseCaseModule {
     @Singleton
     fun providePictureListUseCase(repository : SearchImageRepository): SearchImageUseCase {
         return SearchImageUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSearchImageUseCase(repository: SearchImageRepository) : SearchImagePagingUseCase {
+        return SearchImagePagingUseCase(repository)
     }
 
     @Provides
@@ -55,5 +62,7 @@ object UseCaseModule {
     fun provideExtractImageLabelUseCase(repository : ImageRecognitionRepository) : ExtractImageLabelUseCase {
         return ExtractImageLabelUseCase(repository)
     }
+
+
 
 }

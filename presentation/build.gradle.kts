@@ -129,5 +129,6 @@ dependencies {
 
     implementation(libs.google.map)
     implementation(libs.compose.glide)
+    implementation(libs.paging3)
 
 }

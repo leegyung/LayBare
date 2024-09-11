@@ -1,19 +1,29 @@
 package com.project.laybare.fragment.search
 
+import android.content.Context
 import android.graphics.drawable.Drawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.project.domain.entity.ImageEntity
+import com.project.laybare.R
 import com.project.laybare.databinding.SearchResultViewBinding
 
 class SearchAdapter(private val mSearchList : ArrayList<ImageEntity>) : RecyclerView.Adapter<SearchAdapter.ViewHolder>() {
+
+    companion object {
+        private const val PRELOAD_SIZE = 10
+    }
+
 
     private var mListener : SearchAdapterInterface? = null
 
@@ -27,14 +37,34 @@ class SearchAdapter(private val mSearchList : ArrayList<ImageEntity>) : Recycler
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        mSearchList.getOrNull(position)?.let{
-            holder.bind(it)
-        }
+        holder.bind(mSearchList[position])
+
+        preload(holder, position)
     }
 
     fun setListener(listener : SearchAdapterInterface?) {
         mListener = listener
     }
+
+    private fun preload(holder : ViewHolder, currentPosition: Int) {
+        val endPosition = (currentPosition + PRELOAD_SIZE).coerceAtMost(mSearchList.size - 1)
+
+        mSearchList
+            .subList(currentPosition, endPosition)
+            .forEach { data -> if(!data.linkError) preload(holder.itemView.context, data.link) }
+
+
+    }
+
+    private fun preload(context: Context, url: String) {
+
+        Glide.with(context)
+            .load(url)
+            .override(600, 1200)
+            .transform(CenterCrop(), RoundedCorners(context.resources.getDimensionPixelSize(R.dimen.dp_8)))
+            .preload()
+    }
+
 
 
     inner class ViewHolder(private val mBinding : SearchResultViewBinding) : RecyclerView.ViewHolder(mBinding.root) {
@@ -52,35 +82,38 @@ class SearchAdapter(private val mSearchList : ArrayList<ImageEntity>) : Recycler
 
         fun bind(image : ImageEntity) {
 
-            Glide.with(itemView.context)
-                .load(if(image.linkError) image.thumbnailLink else image.link)
-                .override(900)
-                .listener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any?,
-                        target: Target<Drawable>,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        if(!image.linkError){
-                            image.linkError = true
-                        }
-                        return false
-                    }
 
-                    override fun onResourceReady(
-                        resource: Drawable,
-                        model: Any,
-                        target: Target<Drawable>?,
-                        dataSource: DataSource,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        return false
-                    }
-                })
-                .error(Glide.with(itemView.context).load(image.thumbnailLink))
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .into(mBinding.SearchImage)
+            if(!image.linkError) {
+
+                Glide.with(itemView.context)
+                    .load(image.link)
+                    .override(600, 1200)
+                    .listener(object : RequestListener<Drawable> {
+                        override fun onLoadFailed(
+                            e: GlideException?,
+                            model: Any?,
+                            target: Target<Drawable>,
+                            isFirstResource: Boolean
+                        ): Boolean {
+                            image.linkError = true
+                            return false
+                        }
+
+                        override fun onResourceReady(
+                            resource: Drawable,
+                            model: Any,
+                            target: Target<Drawable>?,
+                            dataSource: DataSource,
+                            isFirstResource: Boolean
+                        ): Boolean {
+                            return false
+                        }
+                    })
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .into(mBinding.SearchImage)
+
+            }
+
         }
     }
 

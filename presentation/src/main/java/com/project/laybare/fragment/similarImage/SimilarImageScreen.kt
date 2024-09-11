@@ -37,6 +37,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.project.domain.entity.ImageEntity
 import com.project.domain.entity.ImageLabelEntity
 import com.project.laybare.R
@@ -146,14 +148,19 @@ fun KeywordBox(keyword : ImageLabelEntity, modifier: Modifier = Modifier){
 
 @Composable
 fun ImageList(viewModel : SimilarImageViewModel, onImageClicked: (url : Int) -> Unit) {
+    val imagePagingItems: LazyPagingItems<ImageEntity> = viewModel.mImageListState.collectAsLazyPagingItems()
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         Modifier.padding(20.dp, 0.dp, 20.dp, 0.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp), // 열 사이의 간격 설정
         verticalArrangement = Arrangement.spacedBy(10.dp) // 행 사이의 간격 설정
     ) {
-        itemsIndexed(viewModel.mImageList) { index, image ->
-            SimilarImageView(onImageClicked, index, image)
+        items(imagePagingItems.itemCount) { index ->
+            imagePagingItems[index]?.let{ image ->
+                SimilarImageView(onImageClicked, index, image)
+            }
+
         }
     }
 }

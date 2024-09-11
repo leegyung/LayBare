@@ -1,4 +1,4 @@
-package com.project.data.util
+package com.project.laybare.util
 
 import android.content.ContentValues
 import android.content.Context

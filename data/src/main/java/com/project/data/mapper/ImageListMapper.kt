@@ -26,7 +26,7 @@ object ImageListMapper {
         )
     }
 
-    private fun getImageEntity(dto : ItemDto) : ImageEntity {
+    fun getImageEntity(dto : ItemDto) : ImageEntity {
         val info = dto.image
         return ImageEntity(
             dto.title?:"",
