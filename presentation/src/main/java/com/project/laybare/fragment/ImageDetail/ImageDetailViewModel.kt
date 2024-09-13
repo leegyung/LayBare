@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -30,7 +31,6 @@ class ImageDetailViewModel @Inject constructor(
     private val mExtractTextEntityUseCase: ExtractTextEntityUseCase,
     private val mExtractImageLabelUseCase: ExtractImageLabelUseCase
 ) : ViewModel() {
-
 
     private val _createAlert = MutableSharedFlow<String>()
     private val _apiLoading = MutableSharedFlow<Boolean>()
@@ -64,6 +64,12 @@ class ImageDetailViewModel @Inject constructor(
         }
     }
 
+    private fun convertToByteArray(bitmap: Bitmap?) : ByteArray {
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+        return byteArrayOutputStream.toByteArray()
+    }
+
     fun extractText(bitmap: Bitmap?, extractEntity : Boolean) {
         viewModelScope.launch {
             if(bitmap == null){
@@ -71,7 +77,7 @@ class ImageDetailViewModel @Inject constructor(
                 return@launch
             }
 
-            mExtractTextUseCase(bitmap).collectLatest { result ->
+            mExtractTextUseCase(convertToByteArray(bitmap)).collectLatest { result ->
                 when(result){
                     is ApiResult.ResponseLoading -> {
                         _apiLoading.emit(true)
@@ -130,7 +136,7 @@ class ImageDetailViewModel @Inject constructor(
             return
         }
 
-        mSearchLandMarkUseCase(BuildConfig.API_KEY, bitmap).onEach { result ->
+        mSearchLandMarkUseCase(BuildConfig.API_KEY, convertToByteArray(bitmap)).onEach { result ->
             when(result){
                 is ApiResult.ResponseLoading -> {
                     _apiLoading.emit(true)
@@ -158,7 +164,7 @@ class ImageDetailViewModel @Inject constructor(
             return
         }
 
-        mExtractImageLabelUseCase(bitmap).onEach { result ->
+        mExtractImageLabelUseCase(convertToByteArray(bitmap)).onEach { result ->
             when(result){
                 is LibraryResult.ResponseLoading -> {
                     _apiLoading.emit(true)

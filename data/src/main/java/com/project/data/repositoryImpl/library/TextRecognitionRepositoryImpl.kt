@@ -1,6 +1,7 @@
 package com.project.data.repositoryImpl.library
 
-import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.ImageFormat
 import com.google.mlkit.nl.entityextraction.EntityAnnotation
 import com.google.mlkit.nl.entityextraction.EntityExtraction
 import com.google.mlkit.nl.entityextraction.EntityExtractionParams
@@ -15,7 +16,9 @@ import kotlin.coroutines.suspendCoroutine
 
 class TextRecognitionRepositoryImpl : TextRecognitionRepository {
 
-    override suspend fun extractText(bitmap: Bitmap): String? {
+    override suspend fun extractText(image: ByteArray): String? {
+        // byteArray 비트맵 변환
+        val bitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
         val inputImage = InputImage.fromBitmap(bitmap, 0)
         val recognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
 

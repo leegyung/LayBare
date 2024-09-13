@@ -35,20 +35,17 @@ android {
 }
 
 dependencies {
-
+    implementation(project(":domain"))
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation(project(":domain"))
+
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.retrofit)
     implementation(libs.retrofitConverter)
-    implementation(libs.glide)
     implementation(libs.imageRecognition)
     implementation(libs.entity.extraction)
     implementation(libs.image.labeling)

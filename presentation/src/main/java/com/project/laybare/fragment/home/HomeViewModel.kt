@@ -2,26 +2,15 @@ package com.project.laybare.fragment.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.project.domain.entity.ImageEntity
 import com.project.domain.entity.SearchImageResultEntity
 import com.project.domain.usecase.SearchImageUseCase
 import com.project.domain.util.ApiResult
-import com.project.domain.util.RandomWordGenerator
 import com.project.laybare.BuildConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel

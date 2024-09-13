@@ -15,11 +15,9 @@ import javax.inject.Inject
 
 class SearchLandmarkRepositoryImpl @Inject constructor(private val mApiService : SearchLandmarkApi) :
     SearchLandmarkRepository {
-    override suspend fun searchLandmark(apiKey: String, image: Bitmap) : SearchLandmarkEntity? {
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        image.compress(Bitmap.CompressFormat.JPEG, 70, byteArrayOutputStream)
-        val byteArray = byteArrayOutputStream.toByteArray()
-        val base64Image = Base64.encodeToString(byteArray, Base64.DEFAULT)
+    override suspend fun searchLandmark(apiKey: String, image: ByteArray) : SearchLandmarkEntity? {
+        val base64Image = Base64.encodeToString(image, Base64.DEFAULT)
+
 
         val data = SearchLandmarkRequestData(
             RequestImageData(base64Image),

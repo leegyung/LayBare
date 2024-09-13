@@ -27,9 +27,7 @@ class SimilarImageViewModel @Inject constructor(
     var mKeywordList = mutableStateListOf<ImageLabelEntity>()
         private set
 
-    var mImageListState: MutableStateFlow<PagingData<ImageEntity>> = MutableStateFlow(value = PagingData.empty())
-        private set
-
+    val mImageListState: MutableStateFlow<PagingData<ImageEntity>> = MutableStateFlow(value = PagingData.empty())
 
     private var mNetworkingJob : Job? = null
 

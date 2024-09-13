@@ -1,4 +1,4 @@
-package com.project.domain.util
+package com.project.data.util
 
 import java.time.LocalDateTime
 import kotlin.random.Random
