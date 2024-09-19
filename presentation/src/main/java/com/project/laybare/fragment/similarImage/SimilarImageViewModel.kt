@@ -49,7 +49,7 @@ class SimilarImageViewModel @Inject constructor(
 
             mImageListState.value = PagingData.empty()
 
-            mSearchImagePagingUseCase(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, keyword)
+            mSearchImagePagingUseCase(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, keyword, 10)
                 .cachedIn(viewModelScope)
                 .distinctUntilChanged()
                 .collect{ result ->

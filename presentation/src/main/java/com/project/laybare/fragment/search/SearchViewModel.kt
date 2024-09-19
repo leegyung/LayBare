@@ -1,28 +1,45 @@
 package com.project.laybare.fragment.search
 
 import android.annotation.SuppressLint
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.PagingSource
+import androidx.paging.cachedIn
 import com.project.domain.entity.ImageEntity
 import com.project.domain.entity.SearchImageResultEntity
+import com.project.domain.usecase.SearchImagePagingUseCase
 import com.project.domain.usecase.SearchImageUseCase
 import com.project.domain.util.ApiResult
 import com.project.laybare.BuildConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SearchViewModel @Inject constructor(private val mSearchPictureUseCase: SearchImageUseCase) : ViewModel() {
+class SearchViewModel @Inject constructor(
+    private val mSearchPictureUseCase: SearchImageUseCase,
+    private val mSearchImagePagingUseCase : SearchImagePagingUseCase
+) : ViewModel() {
     private var mNetworkingJob : Job? = null
     private val _createAlert = MutableSharedFlow<String>()
 
     val mCreateAlert = _createAlert.asSharedFlow()
+
+    var mKeywordState = mutableStateOf("")
+        private set
+
+    var mImageListState: MutableStateFlow<PagingData<ImageEntity>> = MutableStateFlow(value = PagingData.empty())
+        private set
+
 
 
     private var mKeyword = ""
@@ -31,6 +48,32 @@ class SearchViewModel @Inject constructor(private val mSearchPictureUseCase: Sea
 
     private var mTotalCount : Long = 0
     private var mCurrentPage = 1
+
+
+
+    fun searchImage() {
+        val keyword = mKeywordState.value
+
+        if(keyword.isEmpty()){
+            return
+        }
+
+        mNetworkingJob?.cancel()
+        mNetworkingJob = viewModelScope.launch {
+            mImageListState.value = PagingData.empty()
+
+            mSearchImagePagingUseCase(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, keyword, 10)
+                .cachedIn(viewModelScope)
+                .distinctUntilChanged()
+                .collect{ result ->
+                    mImageListState.value = result
+                }
+        }
+
+
+    }
+
+
 
 
     fun getKeyword() : String {

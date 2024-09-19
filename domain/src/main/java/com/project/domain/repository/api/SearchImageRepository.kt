@@ -7,5 +7,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface SearchImageRepository {
     suspend fun searchImage(apiKey : String, searchEngine : String, keyword : String, page : Int, size : Int) : SearchImageResultEntity
-    suspend fun getSearchImagePagingSource(apiKey : String, searchEngine : String, keyword : String) : Flow<PagingData<ImageEntity>>
+    suspend fun getSearchImagePagingSource(apiKey : String, searchEngine : String, keyword : String, pageSize : Int) : Flow<PagingData<ImageEntity>>
 }

@@ -13,18 +13,31 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class SearchImageRepositoryImpl @Inject constructor(private val mApiService : SearchImageApi) : SearchImageRepository {
+class SearchImageRepositoryImpl @Inject constructor(
+    private val mApiService : SearchImageApi
+) : SearchImageRepository {
+
+    override suspend fun getSearchImagePagingSource(
+        apiKey: String,
+        searchEngine: String,
+        keyword: String,
+        pageSize : Int
+    ): Flow<PagingData<ImageEntity>> {
+
+        return Pager(
+            config = PagingConfig(pageSize = pageSize),
+            pagingSourceFactory = { SearchImagePagingSource(mApiService, apiKey, searchEngine, keyword) }
+        ).flow
+
+    }
+
+
     override suspend fun searchImage(apiKey : String, searchEngine : String, keyword: String, page: Int, size: Int): SearchImageResultEntity {
         val response = mApiService.searchImage(apiKey, searchEngine, keyword, size, page)
         val entity = ImageListMapper.getImageListEntity(response, keyword)
         return entity
     }
 
-    override suspend fun getSearchImagePagingSource(apiKey: String, searchEngine: String, keyword: String): Flow<PagingData<ImageEntity>> {
-        return Pager(
-            config = PagingConfig(pageSize = 10),
-            pagingSourceFactory = { SearchImagePagingSource(mApiService, apiKey, searchEngine, keyword) }
-        ).flow
-    }
+
 
 }
