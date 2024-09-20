@@ -1,40 +1,43 @@
 package com.project.data.mapper
 
-import com.project.data.model.ItemDto
+import com.project.data.model.ImageItemDto
 import com.project.data.model.SearchImageResultDto
 import com.project.domain.entity.ImageEntity
 import com.project.domain.entity.SearchImageResultEntity
 
-object ImageListMapper {
-    fun getImageListEntity(dto : SearchImageResultDto?, keyword : String) : SearchImageResultEntity {
-        val total = dto?.queries?.request?.getOrNull(0)?.totalResults?:0
-        val nextPageIndex = dto?.queries?.nextPage?.getOrNull(0)?.startIndex?:0
-        val correctionQuery = dto?.spelling?.correctedQuery?:""
-        val images = arrayListOf<ImageEntity>()
 
 
-        dto?.items?.forEach {
-            images.add(getImageEntity(it))
-        }
+fun SearchImageResultDto.toSearchImageResult(keyword : String) : SearchImageResultEntity {
+    val total = queries?.request?.getOrNull(0)?.totalResults?:0
+    val nextPageIndex = queries?.nextPage?.getOrNull(0)?.startIndex?:0
+    val correctionQuery = spelling?.correctedQuery?:""
+    val images = arrayListOf<ImageEntity>()
 
-        return SearchImageResultEntity(
-            keyword,
-            total,
-            nextPageIndex,
-            correctionQuery,
-            images
-        )
+
+    items?.forEach {
+        images.add(it.toImageData())
     }
 
-    fun getImageEntity(dto : ItemDto) : ImageEntity {
-        val info = dto.image
-        return ImageEntity(
-            dto.title?:"",
-            dto.link?:"",
-            info?.contextLink?:"",
-            info?.height?:0,
-            info?.width?:0,
-            info?.thumbnailLink?:""
-        )
-    }
+    return SearchImageResultEntity(
+        keyword,
+        total,
+        nextPageIndex,
+        correctionQuery,
+        images
+    )
 }
+
+fun ImageItemDto.toImageData() : ImageEntity {
+    return ImageEntity(
+        title?:"",
+        link?:"",
+        image?.contextLink?:"",
+        image?.height?:0,
+        image?.width?:0,
+        image?.thumbnailLink?:""
+    )
+}
+
+
+
+

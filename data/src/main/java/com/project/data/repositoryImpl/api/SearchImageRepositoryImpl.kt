@@ -4,12 +4,11 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.project.data.api.SearchImageApi
-import com.project.data.mapper.ImageListMapper
+import com.project.data.mapper.toSearchImageResult
 import com.project.data.pagingSource.SearchImagePagingSource
 import com.project.domain.entity.ImageEntity
 import com.project.domain.entity.SearchImageResultEntity
 import com.project.domain.repository.api.SearchImageRepository
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -34,7 +33,7 @@ class SearchImageRepositoryImpl @Inject constructor(
 
     override suspend fun searchImage(apiKey : String, searchEngine : String, keyword: String, page: Int, size: Int): SearchImageResultEntity {
         val response = mApiService.searchImage(apiKey, searchEngine, keyword, size, page)
-        val entity = ImageListMapper.getImageListEntity(response, keyword)
+        val entity = response.toSearchImageResult(keyword)
         return entity
     }
 

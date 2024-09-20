@@ -4,7 +4,7 @@ package com.project.data.model
 data class SearchImageResultDto(
     val queries : QueryDto?,
     val spelling : SpellingDto?,
-    val items : ArrayList<ItemDto>?
+    val items : ArrayList<ImageItemDto>?
 )
 data class QueryDto(
     val request : ArrayList<RequestDto>?,
@@ -25,7 +25,7 @@ data class NextPageDto(
 data class SpellingDto(
     val correctedQuery : String?
 )
-data class ItemDto(
+data class ImageItemDto(
     val title : String?,
     val link : String?,
     val image : ImageInfoDto?

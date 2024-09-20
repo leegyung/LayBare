@@ -3,9 +3,8 @@ package com.project.data.pagingSource
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.project.data.api.SearchImageApi
-import com.project.data.mapper.ImageListMapper
+import com.project.data.mapper.toImageData
 import com.project.domain.entity.ImageEntity
-import com.project.domain.repository.api.SearchImageRepository
 import javax.inject.Inject
 
 class SearchImagePagingSource @Inject constructor(
@@ -25,7 +24,7 @@ class SearchImagePagingSource @Inject constructor(
         val page = params.key ?: 1
         return try {
             val response = mApiService.searchImage(mApiKey, mSearchEngine, mKeyword, 10, page)
-            val entity = response.items?.map{ ImageListMapper.getImageEntity(it) }?: arrayListOf()
+            val entity = response.items?.map{ it.toImageData() }?: arrayListOf()
             LoadResult.Page(
                 data = entity,
                 prevKey = if (page == 1) null else page - 10,
