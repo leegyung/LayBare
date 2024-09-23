@@ -40,5 +40,5 @@ object ImageDetailData {
     fun getLocationData() : SearchLandmarkEntity? = mLocationData
     fun getContactList() : HashMap<String, ArrayList<String>>? = mContactData
 
-    fun getImageLabelList() : List<ImageLabelEntity> = mLabelList?: arrayListOf()
+    fun getImageLabelList() : List<ImageLabelEntity> = mLabelList?: emptyList()
 }

@@ -38,39 +38,15 @@ class SimilarImage : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         mComposeView.setContent {
-            SimilarImageCompose(
+            SimilarImageMainScreen(
                 mViewModel,
-                onBackClicked = {
-                    findNavController().popBackStack()
-                },
-                onKeywordClicked = { index ->
-                    mViewModel.onKeywordClicked(index)
-                },
-                onImageClicked = {
-                    moveToImageDetail(it)
-                }
+                findNavController()
             )
+
         }
 
+
     }
-
-
-    private fun moveToImageDetail(index : Int) {
-        val setDataResult = mViewModel.onImageClicked(index)
-        if(setDataResult){
-            val navOption = NavOptions.Builder()
-                .setEnterAnim(R.anim.next_page_in_anim)
-                .setExitAnim(R.anim.previous_page_out_anim)
-                .setPopEnterAnim(R.anim.previous_page_in_anim)
-                .setPopExitAnim(R.anim.next_page_out_anim)
-                .build()
-            findNavController().navigate(R.id.imageDetail, null, navOption)
-        }
-    }
-
-
-
-
 
 
 
