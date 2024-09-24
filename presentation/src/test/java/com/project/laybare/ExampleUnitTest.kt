@@ -1,10 +1,5 @@
 package com.project.laybare
 
-import com.project.laybare.fragment.similarImage.TodoListMutation
-import com.project.laybare.fragment.similarImage.TodoListReducer
-import com.project.laybare.fragment.similarImage.TodoListUiState
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -17,11 +12,6 @@ import org.junit.Assert.*
 class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
-        val state = MutableStateFlow<TodoListUiState>(TodoListUiState.Empty)
-        println(state.value.toString())
-        state.update {
-            TodoListReducer().invoke(TodoListMutation.ShowError("error"))
-        }
-        println(state.value.toString())
+
     }
 }

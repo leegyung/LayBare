@@ -5,6 +5,8 @@ import androidx.paging.PagingState
 import com.project.data.api.SearchImageApi
 import com.project.data.mapper.toImageData
 import com.project.domain.entity.ImageEntity
+import retrofit2.HttpException
+import java.io.IOException
 import javax.inject.Inject
 
 class SearchImagePagingSource @Inject constructor(
@@ -30,8 +32,12 @@ class SearchImagePagingSource @Inject constructor(
                 prevKey = if (page == 1) null else page - 10,
                 nextKey = if (entity.isEmpty()) null else page + 10
             )
+        } catch (e : IOException) {
+            LoadResult.Error(Throwable("인터넷 연결을 확인해 주세요"))
+        } catch (e : HttpException) {
+            LoadResult.Error(Throwable("서버와 연결을 실패했습니다"))
         } catch (e: Exception) {
-            LoadResult.Error(e)
+            LoadResult.Error(Throwable(e.localizedMessage?:"알 수 없는 오류가 발생했어요"))
         }
     }
 }

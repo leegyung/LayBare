@@ -2,114 +2,102 @@ package com.project.laybare.fragment.similarImage
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.LoadState
-import androidx.paging.PagingSource
 import androidx.paging.cachedIn
 import com.project.domain.entity.ImageEntity
 import com.project.domain.usecase.SearchImagePagingUseCase
 import com.project.laybare.BuildConfig
 import com.project.laybare.ssot.ImageDetailData
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.reduce
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.timeout
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.orbitmvi.orbit.Container
+import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.viewmodel.container
+import java.time.Duration
 import javax.inject.Inject
+
 
 @HiltViewModel
 class SimilarImageViewModel @Inject constructor(
     private val mSearchImagePagingUseCase : SearchImagePagingUseCase
-) : ViewModel() {
-    private var mNetworkingJob : Job? = null
+) : ContainerHost<SimilarImageState, SimilarImageSideEffect>, ViewModel() {
 
-    private val _uiState = MutableStateFlow(SimilarImageState())
-    val mUiState get() = _uiState
-
-    private val _uiSideEffect = MutableSharedFlow<SimilarImageSideEffect>()
-    val mUiSideEffect get() = _uiSideEffect.asSharedFlow()
-
-
+    override val container: Container<SimilarImageState, SimilarImageSideEffect> = container(SimilarImageState())
 
     init {
-        initializeData()
-        searchImage()
+        initializeState()
+        setNewImagePagingSource()
     }
 
-    private fun initializeData(){
+    private fun initializeState() = intent {
         val keywords = ImageDetailData.getImageLabelList()
-        _uiState.update { it.copy( keyword = keywords ) }
+        reduce { state.copy(keyword = keywords, isLoading = true) }
     }
 
 
     fun processEvent(event : SimilarImageEvent) {
-        when(event){
-            is SimilarImageEvent.OnBackClicked -> {}
-            is SimilarImageEvent.OnImageClicked -> onImageClicked(event.image)
-            is SimilarImageEvent.OnKeywordClicked -> onKeywordClicked(event.index)
-            is SimilarImageEvent.OnErrorOccurred -> {
-                viewModelScope.launch {
-                    _uiSideEffect.emit(SimilarImageSideEffect.ShowToast(event.message))
-                }
+
+        viewModelScope.launch {
+            when(event){
+                is SimilarImageEvent.OnBackClicked -> onBackPressed()
+                is SimilarImageEvent.OnImageClicked -> navigateToImageDetail(event.image)
+                is SimilarImageEvent.OnKeywordClicked -> onKeywordClicked(event.index)
+                is SimilarImageEvent.OnErrorOccurred -> showDialog(event.message)
             }
         }
     }
 
+    private fun onBackPressed() = intent {
+        postSideEffect(SimilarImageSideEffect.PopBackstack)
+    }
 
-    private fun searchImage() {
-        mNetworkingJob?.cancel()
+    private fun navigateToImageDetail(image: ImageEntity) = intent {
+        ImageDetailData.setNewImageData(if(image.linkError) image.thumbnailLink else image.link)
+        postSideEffect(SimilarImageSideEffect.NavigateToImageDetail)
+    }
 
+    private fun showDialog(error : String?) = intent {
+        val msg = error?:"알 수 없는 오류가 발생했습니다"
+        postSideEffect(SimilarImageSideEffect.ShowToast(msg))
+    }
 
-        mNetworkingJob = viewModelScope.launch {
-            val keyword = _uiState.value.keyword.filter { it.isSelected }.joinToString(separator = ", ") { it.label }
-            if(keyword.isEmpty()){
-                return@launch
+    private fun onKeywordClicked(targetIndex : Int) = intent {
+        val newKeywordData = state.keyword.mapIndexed { index, label ->
+            if(index == targetIndex){
+                label.copy(isSelected = !label.isSelected)
+            }else{
+                label
             }
+        }
+        reduce { state.copy(keyword = newKeywordData) }
+
+        setNewImagePagingSource()
+    }
 
 
-            mSearchImagePagingUseCase(BuildConfig.API_KEY + "asdasdasd", BuildConfig.SEARCH_ENGINE, keyword, 10)
+
+
+    private fun setNewImagePagingSource() = intent {
+        val keyword = state.keyword.filter { it.isSelected }.joinToString(separator = ", ") { it.label }
+        if(keyword.isEmpty()){
+            postSideEffect(SimilarImageSideEffect.ShowToast("선택된 검색 키워드가 없어요"))
+        }else {
+            val imagePagingFlow = mSearchImagePagingUseCase(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, keyword, 10)
                 .cachedIn(viewModelScope)
                 .distinctUntilChanged()
-                .onStart {
-                    _uiState.update { it.copy(isLoading = true) }
+                .catch { error ->
+                    postSideEffect(SimilarImageSideEffect.ShowToast(error.localizedMessage?:"알 수 없는 오류가 발생했어요"))
                 }
-                .collect{ result ->
-                    _uiState.update {
-                        it.copy(isLoading = false).apply {
-                            imageList.update { result }
-                        }
-                    }
-                }
-        }
-
-
-    }
-
-    private fun onKeywordClicked(targetIndex : Int) {
-
-        val newKeywordData = _uiState.value.keyword.mapIndexed { index, image ->
-            if(index == targetIndex){
-                image.copy(isSelected = !image.isSelected)
-            }else{
-                image
-            }
-        }
-
-        _uiState.update { it.copy(keyword = newKeywordData) }
-        searchImage()
-    }
-
-    private fun onImageClicked(image : ImageEntity) {
-        viewModelScope.launch {
-            ImageDetailData.setNewImageData(if(image.linkError) image.thumbnailLink else image.link)
-            _uiSideEffect.emit(SimilarImageSideEffect.Navigate("ImageDetail"))
+            reduce { state.copy(imageList = imagePagingFlow) }
         }
     }
+
+
+
 
 
 

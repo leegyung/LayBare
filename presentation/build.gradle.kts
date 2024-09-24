@@ -128,9 +128,10 @@ dependencies {
     implementation(libs.recyclerView)
     implementation(libs.photoView)
     implementation(libs.gson)
-
     implementation(libs.google.map)
     implementation(libs.compose.glide)
     implementation(libs.paging3)
+    implementation(libs.orbit.compose)
+    implementation(libs.orbit.viewmodel)
 
 }

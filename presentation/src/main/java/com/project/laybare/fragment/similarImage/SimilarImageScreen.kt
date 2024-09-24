@@ -1,6 +1,5 @@
 package com.project.laybare.fragment.similarImage
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,19 +19,15 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -57,28 +52,27 @@ fun SimilarImageMainScreen(
     viewModel: SimilarImageViewModel,
     navController: NavController
 ) {
-    val context = LocalContext.current
-    val mUiState by viewModel.mUiState.collectAsState()
+    val state by viewModel.container.stateFlow.collectAsState()
+    val sideEffectFlow = viewModel.container.sideEffectFlow
 
 
     // Side Effect 를 가져와서 flow로 관찰
     LaunchedEffect(Unit) {
-        viewModel.mUiSideEffect.collect { effect ->
+        sideEffectFlow.collect { effect ->
             when(effect){
-                is SimilarImageSideEffect.Navigate -> {
-                    when(effect.destination){
-                        "Back" -> navController.popBackStack()
-                        "ImageDetail" -> {
-                            val navOption = NavOptions.Builder()
-                                .setEnterAnim(R.anim.next_page_in_anim)
-                                .setExitAnim(R.anim.previous_page_out_anim)
-                                .setPopEnterAnim(R.anim.previous_page_in_anim)
-                                .setPopExitAnim(R.anim.next_page_out_anim)
-                                .build()
-                            navController.navigate(R.id.imageDetail, null, navOption)
-                        }
-                    }
+                is SimilarImageSideEffect.NavigateToImageDetail -> {
+                    val navOption = NavOptions.Builder()
+                        .setEnterAnim(R.anim.next_page_in_anim)
+                        .setExitAnim(R.anim.previous_page_out_anim)
+                        .setPopEnterAnim(R.anim.previous_page_in_anim)
+                        .setPopExitAnim(R.anim.next_page_out_anim)
+                        .build()
+                    navController.navigate(R.id.imageDetail, null, navOption)
                 }
+                is SimilarImageSideEffect.PopBackstack -> {
+                    navController.popBackStack()
+                }
+
                 is SimilarImageSideEffect.ShowToast -> {
 
                 }
@@ -88,7 +82,7 @@ fun SimilarImageMainScreen(
 
 
     SimilarImageScreen(
-        mUiState,
+        state,
         onPerformEvent = {
             viewModel.processEvent(it)
         }
@@ -207,8 +201,19 @@ fun ImageList(
     onPerformEvent : (event : SimilarImageEvent) -> Unit
 ) {
 
-
     val imagePagingItem = uiState.imageList.collectAsLazyPagingItems()
+
+    when{
+        imagePagingItem.loadState.refresh is LoadState.Error -> {
+            val errorState = imagePagingItem.loadState.refresh as LoadState.Error
+            onPerformEvent(SimilarImageEvent.OnErrorOccurred(errorState.error.message?:""))
+        }
+        imagePagingItem.loadState.append is LoadState.Error -> {
+            val errorState = imagePagingItem.loadState.append as LoadState.Error
+            onPerformEvent(SimilarImageEvent.OnErrorOccurred(errorState.error.message?:""))
+        }
+    }
+
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -219,17 +224,6 @@ fun ImageList(
         items(imagePagingItem.itemCount) { index ->
             imagePagingItem[index]?.let{ image ->
                 SimilarImageView(onPerformEvent, image)
-            }
-        }
-
-        when{
-            imagePagingItem.loadState.refresh is LoadState.Error -> {
-                val errorState = imagePagingItem.loadState.refresh as LoadState.Error
-                onPerformEvent(SimilarImageEvent.OnErrorOccurred(errorState.error.message?:""))
-            }
-            imagePagingItem.loadState.append is LoadState.Error -> {
-                val errorState = imagePagingItem.loadState.append as LoadState.Error
-                onPerformEvent(SimilarImageEvent.OnErrorOccurred(errorState.error.message?:""))
             }
         }
     }
