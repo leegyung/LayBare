@@ -25,6 +25,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -43,6 +46,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.project.domain.entity.ImageEntity
 import com.project.domain.entity.ImageLabelEntity
 import com.project.laybare.R
+import com.project.laybare.dialog.SingleChoiceDialog
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -54,6 +58,7 @@ fun SimilarImageMainScreen(
 ) {
     val state by viewModel.container.stateFlow.collectAsState()
     val sideEffectFlow = viewModel.container.sideEffectFlow
+    var showDialog by remember { mutableStateOf<SimilarImageSideEffect.ShowDialog?>(null) }
 
 
     // Side Effect 를 가져와서 flow로 관찰
@@ -73,8 +78,8 @@ fun SimilarImageMainScreen(
                     navController.popBackStack()
                 }
 
-                is SimilarImageSideEffect.ShowToast -> {
-
+                is SimilarImageSideEffect.ShowDialog -> {
+                    showDialog = effect
                 }
             }
         }
@@ -87,6 +92,22 @@ fun SimilarImageMainScreen(
             viewModel.processEvent(it)
         }
     )
+
+
+    if(showDialog != null){
+        val moveToPrevious = showDialog?.moveToPrevious?:false
+        SingleChoiceDialog(
+            content = showDialog?.message,
+            btnText = showDialog?.option,
+            onConfirmClicked = {
+                showDialog = null
+                if(moveToPrevious){
+                    navController.popBackStack()
+                }
+            }
+        )
+    }
+
 
 
 }
@@ -204,13 +225,19 @@ fun ImageList(
     val imagePagingItem = uiState.imageList.collectAsLazyPagingItems()
 
     when{
+
+        imagePagingItem.loadState.refresh is LoadState.NotLoading -> {
+            onPerformEvent(SimilarImageEvent.OnLoadingStateChanged(false))
+        }
+
         imagePagingItem.loadState.refresh is LoadState.Error -> {
             val errorState = imagePagingItem.loadState.refresh as LoadState.Error
-            onPerformEvent(SimilarImageEvent.OnErrorOccurred(errorState.error.message?:""))
+            onPerformEvent(SimilarImageEvent.OnPagingError(errorState.error.message?:""))
         }
+
         imagePagingItem.loadState.append is LoadState.Error -> {
             val errorState = imagePagingItem.loadState.append as LoadState.Error
-            onPerformEvent(SimilarImageEvent.OnErrorOccurred(errorState.error.message?:""))
+            onPerformEvent(SimilarImageEvent.OnPagingError(errorState.error.message?:""))
         }
     }
 

@@ -2,6 +2,7 @@ package com.project.laybare.fragment.similarImage
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.project.domain.entity.ImageEntity
 import com.project.domain.usecase.SearchImagePagingUseCase
@@ -10,14 +11,11 @@ import com.project.laybare.ssot.ImageDetailData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.timeout
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
-import java.time.Duration
 import javax.inject.Inject
 
 
@@ -46,7 +44,8 @@ class SimilarImageViewModel @Inject constructor(
                 is SimilarImageEvent.OnBackClicked -> onBackPressed()
                 is SimilarImageEvent.OnImageClicked -> navigateToImageDetail(event.image)
                 is SimilarImageEvent.OnKeywordClicked -> onKeywordClicked(event.index)
-                is SimilarImageEvent.OnErrorOccurred -> showDialog(event.message)
+                is SimilarImageEvent.OnPagingError -> handlePagingError(event.message)
+                is SimilarImageEvent.OnLoadingStateChanged -> changeLoadingState(event.isLoading)
             }
         }
     }
@@ -55,14 +54,18 @@ class SimilarImageViewModel @Inject constructor(
         postSideEffect(SimilarImageSideEffect.PopBackstack)
     }
 
+    private fun changeLoadingState(isLoading : Boolean) = intent {
+        reduce { state.copy(isLoading= isLoading) }
+    }
+
     private fun navigateToImageDetail(image: ImageEntity) = intent {
         ImageDetailData.setNewImageData(if(image.linkError) image.thumbnailLink else image.link)
         postSideEffect(SimilarImageSideEffect.NavigateToImageDetail)
     }
 
-    private fun showDialog(error : String?) = intent {
-        val msg = error?:"알 수 없는 오류가 발생했습니다"
-        postSideEffect(SimilarImageSideEffect.ShowToast(msg))
+    private fun handlePagingError(error : String?) = intent {
+        reduce { state.copy(imageList = flowOf(PagingData.empty())) }
+        postSideEffect(SimilarImageSideEffect.ShowDialog(error?:"알 수 없는 오류가 발생했습니다", "돌아가기", true))
     }
 
     private fun onKeywordClicked(targetIndex : Int) = intent {
@@ -79,19 +82,20 @@ class SimilarImageViewModel @Inject constructor(
     }
 
 
-
-
     private fun setNewImagePagingSource() = intent {
         val keyword = state.keyword.filter { it.isSelected }.joinToString(separator = ", ") { it.label }
         if(keyword.isEmpty()){
-            postSideEffect(SimilarImageSideEffect.ShowToast("선택된 검색 키워드가 없어요"))
+            postSideEffect(SimilarImageSideEffect.ShowDialog("선택된 검색 키워드가 없어요", "확인", false))
         }else {
             val imagePagingFlow = mSearchImagePagingUseCase(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, keyword, 10)
                 .cachedIn(viewModelScope)
                 .distinctUntilChanged()
                 .catch { error ->
-                    postSideEffect(SimilarImageSideEffect.ShowToast(error.localizedMessage?:"알 수 없는 오류가 발생했어요"))
+                    postSideEffect(SimilarImageSideEffect.ShowDialog(error.localizedMessage?:"알 수 없는 오류가 발생했어요", "돌아가기", true))
                 }
+
+
+
             reduce { state.copy(imageList = imagePagingFlow) }
         }
     }
