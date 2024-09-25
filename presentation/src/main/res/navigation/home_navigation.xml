@@ -84,6 +84,5 @@
     <fragment
         android:id="@+id/similarImage"
         android:name="com.project.laybare.fragment.similarImage.SimilarImage"
-        android:label="fragment_similar_image"
-        tools:layout="@layout/fragment_similar_image" />
+        android:label="fragment_similar_image" />
 </navigation>

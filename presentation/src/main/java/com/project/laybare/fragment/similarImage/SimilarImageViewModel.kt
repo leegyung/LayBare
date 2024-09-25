@@ -9,9 +9,13 @@ import com.project.domain.usecase.SearchImagePagingUseCase
 import com.project.laybare.BuildConfig
 import com.project.laybare.ssot.ImageDetailData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
@@ -25,11 +29,20 @@ class SimilarImageViewModel @Inject constructor(
 ) : ContainerHost<SimilarImageState, SimilarImageSideEffect>, ViewModel() {
 
     override val container: Container<SimilarImageState, SimilarImageSideEffect> = container(SimilarImageState())
+    private val mEventChannel = Channel<SimilarImageEvent>(Channel.UNLIMITED)
 
     init {
         initializeState()
+        processEvent()
         setNewImagePagingSource()
     }
+
+    fun sendEvent(event : SimilarImageEvent) {
+        viewModelScope.launch {
+            mEventChannel.send(event)
+        }
+    }
+
 
     private fun initializeState() = intent {
         val keywords = ImageDetailData.getImageLabelList()
@@ -37,17 +50,16 @@ class SimilarImageViewModel @Inject constructor(
     }
 
 
-    fun processEvent(event : SimilarImageEvent) {
-
-        viewModelScope.launch {
-            when(event){
+    private fun processEvent() {
+        mEventChannel.receiveAsFlow().onEach {
+            when(it){
                 is SimilarImageEvent.OnBackClicked -> onBackPressed()
-                is SimilarImageEvent.OnImageClicked -> navigateToImageDetail(event.image)
-                is SimilarImageEvent.OnKeywordClicked -> onKeywordClicked(event.index)
-                is SimilarImageEvent.OnPagingError -> handlePagingError(event.message)
-                is SimilarImageEvent.OnLoadingStateChanged -> changeLoadingState(event.isLoading)
+                is SimilarImageEvent.OnImageClicked -> navigateToImageDetail(it.image)
+                is SimilarImageEvent.OnKeywordClicked -> onKeywordClicked(it.index)
+                is SimilarImageEvent.OnPagingError -> handlePagingError(it.message)
+                is SimilarImageEvent.OnLoadingStateChanged -> changeLoadingState(it.isLoading)
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
     private fun onBackPressed() = intent {
@@ -93,8 +105,6 @@ class SimilarImageViewModel @Inject constructor(
                 .catch { error ->
                     postSideEffect(SimilarImageSideEffect.ShowDialog(error.localizedMessage?:"알 수 없는 오류가 발생했어요", "돌아가기", true))
                 }
-
-
 
             reduce { state.copy(imageList = imagePagingFlow) }
         }

@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavOptions
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.project.domain.entity.ImageEntity
@@ -66,18 +65,11 @@ fun SimilarImageMainScreen(
         sideEffectFlow.collect { effect ->
             when(effect){
                 is SimilarImageSideEffect.NavigateToImageDetail -> {
-                    val navOption = NavOptions.Builder()
-                        .setEnterAnim(R.anim.next_page_in_anim)
-                        .setExitAnim(R.anim.previous_page_out_anim)
-                        .setPopEnterAnim(R.anim.previous_page_in_anim)
-                        .setPopExitAnim(R.anim.next_page_out_anim)
-                        .build()
-                    navController.navigate(R.id.imageDetail, null, navOption)
+                    navController.navigate(R.id.imageDetail)
                 }
                 is SimilarImageSideEffect.PopBackstack -> {
                     navController.popBackStack()
                 }
-
                 is SimilarImageSideEffect.ShowDialog -> {
                     showDialog = effect
                 }
@@ -88,8 +80,8 @@ fun SimilarImageMainScreen(
 
     SimilarImageScreen(
         state,
-        onPerformEvent = {
-            viewModel.processEvent(it)
+        onSendEvent = {
+            viewModel.sendEvent(it)
         }
     )
 
@@ -117,7 +109,7 @@ fun SimilarImageMainScreen(
 @Composable
 fun SimilarImageScreen(
     uiState : SimilarImageState,
-    onPerformEvent : (event : SimilarImageEvent) -> Unit
+    onSendEvent : (event : SimilarImageEvent) -> Unit
 ) {
     Column(
         Modifier.fillMaxSize()
@@ -136,7 +128,7 @@ fun SimilarImageScreen(
                 Modifier
                     .size(35.dp)
                     .clickable {
-                        onPerformEvent(SimilarImageEvent.OnBackClicked)
+                        onSendEvent(SimilarImageEvent.OnBackClicked)
                     }
             )
 
@@ -150,11 +142,11 @@ fun SimilarImageScreen(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        KeywordList(uiState, onPerformEvent)
+        KeywordList(uiState, onSendEvent)
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        ImageList(uiState, onPerformEvent)
+        ImageList(uiState, onSendEvent)
     }
 
     ProgressBar(uiState.isLoading)
@@ -165,7 +157,7 @@ fun SimilarImageScreen(
 @Composable
 fun KeywordList(
     uiState : SimilarImageState,
-    onPerformEvent : (event : SimilarImageEvent) -> Unit
+    onSendEvent : (event : SimilarImageEvent) -> Unit
 ) {
 
     val keyWordList = uiState.keyword
@@ -183,7 +175,7 @@ fun KeywordList(
             KeywordBox(
                 item,
                 Modifier.clickable {
-                    onPerformEvent(SimilarImageEvent.OnKeywordClicked(index))
+                    onSendEvent(SimilarImageEvent.OnKeywordClicked(index))
                 }
             )
 
@@ -219,7 +211,7 @@ fun KeywordBox(keyword : ImageLabelEntity, modifier: Modifier = Modifier){
 @Composable
 fun ImageList(
     uiState : SimilarImageState,
-    onPerformEvent : (event : SimilarImageEvent) -> Unit
+    onSendEvent : (event : SimilarImageEvent) -> Unit
 ) {
 
     val imagePagingItem = uiState.imageList.collectAsLazyPagingItems()
@@ -227,17 +219,17 @@ fun ImageList(
     when{
 
         imagePagingItem.loadState.refresh is LoadState.NotLoading -> {
-            onPerformEvent(SimilarImageEvent.OnLoadingStateChanged(false))
+            onSendEvent(SimilarImageEvent.OnLoadingStateChanged(false))
         }
 
         imagePagingItem.loadState.refresh is LoadState.Error -> {
             val errorState = imagePagingItem.loadState.refresh as LoadState.Error
-            onPerformEvent(SimilarImageEvent.OnPagingError(errorState.error.message?:""))
+            onSendEvent(SimilarImageEvent.OnPagingError(errorState.error.message?:""))
         }
 
         imagePagingItem.loadState.append is LoadState.Error -> {
             val errorState = imagePagingItem.loadState.append as LoadState.Error
-            onPerformEvent(SimilarImageEvent.OnPagingError(errorState.error.message?:""))
+            onSendEvent(SimilarImageEvent.OnPagingError(errorState.error.message?:""))
         }
     }
 
@@ -250,7 +242,7 @@ fun ImageList(
     ) {
         items(imagePagingItem.itemCount) { index ->
             imagePagingItem[index]?.let{ image ->
-                SimilarImageView(onPerformEvent, image)
+                SimilarImageView(onSendEvent, image)
             }
         }
     }
@@ -264,7 +256,7 @@ fun ImageList(
 
 @Composable
 fun SimilarImageView(
-    onPerformEvent : (event : SimilarImageEvent) -> Unit,
+    onSendEvent : (event : SimilarImageEvent) -> Unit,
     image : ImageEntity
 ){
 
@@ -273,7 +265,7 @@ fun SimilarImageView(
     ) {
         Surface(
             modifier = Modifier
-                .clickable { onPerformEvent(SimilarImageEvent.OnImageClicked(image)) },
+                .clickable { onSendEvent(SimilarImageEvent.OnImageClicked(image)) },
             color = colorResource(id = R.color.gray_bg),
             shape = RoundedCornerShape(8.dp), // 모서리 둥글게
         ) {
@@ -351,7 +343,7 @@ fun ItemListPreview() {
     MaterialTheme {
         SimilarImageScreen(
             state,
-            onPerformEvent = {}
+            onSendEvent = {}
         )
     }
 }
