@@ -43,13 +43,6 @@ class SimilarImageViewModel @Inject constructor(
         }
     }
 
-
-    private fun initializeState() = intent {
-        val keywords = ImageDetailData.getImageLabelList()
-        reduce { state.copy(keyword = keywords, isLoading = true) }
-    }
-
-
     private fun processEvent() {
         mEventChannel.receiveAsFlow().onEach {
             when(it){
@@ -61,6 +54,14 @@ class SimilarImageViewModel @Inject constructor(
             }
         }.launchIn(viewModelScope)
     }
+
+
+    private fun initializeState() = intent {
+        val keywords = ImageDetailData.getImageLabelList()
+        reduce { state.copy(keyword = keywords, isLoading = true) }
+    }
+
+
 
     private fun onBackPressed() = intent {
         postSideEffect(SimilarImageSideEffect.PopBackstack)
@@ -109,6 +110,7 @@ class SimilarImageViewModel @Inject constructor(
             reduce { state.copy(imageList = imagePagingFlow) }
         }
     }
+
 
 
 

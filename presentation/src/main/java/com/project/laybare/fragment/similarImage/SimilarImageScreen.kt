@@ -64,15 +64,9 @@ fun SimilarImageMainScreen(
     LaunchedEffect(Unit) {
         sideEffectFlow.collect { effect ->
             when(effect){
-                is SimilarImageSideEffect.NavigateToImageDetail -> {
-                    navController.navigate(R.id.imageDetail)
-                }
-                is SimilarImageSideEffect.PopBackstack -> {
-                    navController.popBackStack()
-                }
-                is SimilarImageSideEffect.ShowDialog -> {
-                    showDialog = effect
-                }
+                is SimilarImageSideEffect.NavigateToImageDetail -> navController.navigate(R.id.imageDetail)
+                is SimilarImageSideEffect.PopBackstack -> navController.popBackStack()
+                is SimilarImageSideEffect.ShowDialog -> showDialog = effect
             }
         }
     }
