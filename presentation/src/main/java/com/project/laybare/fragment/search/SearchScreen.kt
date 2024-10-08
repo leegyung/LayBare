@@ -25,7 +25,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -51,9 +55,36 @@ import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
-fun SearchScreen(viewModel : SearchViewModel, onSearchClicked : () -> Unit) {
-    val imagePagingItems: LazyPagingItems<ImageEntity> = viewModel.mImageListState.collectAsLazyPagingItems()
+fun SearchMainScreen(viewModel: SearchViewModel, navController: NavController) {
+    val state by viewModel.container.stateFlow.collectAsState()
+    val sideEffectFlow = viewModel.container.sideEffectFlow
 
+
+    LaunchedEffect(Unit) {
+        sideEffectFlow.collect{ sideEffect ->
+            when(sideEffect) {
+                SearchSideEffect.NavigateToImageDetail -> TODO()
+                SearchSideEffect.PopBackstack -> TODO()
+                is SearchSideEffect.ShowDialog -> TODO()
+                is SearchSideEffect.ShowToastMessage -> TODO()
+            }
+        }
+    }
+
+    SearchScreen(
+        uiState = state,
+        onHandleEvent = {
+            viewModel.handleEvent(it)
+        }
+    )
+
+
+}
+
+
+
+@Composable
+fun SearchScreen(uiState : SearchState, onHandleEvent : (event : SearchEvent) -> Unit) {
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -75,7 +106,7 @@ fun SearchScreen(viewModel : SearchViewModel, onSearchClicked : () -> Unit) {
             )
 
             Spacer(modifier = Modifier.width(20.dp))
-            SearchBox(text = viewModel.mKeywordState, onSearchClicked)
+            SearchBox(text = uiState.keyword, onHandleEvent)
         }
 
 
@@ -96,7 +127,7 @@ fun SearchScreen(viewModel : SearchViewModel, onSearchClicked : () -> Unit) {
 }
 
 @Composable
-fun SearchBox(text : MutableState<String>, onSearchClicked : () -> Unit){
+fun SearchBox(text : String, onHandleEvent : (event : SearchEvent) -> Unit){
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 

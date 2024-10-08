@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
@@ -172,8 +173,9 @@ class HomeAdapter(private val mSections : ArrayList<HomeListSectionData>) : Recy
                 .error(Glide.with(itemView.context).load(image.thumbnailLink))
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(mBinding.HomeNormalImageView)
-
         }
+
+        
     }
 
 
