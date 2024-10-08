@@ -53,6 +53,7 @@ import com.project.laybare.fragment.similarImage.SimilarImageView
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlin.system.measureNanoTime
 
 @Composable
 fun SearchMainScreen(viewModel: SearchViewModel, navController: NavController) {
@@ -63,10 +64,18 @@ fun SearchMainScreen(viewModel: SearchViewModel, navController: NavController) {
     LaunchedEffect(Unit) {
         sideEffectFlow.collect{ sideEffect ->
             when(sideEffect) {
-                SearchSideEffect.NavigateToImageDetail -> TODO()
-                SearchSideEffect.PopBackstack -> TODO()
-                is SearchSideEffect.ShowDialog -> TODO()
-                is SearchSideEffect.ShowToastMessage -> TODO()
+                is SearchSideEffect.NavigateToImageDetail -> {
+                    navController.navigate(R.id.imageDetail)
+                }
+                is SearchSideEffect.PopBackstack -> {
+                    navController.popBackStack()
+                }
+                is SearchSideEffect.ShowDialog -> {
+
+                }
+                is SearchSideEffect.ShowToastMessage -> {
+
+                }
             }
         }
     }
@@ -85,6 +94,8 @@ fun SearchMainScreen(viewModel: SearchViewModel, navController: NavController) {
 
 @Composable
 fun SearchScreen(uiState : SearchState, onHandleEvent : (event : SearchEvent) -> Unit) {
+
+    val imagePagingItems = uiState.imageList.collectAsLazyPagingItems()
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -106,7 +117,7 @@ fun SearchScreen(uiState : SearchState, onHandleEvent : (event : SearchEvent) ->
             )
 
             Spacer(modifier = Modifier.width(20.dp))
-            SearchBox(text = uiState.keyword, onHandleEvent)
+            SearchBox(uiState, onHandleEvent)
         }
 
 
@@ -118,7 +129,7 @@ fun SearchScreen(uiState : SearchState, onHandleEvent : (event : SearchEvent) ->
         ) {
             items(imagePagingItems.itemCount) { index ->
                 imagePagingItems[index]?.let{ image ->
-                    SearchImageView(image)
+                    SearchImageView(image, onHandleEvent)
                 }
             }
         }
@@ -127,7 +138,7 @@ fun SearchScreen(uiState : SearchState, onHandleEvent : (event : SearchEvent) ->
 }
 
 @Composable
-fun SearchBox(text : String, onHandleEvent : (event : SearchEvent) -> Unit){
+fun SearchBox(uiState: SearchState, onHandleEvent : (event : SearchEvent) -> Unit){
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
@@ -137,12 +148,12 @@ fun SearchBox(text : String, onHandleEvent : (event : SearchEvent) -> Unit){
             .height(40.dp),
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
         keyboardActions =  KeyboardActions(onSearch = {
-            onSearchClicked()
+            onHandleEvent(SearchEvent.OnSearchClicked)
             focusManager.clearFocus()
             keyboardController?.hide()
         }),
         singleLine = true,
-        value = text.value,
+        value = uiState.keyword,
         textStyle = TextStyle(
             color = colorResource(id = R.color.textBlack),
             fontSize = 14.sp
@@ -168,12 +179,12 @@ fun SearchBox(text : String, onHandleEvent : (event : SearchEvent) -> Unit){
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if(text.value.isNotEmpty()){
+                if(uiState.keyword.isNotEmpty()){
                     Icon(
                         modifier = Modifier
                             .size(20.dp)
                             .clickable {
-                                text.value = ""
+                                onHandleEvent(SearchEvent.OnKeywordChanged(""))
                             },
                         painter = painterResource(id = R.drawable.remove_icon),
                         tint = colorResource(id = R.color.gray50),
@@ -183,13 +194,13 @@ fun SearchBox(text : String, onHandleEvent : (event : SearchEvent) -> Unit){
             }
         },
         onValueChange = {
-            text.value = it
+            onHandleEvent(SearchEvent.OnKeywordChanged(it))
         }
     )
 }
 
 @Composable
-fun SearchImageView(item : ImageEntity) {
+fun SearchImageView(item : ImageEntity, onHandleEvent : (event : SearchEvent) -> Unit) {
     Column(
         Modifier.height(350.dp)
     ) {
@@ -199,7 +210,10 @@ fun SearchImageView(item : ImageEntity) {
         ) {
             GlideImage(
                 modifier = Modifier
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .clickable {
+                        onHandleEvent(SearchEvent.OnImageClicked(item.link))
+                    },
                 imageModel = { item.link },
                 imageOptions = ImageOptions(
                     contentScale = ContentScale.Crop,

@@ -42,11 +42,9 @@ class Search : Fragment() {
 
 
         mComposeView.setContent {
-            SearchScreen(
+            SearchMainScreen(
                 mViewModel,
-                onSearchClicked = {
-                    mViewModel.searchImage()
-                }
+                mNavController
             )
         }
 
