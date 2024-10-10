@@ -4,7 +4,7 @@
 - ML Kit 의 Text, Entity Extraction을 라이브러리를 활용한 이미지의 텍스트 분석
 - ML Kit 의 Image Labeling을 통한 이미지의 특징 분석
 
-부가 설명
+**부가 설명**
 - MVVM 디자인 패턴 적용(MVI migration 진행중)
 - Shared 와 State Flow를 활용한 UI state 업데이트
 - Flow 와 Retrofit2 기반 HTTP 통신
@@ -12,6 +12,11 @@
 - 아키텍처 계층 모듈화
 - Navigation을 통한 페이지 이동
 - Hilt를 활용한 의존성 주입
+
+**라이브러리**
+Navigation, Hilt, Retrofit2, Glide, Text-Recognition,Entity-Extraction, Google Map, Orbit, Compose
+
+
 
 **현재 구현된 기능**
 - Custom Api를 통한 사진 검색
@@ -24,9 +29,12 @@
 
 **Compose Migration**
 - Similar Image 페이지 완료
-- Search Image 페이지 진행중
+- Search Image 페이지 완료
+- Text Result 페이지 진행중
 
 **MVI 패턴 적용**
 - Similar Image 페이지 완료
+- Search Image 페이지 완료
+- Text Result 페이지 진행중
 
 
