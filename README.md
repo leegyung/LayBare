@@ -30,7 +30,7 @@ Navigation, Hilt, Retrofit2, Glide, Text-Recognition,Entity-Extraction, Google M
 **Compose Migration**
 - Similar Image 페이지 완료
 - Search Image 페이지 완료
-- Text Result 페이지 진행중
+- Text Result 페이지 완료
 
 **MVI 패턴 적용**
 - Similar Image 페이지 완료
