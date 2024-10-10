@@ -1,6 +1,7 @@
 package com.project.laybare.fragment.search
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,9 +31,12 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
@@ -49,6 +53,8 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.project.domain.entity.ImageEntity
 import com.project.laybare.R
+import com.project.laybare.dialog.SingleChoiceDialog
+import com.project.laybare.fragment.similarImage.SimilarImageSideEffect
 import com.project.laybare.fragment.similarImage.SimilarImageView
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
@@ -59,6 +65,8 @@ import kotlin.system.measureNanoTime
 fun SearchMainScreen(viewModel: SearchViewModel, navController: NavController) {
     val state by viewModel.container.stateFlow.collectAsState()
     val sideEffectFlow = viewModel.container.sideEffectFlow
+    var showDialog by remember { mutableStateOf<SearchSideEffect.ShowDialog?>(null) }
+    val context = LocalContext.current
 
 
     LaunchedEffect(Unit) {
@@ -71,10 +79,10 @@ fun SearchMainScreen(viewModel: SearchViewModel, navController: NavController) {
                     navController.popBackStack()
                 }
                 is SearchSideEffect.ShowDialog -> {
-
+                    showDialog = sideEffect
                 }
                 is SearchSideEffect.ShowToastMessage -> {
-
+                    Toast.makeText(context, sideEffect.msg, Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -86,6 +94,20 @@ fun SearchMainScreen(viewModel: SearchViewModel, navController: NavController) {
             viewModel.handleEvent(it)
         }
     )
+
+    if(showDialog != null){
+        val moveToPrevious = showDialog?.moveToPrevious?:false
+        SingleChoiceDialog(
+            content = showDialog?.message,
+            btnText = showDialog?.option,
+            onConfirmClicked = {
+                showDialog = null
+                if(moveToPrevious){
+                    navController.popBackStack()
+                }
+            }
+        )
+    }
 
 
 }
