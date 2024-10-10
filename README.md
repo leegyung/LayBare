@@ -18,7 +18,6 @@
 Navigation, Hilt, Retrofit2, Glide, Text-Recognition,Entity-Extraction, Google Map, Orbit, Compose
 
 
-
 **현재 구현된 기능**
 - Custom Api를 통한 사진 검색
 - 이미지에서 추출한 텍스트를 가져와 편집, 복사 기능
@@ -32,6 +31,7 @@ Navigation, Hilt, Retrofit2, Glide, Text-Recognition,Entity-Extraction, Google M
 - Similar Image 페이지 완료
 - Search Image 페이지 완료
 - Text Result 페이지 완료
+- Home 페이지 진행중
 
 **MVI 패턴 적용**
 - Similar Image 페이지 완료
