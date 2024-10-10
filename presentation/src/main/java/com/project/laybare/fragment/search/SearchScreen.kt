@@ -256,7 +256,6 @@ fun SearchImageView(item : ImageEntity, onHandleEvent : (event : SearchEvent) ->
 
 
 
-@SuppressLint("UnrememberedMutableState")
 @Preview(showBackground = true)
 @Composable
 fun SearchScreenPreview() {

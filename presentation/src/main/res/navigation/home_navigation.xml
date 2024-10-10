@@ -66,8 +66,7 @@
     <fragment
         android:id="@+id/textResult"
         android:name="com.project.laybare.fragment.textResult.TextResult"
-        android:label="fragment_text_result"
-        tools:layout="@layout/fragment_text_result" />
+        android:label="fragment_text_result" />
     <fragment
         android:id="@+id/location"
         android:name="com.project.laybare.fragment.location.Location"
