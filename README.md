@@ -14,8 +14,8 @@
 - Hilt를 활용한 의존성 주입
 
 **라이브러리**
-Navigation, Hilt, Retrofit2, Glide, Text-Recognition,Entity-Extraction, Google Map, Orbit, Compose
 
+Navigation, Hilt, Retrofit2, Glide, Text-Recognition,Entity-Extraction, Google Map, Orbit, Compose
 
 
 **현재 구현된 기능**
@@ -30,11 +30,12 @@ Navigation, Hilt, Retrofit2, Glide, Text-Recognition,Entity-Extraction, Google M
 **Compose Migration**
 - Similar Image 페이지 완료
 - Search Image 페이지 완료
-- Text Result 페이지 진행중
+- Text Result 페이지 완료
+- Home 페이지 진행중
 
 **MVI 패턴 적용**
 - Similar Image 페이지 완료
 - Search Image 페이지 완료
-- Text Result 페이지 진행중
+- Text Result 페이지 완료
 
 
