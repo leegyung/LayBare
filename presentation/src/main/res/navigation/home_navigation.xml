@@ -28,8 +28,7 @@
     <fragment
         android:id="@+id/search"
         android:name="com.project.laybare.fragment.search.Search"
-        android:label="fragment_search"
-        tools:layout="@layout/fragment_search" />
+        android:label="fragment_search"/>
     <fragment
         android:id="@+id/imageDetail"
         android:name="com.project.laybare.fragment.ImageDetail.ImageDetail"

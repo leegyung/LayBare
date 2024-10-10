@@ -134,7 +134,7 @@ fun SearchScreen(uiState : SearchState, onHandleEvent : (event : SearchEvent) ->
                 Modifier
                     .size(35.dp)
                     .clickable {
-
+                        onHandleEvent(SearchEvent.OnBackClicked)
                     }
             )
 

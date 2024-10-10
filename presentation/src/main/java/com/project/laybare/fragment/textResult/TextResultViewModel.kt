@@ -16,15 +16,11 @@ class TextResultViewModel @Inject constructor() : ContainerHost<TextResultState,
         TextResultState(ImageDetailData.getExtractedText())
     )
 
-    private var mOriginalText = ""
-    private var mEditedText = ""
-
-
-
     fun handelEvent(event: TextResultEvent) {
         when(event){
-            TextResultEvent.RollBackText -> rollbackText()
-            TextResultEvent.MoveToPreviousPage -> moveToPreviousPage()
+            is TextResultEvent.RollBackText -> rollbackText()
+            is TextResultEvent.MoveToPreviousPage -> moveToPreviousPage()
+            is TextResultEvent.OnTextChanged -> onTextChanged(event.text)
         }
     }
 
@@ -37,30 +33,12 @@ class TextResultViewModel @Inject constructor() : ContainerHost<TextResultState,
         reduce { state.copy(modifiedText = state.originalText) }
     }
 
-
-
-    init {
-        val extractedText = ImageDetailData.getExtractedText()
-        mOriginalText = extractedText
-        mEditedText = extractedText
+    private fun onTextChanged(newText : String) = intent {
+        reduce { state.copy(modifiedText = newText) }
     }
 
-    fun isOriginalTextValid() : Boolean {
-        return mOriginalText.isNotEmpty()
-    }
 
-    fun setEditedText(text: String) {
-        mEditedText = text
-    }
 
-    fun getEditedText() : String {
-        return mEditedText
-    }
-
-    fun resetText() : String {
-        mEditedText = mOriginalText
-        return mOriginalText
-    }
 
 
 

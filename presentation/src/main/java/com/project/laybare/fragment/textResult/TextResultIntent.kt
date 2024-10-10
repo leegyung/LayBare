@@ -9,6 +9,7 @@ sealed class TextResultSideEffect {
 sealed class TextResultEvent {
     data object MoveToPreviousPage : TextResultEvent()
     data object RollBackText : TextResultEvent()
+    data class OnTextChanged(val text : String) : TextResultEvent()
 }
 
 @Immutable
