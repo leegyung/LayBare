@@ -34,6 +34,7 @@ fragmentKtx = "1.8.4"
 compose_glide = "2.3.6"
 paging3 = "3.3.2"
 orbit = "9.0.0"
+accompanist_permission = "1.0.0"
 
 
 
@@ -69,6 +70,7 @@ image-labeling = {group = "com.google.mlkit", name = "image-labeling", version.r
 compose-glide = {group = "com.github.skydoves", name = "landscapist-glide", version.ref = "compose_glide"}
 orbit-viewmodel = {group = "org.orbit-mvi", name = "orbit-viewmodel", version.ref = "orbit"}
 orbit-compose = {group = "org.orbit-mvi", name = "orbit-compose", version.ref = "orbit"}
+accompanist_permission = {group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist_permission"}
 
 
 

@@ -63,7 +63,7 @@ class Contact : Fragment() {
     // 카메라 사용 권한 요청 결과
     private val mCameraPermissionResult = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
         if(isGranted){
-            mPhotoTaker.dispatchTakePictureIntent(requireContext(), mTakePictureResult)
+            mPhotoTaker.dispatchTakePictureIntent(mTakePictureResult)
         }else{
             Snackbar.make(mBinding.root, "사진 촬영을 위해 권한이 필요해요", Snackbar.LENGTH_SHORT).show()
         }
@@ -189,12 +189,12 @@ class Contact : Fragment() {
             }
             override fun onCameraClicked() {
                 if(!::mPhotoTaker.isInitialized){
-                    mPhotoTaker = PhotoTaker()
+                    mPhotoTaker = PhotoTaker(requireContext())
                 }
 
                 val permissionGranted = mPhotoTaker.checkCameraPermission(requireContext(), mCameraPermissionResult)
                 if(permissionGranted){
-                    mPhotoTaker.dispatchTakePictureIntent(requireContext(), mTakePictureResult)
+                    mPhotoTaker.dispatchTakePictureIntent(mTakePictureResult)
                 }
             }
         })

@@ -2,9 +2,6 @@
 <project version="4">
   <component name="deploymentTargetSelector">
     <selectionStates>
-      <SelectionState runConfigName="SearchScreenPreview">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="ItemListPreview (3)">
         <option name="selectionMode" value="DROPDOWN" />
         <DropdownSelection timestamp="2024-09-23T03:34:02.134365Z">
@@ -31,6 +28,9 @@
         <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="BannerImageTest">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="HomeScreenTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

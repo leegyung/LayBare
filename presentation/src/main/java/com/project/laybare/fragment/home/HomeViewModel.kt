@@ -3,18 +3,20 @@ package com.project.laybare.fragment.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.project.domain.entity.SearchImageResultEntity
-import com.project.domain.usecase.SearchImageUseCase
+import com.project.domain.usecase.GetHomeImagesUseCase
 import com.project.domain.util.ApiResult
 import com.project.laybare.BuildConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(private val mSearchImageUseCase: SearchImageUseCase) : ViewModel() {
+class HomeViewModel @Inject constructor(private val mGetHomeImageUseCase: GetHomeImagesUseCase) : ViewModel() {
     private val _apiError = MutableSharedFlow<String>()
     private val _loadingState = MutableSharedFlow<Boolean>()
 
@@ -25,7 +27,7 @@ class HomeViewModel @Inject constructor(private val mSearchImageUseCase: SearchI
     private val mHomeAdapter = HomeAdapter(mSectionList)
 
     init {
-        //getInitialData()
+        getInitialData()
     }
 
     /**
@@ -35,30 +37,27 @@ class HomeViewModel @Inject constructor(private val mSearchImageUseCase: SearchI
      * 하... 한번 호출로 몽땅 받아오고싶다....
      */
     fun getInitialData() {
-
-        mSearchImageUseCase(BuildConfig.API_KEY, BuildConfig.SEARCH_ENGINE, "Museum", 1, 5).onEach { result ->
-            when(result){
-                is ApiResult.ResponseLoading -> {
-                    _loadingState.emit(true)
-                }
-                is ApiResult.ResponseSuccess -> {
-                    result.data.let { data ->
-                        getArraySectionData(data, "BANNER")?.let { section -> mSectionList.add(section) }
-                        getArraySectionData(data, "HORIZONTAL")?.let { section -> mSectionList.add(section) }
-                        getArraySectionData(data, "HORIZONTAL")?.let { section -> mSectionList.add(section) }
-                        getArraySectionData(data, "HORIZONTAL")?.let { section -> mSectionList.add(section) }
-                        mHomeAdapter.notifyItemRangeInserted (0, mSectionList.size - 1)
+        viewModelScope.launch {
+            mGetHomeImageUseCase(
+                apiKey = BuildConfig.API_KEY,
+                searchEngine = BuildConfig.SEARCH_ENGINE,
+                sectionSize = 2,
+                bannerImageNum = 5,
+                normalImageNum = 10
+            ).collect{ result ->
+                when(result){
+                    is ApiResult.ResponseError -> {
+                        println("애러 생김")
                     }
-                    _loadingState.emit(false)
-                }
-                is ApiResult.ResponseError -> {
-                    _apiError.emit(result.errorMessage)
-                    _loadingState.emit(false)
+                    is ApiResult.ResponseLoading -> {
+
+                    }
+                    is ApiResult.ResponseSuccess -> {
+                        println(result.data.toString())
+                    }
                 }
             }
-        }.launchIn(viewModelScope)
-
-
+        }
     }
 
     private fun getArraySectionData(data : SearchImageResultEntity, sectionType : String) : HomeListSectionData? {
@@ -68,7 +67,6 @@ class HomeViewModel @Inject constructor(private val mSearchImageUseCase: SearchI
         return HomeListSectionData(
             sectionType,
             data.keyWord,
-            null,
             data.imageList
         )
     }

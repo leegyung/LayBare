@@ -2,6 +2,7 @@ package com.project.data.mapper
 
 import com.project.data.model.ImageItemDto
 import com.project.data.model.SearchImageResultDto
+import com.project.domain.entity.HomeImageSectionEntity
 import com.project.domain.entity.ImageEntity
 import com.project.domain.entity.SearchImageResultEntity
 
@@ -26,6 +27,21 @@ fun SearchImageResultDto.toSearchImageResult(keyword : String) : SearchImageResu
         images
     )
 }
+
+
+fun SearchImageResultDto.toHomeImageSection(keyword: String, section : String) : HomeImageSectionEntity {
+    val images = items?.map { it.toImageData() }
+
+
+
+    return HomeImageSectionEntity(
+        sectionType = section,
+        keyword = keyword,
+        imageList = images?: emptyList()
+    )
+}
+
+
 
 fun ImageItemDto.toImageData() : ImageEntity {
     return ImageEntity(

@@ -72,9 +72,9 @@ class HomeAdapter(private val mSections : ArrayList<HomeListSectionData>) : Recy
                 }
             }
             is ImageViewHolder -> {
-                mSections.getOrNull(position)?.image?.let{
-                    holder.bind(it)
-                }
+                //mSections.getOrNull(position)?.image?.let{
+                //    holder.bind(it)
+                //}
             }
         }
 
@@ -147,9 +147,9 @@ class HomeAdapter(private val mSections : ArrayList<HomeListSectionData>) : Recy
         init {
             mBinding.HomeNormalImageView.clipToOutline = true
             mBinding.HomeNormalImageView.setOnClickListener {
-                mSections.getOrNull(bindingAdapterPosition)?.image?.let{
-                    mListener?.onImageClicked(if(it.linkError) it.thumbnailLink else it.link)
-                }
+                //mSections.getOrNull(bindingAdapterPosition)?.image?.let{
+                //    mListener?.onImageClicked(if(it.linkError) it.thumbnailLink else it.link)
+               // }
             }
 
         }

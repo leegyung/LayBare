@@ -35,7 +35,7 @@ class Home : Fragment() {
     private val mBinding get() = _binding!!
     private val mViewModel : HomeViewModel by viewModels()
     private lateinit var mNavController: NavController
-    private lateinit var mPhotoTaker : PhotoTaker
+    private val mPhotoTaker by lazy { PhotoTaker(requireContext()) }
 
     // 촬영 어플에서 찍은 사진 결과
     private val mTakePictureResult = registerForActivityResult(ActivityResultContracts.TakePicture()) { success: Boolean ->
@@ -54,7 +54,7 @@ class Home : Fragment() {
     // 카메라 사용 권한 요청 결과
     private val mPermissionResult = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
         if(isGranted){
-            mPhotoTaker.dispatchTakePictureIntent(requireContext(), mTakePictureResult)
+            mPhotoTaker.dispatchTakePictureIntent(mTakePictureResult)
         }else{
             Snackbar.make(mBinding.root, "사진 촬영을 위해 권한이 필요해요", Snackbar.LENGTH_SHORT).show()
         }
@@ -159,13 +159,9 @@ class Home : Fragment() {
                 mPickImage.launch("image/*")
             }
             override fun onCameraClicked() {
-                if(!::mPhotoTaker.isInitialized){
-                    mPhotoTaker = PhotoTaker()
-                }
-
                 val permissionGranted = mPhotoTaker.checkCameraPermission(requireContext(), mPermissionResult)
                 if(permissionGranted){
-                    mPhotoTaker.dispatchTakePictureIntent(requireContext(), mTakePictureResult)
+                    mPhotoTaker.dispatchTakePictureIntent(mTakePictureResult)
                 }
             }
         })
