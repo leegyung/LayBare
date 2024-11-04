@@ -1,6 +1,8 @@
 package com.project.laybare.fragment.home
 
+import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -26,6 +28,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -37,6 +42,7 @@ import androidx.navigation.NavController
 import com.project.domain.entity.HomeImageSectionEntity
 import com.project.domain.entity.ImageEntity
 import com.project.laybare.R
+import com.project.laybare.dialog.ImageSelectOptionDialog
 import com.project.laybare.util.PhotoTaker
 
 
@@ -46,41 +52,44 @@ fun HomeMainScreen(viewModel : HomeViewModel, navController: NavController) {
     val mContext = LocalContext.current
     val uiState by viewModel.container.stateFlow.collectAsState()
     val sideEffectFlow = viewModel.container.sideEffectFlow
-
+    var showImageSelectOptDialog by remember { mutableStateOf(false) }
 
     val mPhotoTaker by lazy { PhotoTaker(mContext) }
 
     // 앨범에서 선탣한 사진 uri 결과
     val mSelectedAlbumImageResult = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
-
-            println(it.toString())
-
-            //ImageDetailData.setNewImageData(uri.toString())
-            //findNavController().navigate(R.id.action_home_to_imageDetail)
+            viewModel.onHandleEvent(HomeEvent.MoveToImageDetail(it.toString()))
         }
     }
-
     // 촬영 어플에서 찍은 사진 결과
     val mTakePictureResult = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success: Boolean ->
         if (success) {
-            //ImageDetailData.setNewImageData(mPhotoTaker.getPhotoUri().toString())
-            //findNavController().navigate(R.id.action_home_to_imageDetail)
+            viewModel.onHandleEvent(HomeEvent.MoveToImageDetail(mPhotoTaker.getPhotoUri().toString()))
         }
     }
     // 카메라 사용 권한 요청 결과
     val mCameraPermissionResult = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
         if(isGranted){
-            //mPhotoTaker.dispatchTakePictureIntent(requireContext(), mTakePictureResult)
+            mPhotoTaker.dispatchTakePictureIntent(mTakePictureResult)
         }else{
-            //Snackbar.make(mBinding.root, "사진 촬영을 위해 권한이 필요해요", Snackbar.LENGTH_SHORT).show()
+            Toast.makeText(mContext, "사진 촬영을 위해 권한이 필요해요", Toast.LENGTH_SHORT).show()
         }
     }
 
     LaunchedEffect(Unit) {
         sideEffectFlow.collect{ sideEffect ->
             when(sideEffect){
-                is HomeSideEffect.CreateDialog -> {}
+                is HomeSideEffect.CreateDialog -> Unit
+                is HomeSideEffect.NavigateToSearchPage -> navController.navigate(R.id.action_home_to_search)
+                is HomeSideEffect.NavigateToImageDetailPage -> navController.navigate(R.id.action_home_to_imageDetail)
+                is HomeSideEffect.CreateImageSelectDialog -> showImageSelectOptDialog = true
+                is HomeSideEffect.LaunchCamera -> {
+                    if(mPhotoTaker.checkCameraPermission(mCameraPermissionResult)){
+                        mPhotoTaker.dispatchTakePictureIntent(mTakePictureResult)
+                    }
+                }
+                is HomeSideEffect.OpenAlbum -> mSelectedAlbumImageResult.launch("image/*")
             }
         }
     }
@@ -91,6 +100,23 @@ fun HomeMainScreen(viewModel : HomeViewModel, navController: NavController) {
         uiState = uiState
     ) {
         viewModel.onHandleEvent(it)
+    }
+
+
+    if(showImageSelectOptDialog){
+        ImageSelectOptionDialog(
+            onAlbumSelected = {
+                viewModel.onHandleEvent(HomeEvent.SelectImageFromAlbumClicked)
+                showImageSelectOptDialog = false
+            },
+            onCameraSelected = {
+                viewModel.onHandleEvent(HomeEvent.TakePictureByCameraClicked)
+                showImageSelectOptDialog = false
+            },
+            onCancel = {
+                showImageSelectOptDialog = false
+            }
+        )
     }
 
 
@@ -133,8 +159,7 @@ fun HomeScreen(uiState: HomeUiState, onHandleEvent : (event : HomeEvent) -> Unit
                         shape = RoundedCornerShape(15.dp)
                     )
                     .clickable {
-
-
+                        onHandleEvent(HomeEvent.SearchBtnClicked)
                     }
             ){
                 Image(
@@ -153,7 +178,7 @@ fun HomeScreen(uiState: HomeUiState, onHandleEvent : (event : HomeEvent) -> Unit
                 modifier = Modifier
                     .size(40.dp)
                     .clickable {
-
+                        onHandleEvent(HomeEvent.SelectImageBtnClicked)
                     },
                 contentDescription = null
             )

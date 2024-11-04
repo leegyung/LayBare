@@ -8,37 +8,29 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.platform.ComposeView
-import androidx.core.os.bundleOf
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
-import com.google.android.material.snackbar.Snackbar
 import com.project.laybare.R
-import com.project.laybare.databinding.FragmentHomeBinding
 import com.project.laybare.dialog.AlertDialog
-import com.project.laybare.dialog.ImageSelectDialog
+import com.project.laybare.dialog.ImageSelectDialogXML
 import com.project.laybare.dialog.ImageSelectDialogListener
 import com.project.laybare.ssot.ImageDetailData
 import com.project.laybare.util.PhotoTaker
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class Home : Fragment() {
-    private val mComposeView by lazy { ComposeView(requireContext()) }
-
-
-    private var _binding: FragmentHomeBinding? = null
-    private val mBinding get() = _binding!!
+    private lateinit var mComposeView : ComposeView
     private val mViewModel : HomeViewModel by viewModels()
     private lateinit var mNavController: NavController
+
+
+
     private val mPhotoTaker by lazy { PhotoTaker(requireContext()) }
 
     // 촬영 어플에서 찍은 사진 결과
@@ -60,7 +52,7 @@ class Home : Fragment() {
         if(isGranted){
             mPhotoTaker.dispatchTakePictureIntent(mTakePictureResult)
         }else{
-            Snackbar.make(mBinding.root, "사진 촬영을 위해 권한이 필요해요", Snackbar.LENGTH_SHORT).show()
+            //Snackbar.make(mBinding.root, "사진 촬영을 위해 권한이 필요해요", Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -70,7 +62,9 @@ class Home : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return mComposeView
+        return ComposeView(requireContext()).also {
+            mComposeView = it
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -116,18 +110,18 @@ class Home : Fragment() {
 //        })
 
         // 검색 버튼 클릭 리스너
-        mBinding.HomeSearchBtn.setOnClickListener {
-            val extras = FragmentNavigatorExtras(
-                mBinding.HomeSearchBtn to "shared_text",
-                mBinding.HomeLogo to "shared_logo"
-            )
-            mNavController.navigate(R.id.action_home_to_search, null, null, extras)
-        }
-
-        // 사진기 버튼 클릭 리스너
-        mBinding.HomeCameraBtn.setOnClickListener {
-            createImageSelectOptionDialog()
-        }
+//        mBinding.HomeSearchBtn.setOnClickListener {
+//            val extras = FragmentNavigatorExtras(
+//                mBinding.HomeSearchBtn to "shared_text",
+//                mBinding.HomeLogo to "shared_logo"
+//            )
+//            mNavController.navigate(R.id.action_home_to_search, null, null, extras)
+//        }
+//
+//        // 사진기 버튼 클릭 리스너
+//        mBinding.HomeCameraBtn.setOnClickListener {
+//            createImageSelectOptionDialog()
+//        }
 
 
     }
@@ -161,13 +155,13 @@ class Home : Fragment() {
 
 
     private fun createImageSelectOptionDialog() {
-        val dialog = ImageSelectDialog()
+        val dialog = ImageSelectDialogXML()
         dialog.setImageSelectDialogListener(object : ImageSelectDialogListener{
             override fun onAlbumClicked() {
                 mPickImage.launch("image/*")
             }
             override fun onCameraClicked() {
-                val permissionGranted = mPhotoTaker.checkCameraPermission(requireContext(), mPermissionResult)
+                val permissionGranted = mPhotoTaker.checkCameraPermission(mPermissionResult)
                 if(permissionGranted){
                     mPhotoTaker.dispatchTakePictureIntent(mTakePictureResult)
                 }
@@ -191,11 +185,6 @@ class Home : Fragment() {
         dialog.show()
     }
 
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
 
 
 

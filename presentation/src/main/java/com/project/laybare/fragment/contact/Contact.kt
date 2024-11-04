@@ -20,7 +20,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.project.laybare.R
 import com.project.laybare.databinding.FragmentContactBinding
 import com.project.laybare.dialog.AlertDialog
-import com.project.laybare.dialog.ImageSelectDialog
+import com.project.laybare.dialog.ImageSelectDialogXML
 import com.project.laybare.dialog.ImageSelectDialogListener
 import com.project.laybare.util.ContactCreator
 import com.project.laybare.util.PhotoTaker
@@ -182,7 +182,7 @@ class Contact : Fragment() {
     }
 
     private fun createImageSelectOptionDialog() {
-        val dialog = ImageSelectDialog()
+        val dialog = ImageSelectDialogXML()
         dialog.setImageSelectDialogListener(object : ImageSelectDialogListener {
             override fun onAlbumClicked() {
                 mPickImage.launch("image/*")
@@ -192,7 +192,7 @@ class Contact : Fragment() {
                     mPhotoTaker = PhotoTaker(requireContext())
                 }
 
-                val permissionGranted = mPhotoTaker.checkCameraPermission(requireContext(), mCameraPermissionResult)
+                val permissionGranted = mPhotoTaker.checkCameraPermission(mCameraPermissionResult)
                 if(permissionGranted){
                     mPhotoTaker.dispatchTakePictureIntent(mTakePictureResult)
                 }

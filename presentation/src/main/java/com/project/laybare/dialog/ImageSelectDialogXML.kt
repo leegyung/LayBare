@@ -18,7 +18,7 @@ interface ImageSelectDialogListener{
 }
 
 
-class ImageSelectDialog : BottomSheetDialogFragment() {
+class ImageSelectDialogXML : BottomSheetDialogFragment() {
 
     private var mListener: ImageSelectDialogListener? = null
 

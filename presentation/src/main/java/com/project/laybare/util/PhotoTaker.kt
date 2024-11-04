@@ -21,8 +21,8 @@ class PhotoTaker(private val mContext: Context) {
      * 카메라 어플 사용 권한 체크
      * 권한이 없다면 ActivityResultLauncher 를 통해 요청
      */
-    fun checkCameraPermission(context: Context, launcher : ActivityResultLauncher<String>) : Boolean {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+    fun checkCameraPermission(launcher : ActivityResultLauncher<String>) : Boolean {
+        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             // 권한이 없는 경우 권한을 요청
             launcher.launch(Manifest.permission.CAMERA)
             return false

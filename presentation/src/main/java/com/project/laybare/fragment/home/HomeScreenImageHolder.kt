@@ -54,7 +54,7 @@ fun HomeBannerHolder(items : List<ImageEntity>, onHandleEvent : (event : HomeEve
             .fillMaxWidth(),
         state = pagerState,
         contentPadding = PaddingValues(horizontal = 70.dp), // 현재 페이지 양옆 패딩
-        pageSpacing = 8.dp, // 다음 페이지와의 간격
+        pageSpacing = 8.dp // 다음 페이지와의 간격
     ) { page ->
         val pageOffset = ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction)
         val image = items[page]
@@ -95,7 +95,7 @@ fun HomeBannerImage(url : String, pageOffset : Float, onHandleEvent : (event : H
             modifier = Modifier
                 .fillMaxSize()
                 .clickable {
-
+                    onHandleEvent(HomeEvent.MoveToImageDetail(url))
                 },
             imageModel = { url },
             imageOptions = ImageOptions(
@@ -145,13 +145,9 @@ fun HomeRegularImageHolder(imageList : List<ImageEntity>, keyword : String, view
                     color = colorResource(id = R.color.textBlack),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                ),
-                modifier = Modifier.padding()
+                )
             )
         }
-
-
-
 
         LazyRow(
             modifier = Modifier
@@ -164,9 +160,6 @@ fun HomeRegularImageHolder(imageList : List<ImageEntity>, keyword : String, view
                 HomeRegularImage(imageList[i].link, onHandleEvent)
             }
         }
-
-
-
 
     }
 }
@@ -184,8 +177,7 @@ fun HomeRegularImage(url : String, onHandleEvent : (event : HomeEvent) -> Unit) 
             modifier = Modifier
                 .fillMaxSize()
                 .clickable {
-
-
+                    onHandleEvent(HomeEvent.MoveToImageDetail(url))
                 },
             imageModel = { url },
             imageOptions = ImageOptions(
