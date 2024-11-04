@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -31,6 +32,9 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class Home : Fragment() {
+    private val mComposeView by lazy { ComposeView(requireContext()) }
+
+
     private var _binding: FragmentHomeBinding? = null
     private val mBinding get() = _binding!!
     private val mViewModel : HomeViewModel by viewModels()
@@ -65,16 +69,20 @@ class Home : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        return _binding?.root
+    ): View {
+        return mComposeView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         mNavController = findNavController()
-        initUI()
+
+        mComposeView.setContent {
+            HomeMainScreen(mViewModel, mNavController)
+        }
+
+
     }
 
     private fun initObserver() {

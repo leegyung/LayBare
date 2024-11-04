@@ -22,7 +22,7 @@ class HomeViewModel @Inject constructor(
 
 
     init {
-        //getInitialData()
+        getInitialData()
     }
 
     fun getInitialData() = intent {

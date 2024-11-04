@@ -3,25 +3,40 @@ package com.project.laybare.fragment.home
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Button
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.fragment.findNavController
-import com.google.android.material.snackbar.Snackbar
 import com.project.domain.entity.HomeImageSectionEntity
 import com.project.domain.entity.ImageEntity
 import com.project.laybare.R
-import com.project.laybare.ssot.ImageDetailData
 import com.project.laybare.util.PhotoTaker
 
 
@@ -88,6 +103,63 @@ fun HomeScreen(uiState: HomeUiState, onHandleEvent : (event : HomeEvent) -> Unit
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
+
+        Row(
+            modifier = Modifier
+                .height(IntrinsicSize.Min)
+                .fillMaxWidth()
+                .padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Image(
+                painter = painterResource(id = R.drawable.lay_bare),
+                contentDescription = null,
+                modifier = Modifier
+                    .width(112.dp)
+                    .height(50.dp)
+            )
+
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(30.dp)
+                    .weight(1f)
+                    .padding(10.dp, 0.dp, 10.dp, 0.dp)
+                    .background(
+                        color = colorResource(id = R.color.gray_bg),
+                        shape = RoundedCornerShape(15.dp)
+                    )
+                    .clickable {
+
+
+                    }
+            ){
+                Image(
+                    painter = painterResource(id = R.drawable.search_icon),
+                    contentDescription = null,
+                    modifier = Modifier.size(25.dp)
+                )
+
+                Spacer(modifier = Modifier.width(10.dp))
+            }
+
+
+
+            Image(
+                painter = painterResource(id = R.drawable.camera_icon),
+                modifier = Modifier
+                    .size(40.dp)
+                    .clickable {
+
+                    },
+                contentDescription = null
+            )
+        }
+
+
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
@@ -95,12 +167,13 @@ fun HomeScreen(uiState: HomeUiState, onHandleEvent : (event : HomeEvent) -> Unit
                 val section = imageList[i]
 
                 if(section.sectionType == "Banner") {
-                    HomeBannerHolder(section.imageList)
+                    HomeBannerHolder(section.imageList, onHandleEvent)
                 }else {
-                    HomeRegularImageHolder(section.imageList, section.keyword, i)
+                    HomeRegularImageHolder(section.imageList, section.keyword, i, onHandleEvent)
                 }
             }
         }
+
     }
 }
 

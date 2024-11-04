@@ -44,7 +44,7 @@ import kotlin.math.absoluteValue
 
 
 @Composable
-fun HomeBannerHolder(items : List<ImageEntity>) {
+fun HomeBannerHolder(items : List<ImageEntity>, onHandleEvent : (event : HomeEvent) -> Unit) {
     val pagerState = rememberPagerState(pageCount = {
         items.size
     })
@@ -58,7 +58,7 @@ fun HomeBannerHolder(items : List<ImageEntity>) {
     ) { page ->
         val pageOffset = ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction)
         val image = items[page]
-        HomeBannerImage(image.link, pageOffset)
+        HomeBannerImage(image.link, pageOffset, onHandleEvent)
     }
 
 }
@@ -67,7 +67,7 @@ fun HomeBannerHolder(items : List<ImageEntity>) {
 
 
 @Composable
-fun HomeBannerImage(url : String, pageOffset : Float) {
+fun HomeBannerImage(url : String, pageOffset : Float, onHandleEvent : (event : HomeEvent) -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -109,7 +109,7 @@ fun HomeBannerImage(url : String, pageOffset : Float) {
 
 
 @Composable
-fun HomeRegularImageHolder(imageList : List<ImageEntity>, keyword : String, viewIndex : Int) {
+fun HomeRegularImageHolder(imageList : List<ImageEntity>, keyword : String, viewIndex : Int, onHandleEvent : (event : HomeEvent) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -122,11 +122,16 @@ fun HomeRegularImageHolder(imageList : List<ImageEntity>, keyword : String, view
                 .height(IntrinsicSize.Min)
                 .padding(20.dp),
             contentAlignment = Alignment.CenterStart
-
         ){
+            val brushImage = when(viewIndex % 4 + 1) {
+                1 -> R.drawable.brush1
+                2 -> R.drawable.brush2
+                3 -> R.drawable.brush3
+                else -> R.drawable.brush4
+            }
 
             Image(
-                painter = painterResource(id = R.drawable.brush1),
+                painter = painterResource(id = brushImage),
                 contentDescription = null,
                 modifier = Modifier
                     .height(40.dp)
@@ -156,7 +161,7 @@ fun HomeRegularImageHolder(imageList : List<ImageEntity>, keyword : String, view
             contentPadding = PaddingValues(horizontal = 20.dp)
         ) {
             items(imageList.count()) { i ->
-                HomeRegularImage(imageList[i].link)
+                HomeRegularImage(imageList[i].link, onHandleEvent)
             }
         }
 
@@ -167,7 +172,7 @@ fun HomeRegularImageHolder(imageList : List<ImageEntity>, keyword : String, view
 }
 
 @Composable
-fun HomeRegularImage(url : String) {
+fun HomeRegularImage(url : String, onHandleEvent : (event : HomeEvent) -> Unit) {
     Surface(
         modifier = Modifier
             .width(150.dp)
@@ -219,7 +224,7 @@ fun BannerImageTest() {
     )
 
     MaterialTheme {
-        HomeRegularImageHolder(urls, "Test", 1)
+        HomeRegularImageHolder(urls, "Test", 1, {})
     }
 
 }
