@@ -82,15 +82,15 @@ class Home : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 // 다이얼로그 생성
                 launch {
-                    mViewModel.mApiError.collectLatest {
-                        imageLoadErrorDialog(it)
-                    }
+//                    mViewModel.mApiError.collectLatest {
+//                        imageLoadErrorDialog(it)
+//                    }
                 }
                 // 프로그레스 바 visibility 설정
                 launch {
-                    mViewModel.mLoadingState.collectLatest {
-                        mBinding.HomeProgressBar.isVisible = it
-                    }
+//                    mViewModel.mLoadingState.collectLatest {
+//                        mBinding.HomeProgressBar.isVisible = it
+//                    }
                 }
             }
         }
@@ -100,12 +100,12 @@ class Home : Fragment() {
 
     private fun initListener(){
         // 사진 리스트 리스너
-        mViewModel.getHomeAdapter().setListener(object : HomeImageListListener{
-            override fun onImageClicked(image: String) {
-                ImageDetailData.setNewImageData(image)
-                findNavController().navigate(R.id.action_home_to_imageDetail)
-            }
-        })
+//        mViewModel.getHomeAdapter().setListener(object : HomeImageListListener{
+//            override fun onImageClicked(image: String) {
+//                ImageDetailData.setNewImageData(image)
+//                findNavController().navigate(R.id.action_home_to_imageDetail)
+//            }
+//        })
 
         // 검색 버튼 클릭 리스너
         mBinding.HomeSearchBtn.setOnClickListener {
@@ -125,30 +125,30 @@ class Home : Fragment() {
     }
 
     private fun initUI() {
-        initObserver()
-        initListener()
-
-
-        val layoutManager = GridLayoutManager(this.context, 2)
-        val adapter = mViewModel.getHomeAdapter()
-
-        layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-            override fun getSpanSize(position: Int): Int {
-                return when (adapter.getItemViewType(position)) {
-                    3 -> 1
-                    else -> 2
-                }
-            }
-        }
-
-        mBinding.HomeRecyclerView.apply {
-            if(itemDecorationCount == 0){
-                addItemDecoration(HomeDecorator(resources.getDimensionPixelSize(R.dimen.dp_10)))
-            }
-            setHasFixedSize(true)
-            this.layoutManager =layoutManager
-            this.adapter = adapter
-        }
+//        initObserver()
+//        initListener()
+//
+//
+//        val layoutManager = GridLayoutManager(this.context, 2)
+//        val adapter = mViewModel.getHomeAdapter()
+//
+//        layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+//            override fun getSpanSize(position: Int): Int {
+//                return when (adapter.getItemViewType(position)) {
+//                    3 -> 1
+//                    else -> 2
+//                }
+//            }
+//        }
+//
+//        mBinding.HomeRecyclerView.apply {
+//            if(itemDecorationCount == 0){
+//                addItemDecoration(HomeDecorator(resources.getDimensionPixelSize(R.dimen.dp_10)))
+//            }
+//            setHasFixedSize(true)
+//            this.layoutManager =layoutManager
+//            this.adapter = adapter
+//        }
     }
 
 

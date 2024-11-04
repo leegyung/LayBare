@@ -32,8 +32,6 @@ fun SearchImageResultDto.toSearchImageResult(keyword : String) : SearchImageResu
 fun SearchImageResultDto.toHomeImageSection(keyword: String, section : String) : HomeImageSectionEntity {
     val images = items?.map { it.toImageData() }
 
-
-
     return HomeImageSectionEntity(
         sectionType = section,
         keyword = keyword,

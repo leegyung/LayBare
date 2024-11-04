@@ -127,7 +127,7 @@
                 android:id="@+id/imageView10"
                 android:layout_width="100dp"
                 android:layout_height="20dp"
-                android:src="@drawable/brush7"
+                android:src="@drawable/brush4"
                 app:layout_constraintBottom_toBottomOf="@+id/textView5"
                 app:layout_constraintStart_toStartOf="@+id/textView5"
                 app:layout_constraintTop_toTopOf="@+id/textView5" />
